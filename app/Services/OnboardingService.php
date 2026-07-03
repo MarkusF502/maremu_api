@@ -107,7 +107,6 @@ class OnboardingService
         'loja_fisica'          => 0.030,  // 3.0%
         'instagram_whatsapp'   => 0.035,  // 3.5% (link de pagamento costuma ser um pouco maior)
         'marketplace'          => 0.150,  // 15%
-        'mix'                  => 0.070,  // 7% (estimativa de canal misto)
     ];
 
     // ─────────────────────────────────────────────────────────────────────

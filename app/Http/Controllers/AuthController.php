@@ -2,14 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+
 
 class AuthController extends Controller
 {
+
+
+        public function register(RegisterRequest $request): JsonResponse
+    {
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => $request->password,
+        ]);
+ 
+        $token = $user->createToken('auth_token')->plainTextToken;
+        
+        Auth::login($user);
+        
+        return response()->json([
+            'message'      => 'Conta criada com sucesso.',
+            'user'         => $user,
+            'token'        => $token,
+            'tem_loja'     => false, 
+        ], 201);
+    }
+
     public function login(Request $request): JsonResponse
     {
         $request->validate([
@@ -41,6 +65,12 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json(['user' => $request->user()]);
+        $user = $request->user();
+ 
+        return response()->json([
+            'user'     => $user,
+            'tem_loja' => $user->loja()->exists(),
+        ]);
     }
+
 }
