@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Categoria;
+use App\Models\Produto;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,5 +49,15 @@ class Loja extends Model
     public function canaisAtivos(): HasMany
     {
         return $this->hasMany(CanalVendaLoja::class)->where('ativo', true);
+    }
+
+    public function categorias(): HasMany
+    {
+        return $this->hasMany(Categoria::class);
+    }
+
+    public function produtos(): HasMany
+    {
+        return $this->hasMany(Produto::class);
     }
 }
