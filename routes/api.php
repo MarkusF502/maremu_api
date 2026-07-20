@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\RelatorioController;
 use App\Http\Middleware\EnsureLojaExists;
 use Illuminate\Support\Facades\Route;
 
@@ -28,4 +29,6 @@ Route::middleware(['auth:sanctum', EnsureLojaExists::class])->group(function () 
     Route::get('/produtos/{produto}', [ProdutoController::class, 'show']);
     Route::put('/produtos/{produto}', [ProdutoController::class, 'update']);
     Route::delete('/produtos/{produto}', [ProdutoController::class, 'destroy']);
+
+    Route::get('/relatorio', [RelatorioController::class, 'index']);
 });
