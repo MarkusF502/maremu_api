@@ -6,11 +6,13 @@ use App\Http\Requests\StoreProdutoRequest;
 use App\Http\Requests\UpdateProdutoRequest;
 use App\Models\Produto;
 use App\Models\VarianteProduto;
+use App\Services\PricingEngine;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 class ProdutoController extends Controller
 {
+    public function __construct(private readonly PricingEngine $pricingEngine) {}
     public function index(): JsonResponse
     {
         $loja = request()->user()->loja()->firstOrFail();
@@ -27,16 +29,32 @@ class ProdutoController extends Controller
 
     public function store(StoreProdutoRequest $request): JsonResponse
     {
-        $loja = $request->user()->loja()->firstOrFail();
+        $loja = $request->user()->loja()->with('canaisAtivos')->firstOrFail();
         $data = $request->validated();
 
-        $produto = DB::transaction(function () use ($data, $loja) {
+        // 1. Chamar o PricingEngine para calcular os preços
+        $taxaCanalPrincipal = $loja->canaisAtivos->max('taxa_percentual') ?? 0.0;
+
+        $dadosPreco = $this->pricingEngine->calcularPreco(
+            custoAquisicao: $data['custo_aquisicao'],
+            freteEntradaUnitario: $data['frete_entrada_unitario'] ?? 0.0,
+            aliquotaEfetiva: $loja->aliquota_efetiva,
+            taxaCanal: $taxaCanalPrincipal,
+            custoFixoMensal: $loja->custo_fixo_mensal,
+            volumeVendasEsperado: $loja->volume_vendas_esperado,
+            margemLucroDesejada: $loja->margem_lucro_desejada
+        );
+
+        $produto = DB::transaction(function () use ($data, $loja, $dadosPreco) {
             $produto = Produto::create([
                 'loja_id' => $loja->id,
                 'categoria_id' => $data['categoria_id'],
                 'nome' => $data['nome'],
                 'custo_aquisicao' => $data['custo_aquisicao'],
-                'preco_venda_atual' => $data['preco_venda_atual'] ?? null,
+                'frete_entrada_unitario' => $data['frete_entrada_unitario'] ?? 0.0,
+                'preco_piso' => $dadosPreco['preco_piso'],
+                // Se o usuário não definir um preço, sugerimos o calculado pelo PricingEngine
+                'preco_venda_atual' => $data['preco_venda_atual'] ?? $dadosPreco['preco_venda'],
                 'status' => $data['status'] ?? 'ativo',
             ]);
 
@@ -67,16 +85,31 @@ class ProdutoController extends Controller
     public function update(UpdateProdutoRequest $request, Produto $produto): JsonResponse
     {
         $this->assertProdutoDaLoja($produto);
-
+        $loja = $request->user()->loja()->with('canaisAtivos')->firstOrFail(); // ← adiciona isso
         $data = $request->validated();
 
-        $produto = DB::transaction(function () use ($produto, $data) {
+
+        $produto = DB::transaction(function () use ($produto, $data, $loja) {
+        $taxaCanalPrincipal = $loja->canaisAtivos->max('taxa_percentual') ?? 0.0;
+
+            $dadosPreco = $this->pricingEngine->calcularPreco(
+                custoAquisicao:       $data['custo_aquisicao'],
+                freteEntradaUnitario: $data['frete_entrada_unitario'] ?? 0.0,
+                aliquotaEfetiva:      $loja->aliquota_efetiva,
+                taxaCanal:            $taxaCanalPrincipal,
+                custoFixoMensal:      $loja->custo_fixo_mensal,
+                volumeVendasEsperado: $loja->volume_vendas_esperado,
+                margemLucroDesejada:  $loja->margem_lucro_desejada,
+            );
+
             $produto->update([
-                'categoria_id' => $data['categoria_id'],
-                'nome' => $data['nome'],
-                'custo_aquisicao' => $data['custo_aquisicao'],
-                'preco_venda_atual' => $data['preco_venda_atual'] ?? null,
-                'status' => $data['status'] ?? $produto->status,
+                'categoria_id'           => $data['categoria_id'],
+                'nome'                   => $data['nome'],
+                'custo_aquisicao'        => $data['custo_aquisicao'],
+                'frete_entrada_unitario' => $data['frete_entrada_unitario'] ?? 0.0,
+                'preco_piso'             => $dadosPreco['preco_piso'],
+                'preco_venda_atual'      => $data['preco_venda_atual'] ?? null,
+                'status'                 => $data['status'] ?? $produto->status,
             ]);
 
             $produto->variantes()->delete();

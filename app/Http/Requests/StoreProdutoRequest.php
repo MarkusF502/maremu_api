@@ -31,6 +31,7 @@ class StoreProdutoRequest extends FormRequest
             'variantes.*.tamanho' => ['required', 'string', 'min:1', 'max:50'],
             'variantes.*.quantidade_estoque' => ['required', 'integer', 'min:0'],
             'variantes.*.estoque_minimo_alerta' => ['nullable', 'integer', 'min:0'],
+            'frete_entrada_unitario' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }
