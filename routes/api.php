@@ -6,6 +6,7 @@ use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Middleware\EnsureLojaExists;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PrecificacaoController;
 use Illuminate\Support\Facades\Route;
 
 // ── Rotas públicas (sem autenticação) ────────────────────────────────────
@@ -30,6 +31,7 @@ Route::middleware(['auth:sanctum', EnsureLojaExists::class])->group(function () 
     Route::get('/produtos/{produto}', [ProdutoController::class, 'show']);
     Route::put('/produtos/{produto}', [ProdutoController::class, 'update']);
     Route::delete('/produtos/{produto}', [ProdutoController::class, 'destroy']);
-
+    Route::post('/precificacao/sugerir/{produto}', [PrecificacaoController::class, 'sugerir']);
+    Route::post('/precificacao/confirmar', [PrecificacaoController::class, 'confirmar']);
     Route::get('/relatorio', [RelatorioController::class, 'index']);
 });

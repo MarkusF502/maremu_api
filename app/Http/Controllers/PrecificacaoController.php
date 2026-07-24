@@ -7,6 +7,7 @@ use App\Models\Produto;
 use App\Services\PrecificacaoPayloadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /**
  * PrecificacaoController
@@ -20,7 +21,8 @@ use Illuminate\Http\Request;
 class PrecificacaoController extends Controller
 {
     public function __construct(
-        private readonly PrecificacaoPayloadService $payloadService
+        private readonly PrecificacaoPayloadService $payloadService,
+        private readonly \App\Services\GeminiService $geminiService,
     ) {}
 
     public function sugerir(Request $request, string $produtoId): JsonResponse
@@ -50,19 +52,25 @@ class PrecificacaoController extends Controller
             'payload_enviado' => $payload,
         ]);
 
-        // ── Fase 5: chamada ao Gemini entrará aqui ────────────────────────
-        // $cenarios = $this->geminiService->sugerirPrecos($payload, $systemPrompt);
-        // $log->update(['cenarios_retornados' => $cenarios]);
-        // return response()->json(['payload' => $payload, 'cenarios' => $cenarios, 'log_id' => $log->id]);
-        // ─────────────────────────────────────────────────────────────────
+        try {
+            $resultado = $this->geminiService->sugerirCenarios($payload);
+        } catch (\RuntimeException $e) {
+            Log::error('Falha ao obter sugestão de preço via Gemini', [
+                'log_id' => $log->id,
+                'erro'   => $e->getMessage(),
+            ]);
 
-        // Por enquanto (Fase 2), retorna o payload montado para validação
+            return response()->json([
+                'message' => 'Não foi possível gerar sugestões de preço no momento. Tente novamente em instantes.',
+            ], 502);
+        }
+
+        $log->update(['cenarios_retornados' => $resultado['cenarios']]);
+
         return response()->json([
-            'payload'           => $payload,
-            'log_id'            => $log->id,
-            'camada_4_ativa'    => !is_null($payload['camada_4']),
-            'canais_disponiveis' => count($payload['camada_2']['canais']),
-        ]);
+            'log_id'   => $log->id,
+            'cenarios' => $resultado['cenarios'],
+                ]);
     }
 
     /**
@@ -85,6 +93,21 @@ class PrecificacaoController extends Controller
         $log->loadMissing('produto');
         abort_if($log->produto->loja_id !== $request->user()->loja->id, 403);
 
+        if ($request->cenario_escolhido !== 'manual') {
+        $cenarios = collect($log->cenarios_retornados ?? []);
+        $cenario  = $cenarios->firstWhere('id', $request->cenario_escolhido);
+
+        if (! $cenario || abs($cenario['preco_sugerido'] - $request->preco_final) > 0.01) {
+            return response()->json([
+                'message' => 'O preço enviado não corresponde ao cenário sugerido pela IA.',
+            ], 422);
+        }
+        }
+
+        $precoOrigem = $request->cenario_escolhido === 'manual'
+            ? 'manual'
+            : 'ia_' . $request->cenario_escolhido;
+
         // Atualiza o log com a escolha
         $log->update([
             'cenario_escolhido'      => $request->cenario_escolhido,
@@ -94,9 +117,7 @@ class PrecificacaoController extends Controller
         // Atualiza o preço e a origem no produto
         $log->produto->update([
             'preco_venda_atual' => $request->preco_final,
-            'preco_origem'      => $request->cenario_escolhido === 'manual'
-                                        ? 'manual'
-                                        : $request->cenario_escolhido,
+            'preco_origem'      => $precoOrigem,
         ]);
 
         return response()->json([

@@ -146,7 +146,7 @@ class PrecificacaoControllerTest extends TestCase
 
         $response = $this->actingAs($user)->postJson('/api/precificacao/confirmar', [
             'log_id' => $log->id,
-            'cenario_escolhido' => 'ia',
+            'cenario_escolhido' => 'cenario_2',
             'preco_final' => 79.90,
         ]);
 
@@ -160,7 +160,7 @@ class PrecificacaoControllerTest extends TestCase
         $this->assertDatabaseHas('produtos', [
             'id' => $produto->id,
             'preco_venda_atual' => 79.90,
-            'preco_origem' => 'ia',
+            'preco_origem' => 'ia_cenario_2',
         ]);
 
         $this->assertDatabaseHas('logs_sugestao_ia', [
@@ -235,7 +235,7 @@ class PrecificacaoControllerTest extends TestCase
 
         $response = $this->actingAs($user)->postJson('/api/precificacao/confirmar', [
             'log_id' => $logDeOutraLoja->id,
-            'cenario_escolhido' => 'ia',
+            'cenario_escolhido' => 'cenario_2',
             'preco_final' => 50,
         ]);
 
