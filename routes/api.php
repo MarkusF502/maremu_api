@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Middleware\EnsureLojaExists;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // ── Rotas públicas (sem autenticação) ────────────────────────────────────
@@ -23,7 +24,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
 Route::middleware(['auth:sanctum', EnsureLojaExists::class])->group(function () {
     Route::get('/categorias', [CategoriaController::class, 'index']);
     Route::post('/categorias', [CategoriaController::class, 'store']);
-
+    Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/produtos', [ProdutoController::class, 'index']);
     Route::post('/produtos', [ProdutoController::class, 'store']);
     Route::get('/produtos/{produto}', [ProdutoController::class, 'show']);
