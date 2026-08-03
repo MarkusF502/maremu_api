@@ -153,6 +153,10 @@ class PrecificacaoPayloadService
             $dados['candidatos_liquidacao'] = $metrica->candidatos_liquidacao;
         }
 
+        if ($metrica->desatualizada) {
+            $dados['aviso'] = 'Métricas da categoria com vendas recentes ainda não consolidadas. Atualização programada para a próxima madrugada.';
+        }
+
         // Remove campos nulos do array antes de entregar
         return array_filter($dados, fn($v) => !is_null($v));
     }

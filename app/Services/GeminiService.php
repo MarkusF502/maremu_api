@@ -22,7 +22,7 @@ class GeminiService
     public function __construct()
     {
         $this->apiKey = config('services.gemini.api_key');
-        $this->model  = config('services.gemini.model', 'gemini-2.5-flash');
+        $this->model  = config('services.gemini.model', 'gemini-1.5-flash-latest');
 
         if (empty($this->apiKey)) {
             throw new RuntimeException('GEMINI_API_KEY não configurada no .env');
@@ -114,6 +114,7 @@ Você recebe um payload estruturado em JSON com três camadas de dados:
 - camada_1: o preço piso já calculado (cobre todos os custos, sem lucro). Este valor é fixo e não deve ser recalculado por você — use-o apenas como referência mínima absoluta.
 - camada_2: dados da loja (posicionamento, regime tributário, canais de venda) e do produto sendo precificado. Sempre presente.
 - camada_4: métricas históricas da categoria do produto (giro médio, margem realizada vs. planejada, candidatos à liquidação). Pode estar ausente — se estiver ausente no payload, significa que a loja ainda não tem histórico suficiente nessa categoria; não presuma valores nem invente médias de mercado para substituir esse campo.
+- Se houver um campo 'aviso' indicando que os dados estão desatualizados, mencione isso brevemente e de forma natural na sua explicação, para que o lojista saiba que as vendas de hoje ainda não impactaram os cálculos de giro e margem.
 
 Sua tarefa: gerar exatamente 3 cenários de preço de venda, cada um acima do preco_piso, representando diferentes estratégias comerciais:
 1. cenario_liquidacao — margem reduzida, para giro rápido de estoque parado ou baixa saída

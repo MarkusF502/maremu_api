@@ -250,6 +250,7 @@ class SaidaController extends Controller
 
                 return [
                     'produto_id' => $produto->id,
+                    'categoria_id' => $produto->categoria_id,
                     'variante_id' => $variante->id,
                     'produto' => $produto->nome,
                     'tamanho' => $variante->tamanho,
@@ -263,6 +264,12 @@ class SaidaController extends Controller
 
             $subtotal = round((float) $linhas->sum('subtotal'), 2);
             $descontoTotal = round((float) ($data['desconto'] ?? 0), 2);
+            $categoriasAfetadas = $linhas
+                ->pluck('categoria_id')
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
 
             if ($descontoTotal > $subtotal) {
                 throw ValidationException::withMessages([
@@ -331,6 +338,17 @@ class SaidaController extends Controller
                     'estoque_restante' => $linha['estoque_anterior'] - $linha['quantidade'],
                 ];
             }
+
+            DB::afterCommit(function () use ($categoriasAfetadas, $loja): void {
+                if ($categoriasAfetadas === []) {
+                    return;
+                }
+
+                DB::table('metricas_categoria_loja')
+                    ->where('loja_id', $loja->id)
+                    ->whereIn('categoria_id', $categoriasAfetadas)
+                    ->update(['desatualizada' => true]);
+            });
 
             return [
                 'id' => $pedidoId,
