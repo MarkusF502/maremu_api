@@ -23,6 +23,7 @@ class PrecificacaoController extends Controller
     public function __construct(
         private readonly PrecificacaoPayloadService $payloadService,
         private readonly \App\Services\GeminiService $geminiService,
+        private readonly \App\Services\PricingEngine $pricingEngine,
     ) {}
 
     public function sugerir(Request $request, string $produtoId): JsonResponse
@@ -65,12 +66,69 @@ class PrecificacaoController extends Controller
             ], 502);
         }
 
-        $log->update(['cenarios_retornados' => $resultado['cenarios']]);
+        // A IA devolveu apenas a margem de cada cenário (H1 — ver Especificação
+        // Técnica §3.4). O preço final é sempre calculado aqui, de forma
+        // determinística, para que explicação (IA) e preço (PHP) nunca divirjam.
+        $cenarios = $this->calcularPrecosDosCenarios($resultado['cenarios'], $produto);
+
+        $log->update(['cenarios_retornados' => $cenarios]);
 
         return response()->json([
             'log_id'   => $log->id,
-            'cenarios' => $resultado['cenarios'],
-                ]);
+            'cenarios' => $cenarios,
+        ]);
+    }
+
+    /**
+     * Converte a margem_lucro_percentual de cada cenário (vinda da IA) em
+     * preco_sugerido, via PricingEngine. A IA nunca calcula o preço final —
+     * ver GeminiService::sugerirCenarios().
+     *
+     * @param  array<array{id: string, tipo: string, margem_lucro_percentual: float, explicacao: string}>  $cenariosIa
+     * @return array<array{id: string, tipo: string, margem_lucro_percentual: float, explicacao: string, preco_sugerido: float, preco_piso_referencia: float}>
+     */
+    private function calcularPrecosDosCenarios(array $cenariosIa, Produto $produto): array
+    {
+        $loja         = $produto->loja;
+        $taxaCanal    = $this->taxaCanalAplicavel($loja);
+
+        foreach ($cenariosIa as &$cenario) {
+            $margem = (float) $cenario['margem_lucro_percentual'];
+
+            $calculo = $this->pricingEngine->calcularPreco(
+                custoAquisicao: (float) $produto->custo_aquisicao,
+                freteEntradaUnitario: (float) $produto->frete_entrada_unitario,
+                aliquotaEfetiva: (float) $loja->aliquota_efetiva,
+                taxaCanal: $taxaCanal,
+                custoFixoMensal: (float) $loja->custo_fixo_mensal,
+                volumeVendasEsperado: (int) $loja->volume_vendas_esperado,
+                margemLucroDesejada: $margem,
+            );
+
+            $cenario['margem_aplicada']        = $margem;
+            $cenario['preco_sugerido']         = $calculo['preco_venda'];
+            $cenario['preco_piso_referencia']  = $calculo['preco_piso'];
+        }
+
+        return $cenariosIa;
+    }
+
+    /**
+     * Taxa de canal única para o cálculo do PricingEngine, quando a loja tem
+     * múltiplos canais ativos. Mesma abordagem conservadora usada no
+     * onboarding (OnboardingService::taxaCanalConservadora): usa a maior
+     * taxa entre os canais ativos, garantindo que o preço cobre o canal
+     * mais caro. O lojista pode ajustar manualmente depois.
+     */
+    private function taxaCanalAplicavel($loja): float
+    {
+        $taxas = $loja->canaisAtivos->pluck('taxa_percentual')->map(fn ($t) => (float) $t);
+
+        if ($taxas->isEmpty()) {
+            throw new \RuntimeException("Loja {$loja->id} sem canais de venda ativos — não é possível calcular preço.");
+        }
+
+        return $taxas->max();
     }
 
     /**
