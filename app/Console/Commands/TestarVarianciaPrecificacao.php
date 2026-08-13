@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Categoria;
 use App\Models\Produto;
 use App\Models\LogsSugestaoIa;
+use App\Models\MetricasCategoriaLoja;
 use App\Services\PrecificacaoPayloadService;
 use App\Services\GeminiService;
 use Illuminate\Support\Str;
@@ -19,7 +20,9 @@ class TestarVarianciaPrecificacao extends Command
      *
      * @var string
      */
-    protected $signature = 'precificacao:testar-variancia {--amostras=20 : Número de chamadas à IA}';
+    protected $signature = 'precificacao:testar-variancia
+        {--amostras=20 : Número de chamadas à IA}
+        {--cenario=longe_borda : Cenário de camada_4 a simular: longe_borda | borda_inferior_margem | borda_superior_margem | cold_start}';
 
     /**
      * The console command description.
@@ -82,7 +85,20 @@ class TestarVarianciaPrecificacao extends Command
                 ]
             );
 
+            $cenario = $this->option('cenario');
+            $this->info("📊 Cenário de camada_4: {$cenario}");
+            $this->aplicarFixtureCamada4($produto, $categoria, $loja, $cenario);
+
             $payload = $payloadService->montar($produto);
+
+            // Confere no payload de fato montado se camada_4/razao_margem/razao_giro
+            // saíram como esperado — evita repetir o problema do teste anterior,
+            // em que a fixture não chegava até o payload por engano silencioso.
+            $razaoMargem = data_get($payload, 'camada_4.razao_margem');
+            $razaoGiro   = data_get($payload, 'camada_4.razao_giro');
+            $this->line("   razao_margem no payload: " . ($razaoMargem ?? 'ausente'));
+            $this->line("   razao_giro no payload: " . ($razaoGiro ?? 'ausente'));
+            $this->newLine();
 
             $margens = [
                 'liquidacao' => [],
@@ -107,11 +123,11 @@ class TestarVarianciaPrecificacao extends Command
                 ]);
 
                 // Armazena as margens de TODOS os cenários para o cálculo de CV
-                foreach ($resultadoIa['cenarios'] as $cenario) {
-                    $tipo = $cenario['tipo'] ?? 'desconhecido';
+                foreach ($resultadoIa['cenarios'] as $cenarioResultado) {
+                    $tipo = $cenarioResultado['tipo'] ?? 'desconhecido';
                     
-                    if (isset($margens[$tipo]) && isset($cenario['margem_lucro_percentual'])) {
-                        $margens[$tipo][] = (float) $cenario['margem_lucro_percentual'];
+                    if (isset($margens[$tipo]) && isset($cenarioResultado['margem_lucro_percentual'])) {
+                        $margens[$tipo][] = (float) $cenarioResultado['margem_lucro_percentual'];
                     }
                 }
 
@@ -171,6 +187,30 @@ class TestarVarianciaPrecificacao extends Command
                 $this->line("Desvio Padrão: " . number_format($stats['desvio'] * 100, 2) . "%");
                 $this->line("Coeficiente de Variação (CV): " . number_format($stats['cv'], 2) . "%");
                 $this->line("Distribuição bruta: [" . implode(', ', array_map(fn($m) => number_format($m*100, 1).'%', $stats['bruto'])) . "]");
+
+                // Histograma simples por valor arredondado — CV agregado sozinho
+                // não distingue "hesitação numa fronteira" (poucos valores distintos,
+                // repetidos, batendo perto de um limiar) de "decisão instável"
+                // (valores espalhados sem padrão). Isso importa especialmente para
+                // o cenário 'liquidacao' nos testes de borda.
+                $frequencias = [];
+                foreach ($stats['bruto'] as $m) {
+                    $chave = number_format($m * 100, 1) . '%';
+                    $frequencias[$chave] = ($frequencias[$chave] ?? 0) + 1;
+                }
+                arsort($frequencias);
+                $valoresDistintos = count($frequencias);
+                $this->line("Valores distintos: {$valoresDistintos} → " . implode(', ', array_map(
+                    fn($v, $c) => "{$v} ({$c}x)",
+                    array_keys($frequencias),
+                    array_values($frequencias)
+                )));
+
+                if ($tipo === 'liquidacao' && $valoresDistintos <= 3 && $stats['cv'] >= 5.0) {
+                    $this->comment("   → Poucos valores distintos + CV alto: parece hesitação entre faixas vizinhas (efeito de borda), não decisão livre e dispersa.");
+                    $this->comment("   → Se este teste usou --cenario=borda_inferior_margem ou borda_superior_margem, isso é esperado; compare com uma rodada --cenario=longe_borda para confirmar.");
+                }
+
                 $this->newLine();
             }
 
@@ -190,5 +230,75 @@ class TestarVarianciaPrecificacao extends Command
         } catch (\Exception $e) {
             $this->error("\nErro durante a execução: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Monta (ou remove) o registro de MetricasCategoriaLoja conforme o
+     * cenário escolhido, para exercitar razao_margem/razao_giro em pontos
+     * específicos — longe de qualquer borda das faixas do prompt, ou
+     * propositalmente em cima delas (0.69 vs 0.71), para separar "hesitação
+     * de fronteira" de "variância real de decisão".
+     *
+     * loja.volume_vendas_esperado = 120 (fixture fixa) → giro_esperado_dias
+     * = 30 / (120/30) = 7.5 dias. giro_medio_dias abaixo é escolhido para
+     * manter razao_giro = 1.0 (neutro) nos cenários de margem, isolando o
+     * sinal que está sendo testado.
+     */
+    private function aplicarFixtureCamada4(Produto $produto, Categoria $categoria, Loja $loja, string $cenario): void
+    {
+        // Sempre remove fixture anterior primeiro — evita um cenário
+        // "cold_start" rodar em cima de uma metrica deixada por um teste
+        // anterior e mentir sobre o que está sendo testado.
+        MetricasCategoriaLoja::where('loja_id', $loja->id)
+            ->where('categoria_id', $categoria->id)
+            ->delete();
+
+        if ($cenario === 'cold_start') {
+            return; // sem fixture — camada_4 fica ausente, como no fluxo original
+        }
+
+        $margemPlanejada = 0.30;
+        $giroEsperadoDias = 30 / ($loja->volume_vendas_esperado / 30); // 7.5 com volume=120
+
+        $fixtures = [
+            // razao_margem = 0.30 / 0.30... na verdade queremos bem abaixo de 0.70,
+            // e razao_giro = 3.0 (bem acima de 1.5) — os dois sinais concordam,
+            // longe de qualquer fronteira. Caso de referência "sem ambiguidade".
+            'longe_borda' => [
+                'margem_realizada_media' => round($margemPlanejada * 0.30, 4),
+                'giro_medio_dias'        => round($giroEsperadoDias * 3.0, 2),
+            ],
+            // razao_margem = 0.69 — logo abaixo do corte 0.70 (agressivo).
+            // razao_giro = 1.0 (neutro) para isolar o sinal de margem.
+            'borda_inferior_margem' => [
+                'margem_realizada_media' => round($margemPlanejada * 0.69, 4),
+                'giro_medio_dias'        => round($giroEsperadoDias * 1.0, 2),
+            ],
+            // razao_margem = 0.71 — logo acima do corte 0.70 (moderado/na meta).
+            'borda_superior_margem' => [
+                'margem_realizada_media' => round($margemPlanejada * 0.71, 4),
+                'giro_medio_dias'        => round($giroEsperadoDias * 1.0, 2),
+            ],
+        ];
+
+        if (! isset($fixtures[$cenario])) {
+            throw new \InvalidArgumentException(
+                "Cenário '{$cenario}' desconhecido. Use: " . implode(', ', array_keys($fixtures)) . ", cold_start."
+            );
+        }
+
+        MetricasCategoriaLoja::create([
+            'id'                      => Str::uuid()->toString(),
+            'loja_id'                 => $loja->id,
+            'categoria_id'            => $categoria->id,
+            'periodo_referencia'      => now()->startOfMonth(),
+            'volume_minimo_atingido'  => true,
+            'giro_medio_dias'         => $fixtures[$cenario]['giro_medio_dias'],
+            'margem_realizada_media'  => $fixtures[$cenario]['margem_realizada_media'],
+            'margem_planejada_media'  => $margemPlanejada,
+            'qtd_vendas_periodo'      => 20,
+            'data_calculo'            => now(),
+            'desatualizada'           => false,
+        ]);
     }
 }
