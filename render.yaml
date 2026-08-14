@@ -33,6 +33,16 @@ services:
           property: connectionString
       - key: SESSION_DRIVER
         value: database
+      - key: SESSION_DOMAIN
+        value: "" # vazio: backend e frontend estão em domínios diferentes, cookie não pode ter domain fixo
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: SESSION_SAME_SITE
+        value: "none" # obrigatório para cookie cross-site (Render <-> Vercel) chegar de volta
+      - key: SANCTUM_STATEFUL_DOMAINS
+        value: maremu-l2cr.vercel.app,maremu.com.br,www.maremu.com.br
+      - key: FRONTEND_URL
+        sync: false # URL do frontend na Vercel/domínio próprio, usada no CORS (allowed_origins)
       - key: CACHE_STORE
         value: database
       - key: QUEUE_CONNECTION
