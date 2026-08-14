@@ -205,6 +205,19 @@ class OnboardingService
         ], $canais);
     }
 
+    /**
+     * Versão pública de inferirCanais(), usada pelo fluxo de onboarding via
+     * IA (OnboardingIaController::confirmar) — a alíquota efetiva dos canais
+     * continua 100% determinística mesmo nesse fluxo (ver SPEC-onboarding-ia
+     * D7): a IA nunca estima taxa_percentual de canal.
+     *
+     * @param  string[] $canais
+     */
+    public function inferirCanaisPublico(array $canais): array
+    {
+        return $this->inferirCanais($canais);
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // VALIDAÇÃO
     // ─────────────────────────────────────────────────────────────────────
