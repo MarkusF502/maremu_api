@@ -24,6 +24,7 @@ class PrecificacaoController extends Controller
         private readonly PrecificacaoPayloadService $payloadService,
         private readonly \App\Services\GeminiService $geminiService,
         private readonly \App\Services\PricingEngine $pricingEngine,
+        private readonly \App\Services\MargemLiquidacaoService $margemLiquidacaoService,
     ) {}
 
     public function sugerir(Request $request, string $produtoId): JsonResponse
@@ -46,8 +47,27 @@ class PrecificacaoController extends Controller
         // Monta o payload estruturado das três camadas
         $payload = $this->payloadService->montar($produto);
 
-        // Salva o log antes de qualquer chamada externa
-        // Na Fase 5, os cenarios_retornados serão preenchidos aqui
+        // Margem de liquidação: decisão determinística do sistema (Condição C —
+        // ver Relatório de Testes de Variância §6), calculada ANTES da chamada
+        // à IA. A IA recebe o valor já definido para poder explicá-lo, mas
+        // nunca decide o número — mesmo para o cenário de liquidação.
+        // instrucao_liquidacao fica fora da numeração de camadas porque não é
+        // dado de negócio bruto: é uma decisão já tomada pelo sistema.
+        $instrucaoLiquidacao = $this->margemLiquidacaoService->calcular(
+            razaoMargem: $payload['camada_4']['razao_margem'] ?? null,
+            razaoGiro: $payload['camada_4']['razao_giro'] ?? null,
+            posicionamento: $produto->loja->posicionamento,
+        );
+
+        $payload['instrucao_liquidacao'] = [
+            'margem_definida' => $instrucaoLiquidacao['margem'],
+            'origem'          => $instrucaoLiquidacao['origem'], // 'score' | 'fallback_posicionamento'
+            'score'           => $instrucaoLiquidacao['score'],  // int|null — auditoria/QA, ver Relatório §6
+        ];
+
+        // Salva o log antes de qualquer chamada externa. instrucao_liquidacao
+        // (com origem/score) já vai dentro de payload_enviado — sem migration
+        // nova, conforme decidido.
         $log = LogsSugestaoIa::create([
             'produto_id'      => $produto->id,
             'payload_enviado' => $payload,
@@ -69,7 +89,14 @@ class PrecificacaoController extends Controller
         // A IA devolveu apenas a margem de cada cenário (H1 — ver Especificação
         // Técnica §3.4). O preço final é sempre calculado aqui, de forma
         // determinística, para que explicação (IA) e preço (PHP) nunca divirjam.
-        $cenarios = $this->calcularPrecosDosCenarios($resultado['cenarios'], $produto);
+        // Para o cenário de liquidação, a margem em si também nunca vem da IA
+        // (ver instrucao_liquidacao acima) — ver Relatório de Testes de
+        // Variância §6.
+        $cenarios = $this->calcularPrecosDosCenarios(
+            $resultado['cenarios'],
+            $produto,
+            $payload['instrucao_liquidacao']['margem_definida'],
+        );
 
         $log->update(['cenarios_retornados' => $cenarios]);
 
@@ -80,20 +107,51 @@ class PrecificacaoController extends Controller
     }
 
     /**
-     * Converte a margem_lucro_percentual de cada cenário (vinda da IA) em
-     * preco_sugerido, via PricingEngine. A IA nunca calcula o preço final —
-     * ver GeminiService::sugerirCenarios().
+     * Converte a margem_lucro_percentual de cada cenário em preco_sugerido,
+     * via PricingEngine. A IA nunca calcula o preço final — ver
+     * GeminiService::sugerirCenarios().
+     *
+     * Para tipo === 'liquidacao', a margem usada é sempre
+     * $margemLiquidacaoDefinida (calculada por MargemLiquidacaoService antes
+     * da chamada à IA), nunca o valor que a IA ecoou em
+     * margem_lucro_percentual. A IA só recebeu esse valor para poder
+     * explicá-lo (instrucao_liquidacao) — o preço final do cenário de
+     * liquidação nunca depende da resposta da IA, nem para "conferir se ela
+     * concordou". Isso é defense-in-depth: dado financeiro nunca é confiado
+     * a texto gerado por modelo, mesmo quando o modelo só está repetindo um
+     * número que já veio pronto (ver Relatório de Testes de Variância §6).
      *
      * @param  array<array{id: string, tipo: string, margem_lucro_percentual: float, explicacao: string}>  $cenariosIa
+     * @param  float  $margemLiquidacaoDefinida  instrucao_liquidacao.margem_definida
      * @return array<array{id: string, tipo: string, margem_lucro_percentual: float, explicacao: string, preco_sugerido: float, preco_piso_referencia: float}>
      */
-    private function calcularPrecosDosCenarios(array $cenariosIa, Produto $produto): array
+    private function calcularPrecosDosCenarios(array $cenariosIa, Produto $produto, float $margemLiquidacaoDefinida): array
     {
         $loja         = $produto->loja;
         $taxaCanal    = $this->taxaCanalAplicavel($loja);
 
         foreach ($cenariosIa as &$cenario) {
-            $margem = (float) $cenario['margem_lucro_percentual'];
+            if ($cenario['tipo'] === 'liquidacao') {
+                $margemEcoada = (float) $cenario['margem_lucro_percentual'];
+
+                // A IA deveria apenas ecoar instrucao_liquidacao.margem_definida
+                // (ver prompt em GeminiService). Se divergir, é sinal de prompt
+                // drift — dado útil de QA — mas nunca bloqueia nem usa o valor
+                // divergente.
+                if (abs($margemEcoada - $margemLiquidacaoDefinida) > 0.0001) {
+                    Log::warning('Gemini ecoou margem_lucro_percentual divergente de instrucao_liquidacao.margem_definida no cenário de liquidação.', [
+                        'produto_id'      => $produto->id,
+                        'margem_ecoada'   => $margemEcoada,
+                        'margem_definida' => $margemLiquidacaoDefinida,
+                    ]);
+                }
+
+                $margem = $margemLiquidacaoDefinida;
+            } else {
+                // cenario_ideal e cenario_alta_demanda: decisão livre da IA
+                // (Condição B, CV ~0 — ver Relatório de Testes de Variância §4.1).
+                $margem = (float) $cenario['margem_lucro_percentual'];
+            }
 
             $calculo = $this->pricingEngine->calcularPreco(
                 custoAquisicao: (float) $produto->custo_aquisicao,

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LojaController;
+use App\Http\Controllers\OnboardingIaController;
 use App\Http\Middleware\EnsureLojaExists;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,14 @@ Route::middleware('auth:sanctum')->prefix('loja/onboarding')->group(function () 
     // Etapa 2: recebe os dados revisados/confirmados e salva no banco
     // Após isso o usuário tem acesso ao restante do sistema
     Route::post('/salvar', [LojaController::class, 'salvar']);
+
+    // ── Onboarding via IA (SPEC-onboarding-ia) ────────────────────────────
+    // Tela 2: texto dissertativo → estimativas da IA (ou fallback pra Tela 2B)
+    // throttle:5,1 protege a quota do Gemini (SPEC §6.1 / S7)
+    Route::middleware('throttle:5,1')->post('/analisar-texto', [OnboardingIaController::class, 'analisarTexto']);
+
+    // Tela 3: confirma/edita as estimativas e cria a loja
+    Route::post('/confirmar-ia', [OnboardingIaController::class, 'confirmar']);
 
 });
 

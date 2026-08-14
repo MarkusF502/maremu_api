@@ -11,6 +11,7 @@ use App\Models\LogsSugestaoIa;
 use App\Models\MetricasCategoriaLoja;
 use App\Services\PrecificacaoPayloadService;
 use App\Services\GeminiService;
+use App\Services\MargemLiquidacaoService;
 use Illuminate\Support\Str;
 
 class TestarVarianciaPrecificacao extends Command
@@ -29,14 +30,16 @@ class TestarVarianciaPrecificacao extends Command
      *
      * @var string
      */
-    protected $description = 'Testa a variância da IA (Condição B) realizando múltiplas chamadas e calculando o CV da margem.';
+    protected $description = 'Testa a variância da IA (Condição B, cenario_ideal/cenario_alta_demanda) e a fidelidade do eco no cenário de liquidação (Condição C).';
 
-    public function handle(PrecificacaoPayloadService $payloadService, GeminiService $geminiService)
+    public function handle(PrecificacaoPayloadService $payloadService, GeminiService $geminiService, MargemLiquidacaoService $margemLiquidacaoService)
     {
         $amostras = (int) $this->option('amostras');
-        
-        $this->info("🎯 Iniciando teste de variância (Condição B - Margem Float) com {$amostras} amostras...");
-        $this->warn("⏳ Isso pode levar alguns minutos devido aos limites de taxa da API (1.5s entre chamadas).");
+
+        $this->info("🎯 Iniciando teste com {$amostras} amostras...");
+        $this->line("   • cenario_ideal / cenario_alta_demanda: ainda margem livre da IA (Condição B) — mede-se CV normalmente.");
+        $this->line("   • cenario_liquidacao: margem agora é determinística (Condição C) — a IA só deve ecoar instrucao_liquidacao.margem_definida; mede-se fidelidade do eco, não mais CV livre.");
+        $this->warn("⏳ Isso pode levar alguns minutos devido aos limites de taxa da API (5s entre chamadas).");
         $this->warn("⚠️ ATENÇÃO: Os dados gerados neste teste serão SALVOS definitivamente no banco de dados.");
 
         try {
@@ -98,6 +101,21 @@ class TestarVarianciaPrecificacao extends Command
             $razaoGiro   = data_get($payload, 'camada_4.razao_giro');
             $this->line("   razao_margem no payload: " . ($razaoMargem ?? 'ausente'));
             $this->line("   razao_giro no payload: " . ($razaoGiro ?? 'ausente'));
+
+            // Fonte de verdade da margem de liquidação (Condição C) — calculada
+            // ANTES da chamada à IA, exatamente como em PrecificacaoController::sugerir().
+            // Sem isso, o payload enviado à IA fica inconsistente com o que o
+            // prompt promete ("instrucao_liquidacao ... Sempre presente"), e a
+            // IA não tem o que ecoar.
+            $instrucaoLiquidacao = $margemLiquidacaoService->calcular($razaoMargem, $razaoGiro, $loja->posicionamento);
+
+            $payload['instrucao_liquidacao'] = [
+                'margem_definida' => $instrucaoLiquidacao['margem'],
+                'origem'          => $instrucaoLiquidacao['origem'],
+                'score'           => $instrucaoLiquidacao['score'],
+            ];
+
+            $this->line("   instrucao_liquidacao.margem_definida: " . number_format($instrucaoLiquidacao['margem'] * 100, 2) . "% (origem: {$instrucaoLiquidacao['origem']}, score: " . ($instrucaoLiquidacao['score'] ?? 'n/a') . ")");
             $this->newLine();
 
             $margens = [
@@ -105,7 +123,15 @@ class TestarVarianciaPrecificacao extends Command
                 'ideal' => [],
                 'alta_demanda' => []
             ];
-            
+
+            // Fidelidade do eco no cenário de liquidação: conta quantas vezes a
+            // IA devolveu exatamente instrucao_liquidacao.margem_definida vs.
+            // quantas vezes divergiu (prompt drift — ver PrecificacaoController::
+            // calcularPrecosDosCenarios, que já ignora o valor divergente na
+            // hora de calcular o preço, mas aqui interessa medir a taxa).
+            $ecosCorretos = 0;
+            $ecosDivergentes = [];
+
             $bar = $this->output->createProgressBar($amostras);
             $bar->start();
 
@@ -113,28 +139,42 @@ class TestarVarianciaPrecificacao extends Command
                 // Chama a IA
                 $resultadoIa = $geminiService->sugerirCenarios($payload);
 
-                // --- CORREÇÃO AQUI: SALVAR O LOG NO BANCO ---
+                // Salva o log com os arrays crus — LogsSugestaoIa faz o cast
+                // para JSON via Eloquent (mesmo padrão de PrecificacaoController::
+                // sugerir()). json_encode() manual aqui faria double-encode:
+                // o JSON viraria uma string escapada dentro do JSON, em vez de
+                // um objeto — divergindo do que a rota real grava.
                 LogsSugestaoIa::create([
                     'id' => Str::uuid()->toString(),
                     'produto_id' => $produto->id,
-                    'payload_enviado' => json_encode($payload, JSON_UNESCAPED_UNICODE),
-                    'cenarios_retornados' => json_encode($resultadoIa['cenarios'], JSON_UNESCAPED_UNICODE),
+                    'payload_enviado' => $payload,
+                    'cenarios_retornados' => $resultadoIa['cenarios'],
                     // cenario_escolhido e preco_final_escolhido ficam nulos por enquanto
                 ]);
 
                 // Armazena as margens de TODOS os cenários para o cálculo de CV
                 foreach ($resultadoIa['cenarios'] as $cenarioResultado) {
                     $tipo = $cenarioResultado['tipo'] ?? 'desconhecido';
-                    
+
                     if (isset($margens[$tipo]) && isset($cenarioResultado['margem_lucro_percentual'])) {
                         $margens[$tipo][] = (float) $cenarioResultado['margem_lucro_percentual'];
+                    }
+
+                    if ($tipo === 'liquidacao' && isset($cenarioResultado['margem_lucro_percentual'])) {
+                        $margemEcoada = (float) $cenarioResultado['margem_lucro_percentual'];
+
+                        if (abs($margemEcoada - $instrucaoLiquidacao['margem']) <= 0.0001) {
+                            $ecosCorretos++;
+                        } else {
+                            $ecosDivergentes[] = $margemEcoada;
+                        }
                     }
                 }
 
                 $bar->advance();
 
                 // Pausa de 5 segundos para respeitar o Rate Limit (max 15 RPM)
-                sleep(5); 
+                sleep(5);
             }
 
             $bar->finish();
@@ -145,7 +185,7 @@ class TestarVarianciaPrecificacao extends Command
 
             foreach ($margens as $tipo => $amostrasCenario) {
                 $coletas = count($amostrasCenario);
-                
+
                 if ($coletas < 2) {
                     $this->error("Amostras insuficientes para o cenário: {$tipo}");
                     continue;
@@ -164,8 +204,13 @@ class TestarVarianciaPrecificacao extends Command
 
                 // Coeficiente de Variação (CV)
                 $cv = ($media > 0) ? ($desvioPadrao / $media) * 100 : 0;
-                
-                if ($cv > $maiorCv) {
+
+                // O cenário de liquidação não entra mais no "pior CV" que
+                // decide H1/H2 — sua margem não é mais uma decisão livre da
+                // IA (ver Condição C). Mantemos o CV calculado aqui só como
+                // dado de apoio; quem importa para liquidação é a taxa de
+                // eco correto, reportada abaixo.
+                if ($tipo !== 'liquidacao' && $cv > $maiorCv) {
                     $maiorCv = $cv;
                 }
 
@@ -178,21 +223,21 @@ class TestarVarianciaPrecificacao extends Command
                 ];
             }
 
-            $this->info("=== RESULTADOS DA PESQUISA (CONDIÇÃO B - MARGEM FLOAT) ===");
-            
+            $this->info("=== RESULTADOS DA PESQUISA ===");
+
             foreach ($resultados as $tipo => $stats) {
                 $this->warn(strtoupper("CENÁRIO: {$tipo}"));
                 $this->line("Amostras válidas: {$stats['coletas']}");
                 $this->line("Média da Margem: " . number_format($stats['media'] * 100, 2) . "%");
                 $this->line("Desvio Padrão: " . number_format($stats['desvio'] * 100, 2) . "%");
-                $this->line("Coeficiente de Variação (CV): " . number_format($stats['cv'], 2) . "%");
+                $this->line("Coeficiente de Variação (CV): " . number_format($stats['cv'], 2) . "%" . ($tipo === 'liquidacao' ? ' (informativo — não decide mais H1/H2, ver seção de eco abaixo)' : ''));
                 $this->line("Distribuição bruta: [" . implode(', ', array_map(fn($m) => number_format($m*100, 1).'%', $stats['bruto'])) . "]");
 
                 // Histograma simples por valor arredondado — CV agregado sozinho
                 // não distingue "hesitação numa fronteira" (poucos valores distintos,
                 // repetidos, batendo perto de um limiar) de "decisão instável"
-                // (valores espalhados sem padrão). Isso importa especialmente para
-                // o cenário 'liquidacao' nos testes de borda.
+                // (valores espalhados sem padrão). Relevante para cenario_ideal e
+                // cenario_alta_demanda, que ainda são decisão livre da IA.
                 $frequencias = [];
                 foreach ($stats['bruto'] as $m) {
                     $chave = number_format($m * 100, 1) . '%';
@@ -206,23 +251,35 @@ class TestarVarianciaPrecificacao extends Command
                     array_values($frequencias)
                 )));
 
-                if ($tipo === 'liquidacao' && $valoresDistintos <= 3 && $stats['cv'] >= 5.0) {
-                    $this->comment("   → Poucos valores distintos + CV alto: parece hesitação entre faixas vizinhas (efeito de borda), não decisão livre e dispersa.");
-                    $this->comment("   → Se este teste usou --cenario=borda_inferior_margem ou borda_superior_margem, isso é esperado; compare com uma rodada --cenario=longe_borda para confirmar.");
-                }
-
                 $this->newLine();
             }
 
-            $this->info("=== CRITÉRIO DE DECISÃO (Avaliando pelo pior CV: " . number_format($maiorCv, 2) . "%) ===");
+            // Fidelidade do eco — cenario_liquidacao (Condição C)
+            $totalLiquidacao = $ecosCorretos + count($ecosDivergentes);
+            $this->info("=== FIDELIDADE DO ECO — CENÁRIO DE LIQUIDAÇÃO (Condição C) ===");
+            $this->line("Margem definida pelo sistema: " . number_format($instrucaoLiquidacao['margem'] * 100, 2) . "% (origem: {$instrucaoLiquidacao['origem']})");
+            if ($totalLiquidacao > 0) {
+                $taxaEco = ($ecosCorretos / $totalLiquidacao) * 100;
+                $this->line("Ecos corretos: {$ecosCorretos}/{$totalLiquidacao} (" . number_format($taxaEco, 1) . "%)");
+
+                if (! empty($ecosDivergentes)) {
+                    $this->error("Divergências detectadas: " . implode(', ', array_map(fn($m) => number_format($m * 100, 2) . '%', $ecosDivergentes)));
+                    $this->line("Isso não afeta o preço final (PrecificacaoController sempre usa instrucao_liquidacao.margem_definida), mas sinaliza prompt drift a investigar.");
+                } else {
+                    $this->info("Nenhuma divergência — a IA ecoou o valor definido em todas as amostras.");
+                }
+            } else {
+                $this->error("Nenhuma amostra válida de cenario_liquidacao coletada.");
+            }
+            $this->newLine();
+
+            $this->info("=== CRITÉRIO DE DECISÃO (cenario_ideal / cenario_alta_demanda — pior CV: " . number_format($maiorCv, 2) . "%) ===");
             if ($maiorCv < 2.0) {
                 $this->info("🎯 Resultado: H1 CONFIRMADA");
-                $this->line("O maior CV entre todos os cenários é menor que 2%. A IA está gerando margens consistentes em todas as estratégias.");
+                $this->line("O maior CV entre cenario_ideal e cenario_alta_demanda é menor que 2%. A IA está gerando margens consistentes nessas estratégias.");
             } elseif ($maiorCv >= 5.0) {
                 $this->error("🚨 Resultado: H2 CONFIRMADA");
-                $this->line("Pelo menos um dos cenários atingiu um CV igual ou superior a 5%. O modelo não converge estrategicamente para a margem em todos os contextos.");
-                $this->line("A variância real reside na decisão livre da IA (float).");
-                $this->line("Próximo passo: Implementar a Condição C (Faixas Discretas via Enum).");
+                $this->line("Pelo menos um desses cenários atingiu CV ≥ 5%. A variância real reside na decisão livre da IA (float).");
             } else {
                 $this->warn("⚠️ Resultado: INCONCLUSIVO");
             }
@@ -261,9 +318,9 @@ class TestarVarianciaPrecificacao extends Command
         $giroEsperadoDias = 30 / ($loja->volume_vendas_esperado / 30); // 7.5 com volume=120
 
         $fixtures = [
-            // razao_margem = 0.30 / 0.30... na verdade queremos bem abaixo de 0.70,
-            // e razao_giro = 3.0 (bem acima de 1.5) — os dois sinais concordam,
-            // longe de qualquer fronteira. Caso de referência "sem ambiguidade".
+            // razao_margem bem abaixo de 0.70, razao_giro bem acima de 1.5 —
+            // os dois sinais concordam, longe de qualquer fronteira. Caso de
+            // referência "sem ambiguidade".
             'longe_borda' => [
                 'margem_realizada_media' => round($margemPlanejada * 0.30, 4),
                 'giro_medio_dias'        => round($giroEsperadoDias * 3.0, 2),
