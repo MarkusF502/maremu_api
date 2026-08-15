@@ -56,6 +56,17 @@ class OnboardingIaService
      */
     public function estimarDadosLoja(string $textoDescritivo, array $dadosFactuais): array
     {
+        // O max_execution_time padrão do PHP (30s em vários ambientes, ex:
+        // Herd local) é menor que o timeout do Guzzle abaixo (45s + retries).
+        // Sem isso, o PHP mata a requisição inteira antes do Guzzle sequer
+        // ter chance de estourar seu próprio timeout "educadamente" — o
+        // resultado é um FatalError cru que pula todo o pipeline de
+        // middleware do Laravel (inclusive CORS), e no navegador aparece
+        // como falso bloqueio de CORS em vez do erro real de timeout.
+        // 150s cobre o pior caso: até 3 tentativas de 45s + 2 esperas de
+        // 1.5s entre elas.
+        set_time_limit(150);
+
         // 45s + backoff de 1.5s: o modelo por trás de 'gemini-flash-latest'
         // tem mostrado latência bem variável em produção (2s a 20s+ para o
         // mesmo prompt trivial, e ocasionalmente 503 "high demand") — ver

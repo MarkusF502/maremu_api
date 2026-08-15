@@ -1,3 +1,11 @@
+# Blueprint do Render: cria o web service (Docker) + banco Postgres já
+# conectados. Deploy via "New +" > "Blueprint" no dashboard do Render,
+# apontando pra este repo (root directory = maremu_api).
+#
+# Variáveis marcadas com `sync: false` precisam ser preenchidas manualmente
+# no dashboard depois do primeiro deploy (não vão pro blueprint por serem
+# secrets ou dependerem de uma URL que só existe depois de criar o serviço).
+
 databases:
   - name: maremu-db
     plan: free
@@ -10,6 +18,7 @@ services:
     name: maremu-api
     runtime: docker
     dockerfilePath: ./Dockerfile
+    dockerContext: .
     plan: free
     healthCheckPath: /up
     envVars:
@@ -18,7 +27,7 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: false
+        value: "false"
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
@@ -31,55 +40,24 @@ services:
         fromDatabase:
           name: maremu-db
           property: connectionString
-      - key: SESSION_DRIVER
-        value: database
-      - key: SESSION_DOMAIN
-        value: "" # vazio: backend e frontend estão em domínios diferentes, cookie não pode ter domain fixo
-      - key: SESSION_SECURE_COOKIE
-        value: "true"
-      - key: SESSION_SAME_SITE
-        value: "none" # obrigatório para cookie cross-site (Render <-> Vercel) chegar de volta
-      - key: SANCTUM_STATEFUL_DOMAINS
-        value: maremu-l2cr.vercel.app,maremu.com.br,www.maremu.com.br
       - key: FRONTEND_URL
-        sync: false # URL do frontend na Vercel/domínio próprio, usada no CORS (allowed_origins)
+        sync: false # https://<seu-projeto>.vercel.app — usada no CORS (allowed_origins)
+      - key: VERCEL_PROJECT
+        value: maremu # slug do projeto na Vercel, libera CORS pros preview deploys (*.vercel.app)
+      # SESSION_*/SANCTUM_STATEFUL_DOMAINS de propósito fora daqui: a auth
+      # migrou de cookie de sessão pra Bearer token (Sanctum API Tokens),
+      # então não há mais cookie cross-site pra configurar.
       - key: CACHE_STORE
         value: database
+      # Sem worker rodando: nada hoje dispara `artisan schedule:run` no
+      # Render, então o Schedule::job(AgregarMetricasCategoria)->dailyAt(...)
+      # não é acionado de qualquer forma. QUEUE_CONNECTION=sync executa
+      # qualquer job na hora (sem precisar de worker) caso algo seja
+      # despachado manualmente. Ver observação sobre o Cron Job.
       - key: QUEUE_CONNECTION
-        value: database
+        value: sync
       - key: FILESYSTEM_DISK
         value: local
-      - key: GEMINI_API_KEY
-        sync: false
-      - key: GEMINI_MODEL
-        value: gemini-flash-latest
-
-  # Worker para processar as filas (ex.: AgregarMetricasCategoria)
-  - type: worker
-    name: maremu-worker
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    dockerCommand: php artisan queue:work --tries=3 --timeout=90
-    plan: free
-    envVars:
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: false
-      - key: APP_KEY
-        sync: false # copiar o mesmo valor gerado para o maremu-api
-      - key: LOG_CHANNEL
-        value: stderr
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_URL
-        fromDatabase:
-          name: maremu-db
-          property: connectionString
-      - key: QUEUE_CONNECTION
-        value: database
-      - key: RUN_MIGRATIONS
-        value: false # só o serviço web roda migrate
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
