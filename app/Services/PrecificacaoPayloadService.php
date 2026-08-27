@@ -42,7 +42,7 @@ class PrecificacaoPayloadService
         return [
             'camada_1' => $this->montarCamada1($produto),
             'camada_2' => $this->montarCamada2($produto, $loja),
-            'camada_4' => $this->montarCamada4($loja, $produto->categoria_id),
+            'camada_4' => $this->montarCamada4($loja->id, $produto->categoria_id),
             'meta'     => [
                 'produto_id'   => $produto->id,
                 'loja_id'      => $loja->id,
@@ -121,9 +121,9 @@ class PrecificacaoPayloadService
     // para aquela combinação loja + categoria.
     // ─────────────────────────────────────────────────────────────────────
 
-    private function montarCamada4($loja, string $categoriaId): ?array
+    private function montarCamada4(string $lojaId, string $categoriaId): ?array
     {
-        $metrica = MetricasCategoriaLoja::where('loja_id', $loja->id)
+        $metrica = MetricasCategoriaLoja::where('loja_id', $lojaId)
             ->where('categoria_id', $categoriaId)
             ->where('volume_minimo_atingido', true)
             ->orderByDesc('periodo_referencia')  // mais recente primeiro
@@ -148,21 +148,6 @@ class PrecificacaoPayloadService
             'data_calculo'           => $metrica->data_calculo,
         ];
 
-        // Sinais derivados para orientar a margem do cenario_liquidacao (ver
-        // Especificação Técnica — normalização de giro por loja). São
-        // calculados aqui, não no PricingEngine, porque dependem só de dados
-        // já presentes nesta camada + volume_vendas_esperado da loja — não
-        // envolvem custo, preço ou nenhuma regra de negócio de precificação.
-        $dados['razao_margem'] = $this->calcularRazaoMargem(
-            $metrica->margem_realizada_media,
-            $metrica->margem_planejada_media
-        );
-
-        $dados['razao_giro'] = $this->calcularRazaoGiro(
-            $metrica->giro_medio_dias,
-            (int) $loja->volume_vendas_esperado
-        );
-
         // candidatos_liquidacao é JSON nullable — só inclui se houver dados
         if (!empty($metrica->candidatos_liquidacao)) {
             $dados['candidatos_liquidacao'] = $metrica->candidatos_liquidacao;
@@ -174,54 +159,5 @@ class PrecificacaoPayloadService
 
         // Remove campos nulos do array antes de entregar
         return array_filter($dados, fn($v) => !is_null($v));
-    }
-
-    /**
-     * Razão de giro: giro real da categoria vs. giro esperado pela própria
-     * loja, derivado de volume_vendas_esperado. Normaliza dias absolutos
-     * pelo ritmo que cada loja projetou para si mesma — uma loja pequena e
-     * uma grande não são comparáveis em dias fixos (ver nota metodológica
-     * na Especificação Técnica).
-     *
-     * > 1.5  → categoria girando bem mais devagar que o esperado
-     * 0.8–1.5 → dentro do esperado
-     * < 0.8  → girando mais rápido que o esperado
-     *
-     * Retorna null quando não é possível calcular (dado ausente ou
-     * volume_vendas_esperado = 0 — loja recém-cadastrada sem essa
-     * informação ainda preenchida). null aqui é tratado como fallback,
-     * nunca como zero.
-     */
-    private function calcularRazaoGiro(?float $giroMedioDias, int $volumeVendasEsperado): ?float
-    {
-        if ($giroMedioDias === null || $volumeVendasEsperado <= 0) {
-            return null;
-        }
-
-        $giroEsperadoDias = 30 / ($volumeVendasEsperado / 30);
-
-        return round($giroMedioDias / $giroEsperadoDias, 4);
-    }
-
-    /**
-     * Razão de margem: margem realizada vs. planejada da categoria.
-     * Já é auto-normalizada (razão de percentuais), não depende do porte
-     * da loja.
-     *
-     * < 0.7    → performando bem abaixo da meta
-     * 0.7–0.9  → levemente abaixo
-     * > 0.9    → perto ou acima da meta
-     *
-     * Retorna null quando não é possível calcular (dado ausente ou
-     * margem_planejada_media = 0 — situação anômala de cadastro que não
-     * deveria ocorrer, mas não se resolve inventando um divisor).
-     */
-    private function calcularRazaoMargem(?float $margemRealizada, ?float $margemPlanejada): ?float
-    {
-        if ($margemRealizada === null || $margemPlanejada === null || $margemPlanejada <= 0) {
-            return null;
-        }
-
-        return round($margemRealizada / $margemPlanejada, 4);
     }
 }
