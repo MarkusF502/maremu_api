@@ -62,9 +62,10 @@ class AnthropicService implements PrecificacaoIaInterface
             ->timeout(30)
             ->retry(2, 500) // 2 tentativas extras, 500ms entre elas — mesmo padrão do GeminiService
             ->post($this->baseUrl, [
-                'model'      => $this->model,
-                'max_tokens' => 1024,
-                'system'     => $this->systemPrompt(),
+                'model'       => $this->model,
+                'max_tokens'  => 1024,
+                'temperature' => 0.0, // baixa: mesmo padrão do GeminiService/OpenAiService — consistência, não criatividade
+                'system'      => $this->systemPrompt(),
                 'messages'   => [
                     ['role' => 'user', 'content' => json_encode($payload, JSON_UNESCAPED_UNICODE)],
                 ],
