@@ -18,8 +18,13 @@ return [
     |
     */
 
-    // config/sanctum.php — localizar a linha stateful_domains
-    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'localhost:3000')),
+    // Migração para Sanctum API Tokens (Bearer): manter uma origem aqui faz o
+    // Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful tratar
+    // requisições vindas dela como SPA stateful, forçando sessão + CSRF mesmo
+    // em chamadas com Bearer token (gera "CSRF token mismatch"). Por isso o
+    // fallback ficou vazio — defina SANCTUM_STATEFUL_DOMAINS só se voltar a
+    // precisar do fluxo antigo de cookie/sessão.
+    'stateful' => array_filter(explode(',', env('SANCTUM_STATEFUL_DOMAINS', ''))),
 
     /*
     |--------------------------------------------------------------------------

@@ -47,18 +47,20 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $request->session()->regenerate();
+        /** @var \App\Models\User $user */
+        $user  = Auth::user();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'user' => Auth::user()
+            'user'  => $user,
+            'token' => $token,
         ]);
     }
 
     public function logout(Request $request): JsonResponse
     {
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Revoga apenas o token usado nesta requisição, não todos os tokens do usuário.
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logout realizado.']);
     }
