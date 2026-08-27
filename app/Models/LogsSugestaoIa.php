@@ -15,6 +15,7 @@ class LogsSugestaoIa extends Model
     protected $fillable = [
         'produto_id',
         'payload_enviado',
+        'provedor_ia',
         'cenarios_retornados',
         'cenario_escolhido',
         'preco_final_escolhido',

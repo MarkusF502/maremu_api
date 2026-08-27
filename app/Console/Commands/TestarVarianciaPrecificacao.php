@@ -9,7 +9,7 @@ use App\Models\Categoria;
 use App\Models\Produto;
 use App\Models\LogsSugestaoIa;
 use App\Services\PrecificacaoPayloadService;
-use App\Services\GeminiService;
+use App\Services\PrecificacaoIaInterface;
 use Illuminate\Support\Str;
 
 class TestarVarianciaPrecificacao extends Command
@@ -19,7 +19,9 @@ class TestarVarianciaPrecificacao extends Command
      *
      * @var string
      */
-    protected $signature = 'precificacao:testar-variancia {--amostras=20 : Número de chamadas à IA}';
+    protected $signature = 'precificacao:testar-variancia
+        {--amostras=20 : Número de chamadas à IA}
+        {--provider=gemini : Provedor de IA a testar: gemini | anthropic}';
 
     /**
      * The console command description.
@@ -28,12 +30,25 @@ class TestarVarianciaPrecificacao extends Command
      */
     protected $description = 'Testa a variância da IA (Condição B) realizando múltiplas chamadas e calculando o CV da margem.';
 
-    public function handle(PrecificacaoPayloadService $payloadService, GeminiService $geminiService)
+    public function handle(PrecificacaoPayloadService $payloadService)
     {
         $amostras = (int) $this->option('amostras');
-        
-        $this->info("🎯 Iniciando teste de variância (Condição B - Margem Float) com {$amostras} amostras...");
-        $this->warn("⏳ Isso pode levar alguns minutos devido aos limites de taxa da API (1.5s entre chamadas).");
+        $provider = $this->option('provider');
+
+        if (! in_array($provider, ['gemini', 'anthropic'], true)) {
+            $this->error("Provider '{$provider}' desconhecido. Use: gemini, anthropic.");
+
+            return;
+        }
+
+        // Sobrescreve a config em runtime (sem editar .env nem reiniciar a
+        // aplicação) e resolve a interface DEPOIS da sobrescrita, para que o
+        // binding condicional de AppServiceProvider escolha o serviço certo.
+        config(['services.ia_provider' => $provider]);
+        $iaService = $this->laravel->make(PrecificacaoIaInterface::class);
+
+        $this->info("🎯 Iniciando teste de variância (Condição B - Margem Float) com {$amostras} amostras (provider: {$provider})...");
+        $this->warn("⏳ Isso pode levar alguns minutos devido aos limites de taxa da API (5s entre chamadas).");
         $this->warn("⚠️ ATENÇÃO: Os dados gerados neste teste serão SALVOS definitivamente no banco de dados.");
 
         try {
@@ -95,14 +110,14 @@ class TestarVarianciaPrecificacao extends Command
 
             for ($i = 0; $i < $amostras; $i++) {
                 // Chama a IA
-                $resultadoIa = $geminiService->sugerirCenarios($payload);
+                $resultadoIa = $iaService->sugerirCenarios($payload);
 
-                // --- CORREÇÃO AQUI: SALVAR O LOG NO BANCO ---
                 LogsSugestaoIa::create([
                     'id' => Str::uuid()->toString(),
                     'produto_id' => $produto->id,
-                    'payload_enviado' => json_encode($payload, JSON_UNESCAPED_UNICODE),
-                    'cenarios_retornados' => json_encode($resultadoIa['cenarios'], JSON_UNESCAPED_UNICODE),
+                    'payload_enviado' => $payload,
+                    'provedor_ia' => $iaService->identificador(),
+                    'cenarios_retornados' => $resultadoIa['cenarios'],
                     // cenario_escolhido e preco_final_escolhido ficam nulos por enquanto
                 ]);
 

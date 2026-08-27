@@ -40,4 +40,14 @@ return [
     'model'   => env('GEMINI_MODEL', 'gemini-2.5-flash'),
     ],
 
+    'anthropic' => [
+        'key'   => env('ANTHROPIC_API_KEY'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-haiku-4-5'),
+    ],
+
+    // Seleciona qual provedor de IA gera as sugestões de margem de
+    // precificação (ver App\Services\PrecificacaoIaInterface). 'gemini' é o
+    // default para não quebrar o comportamento já existente.
+    'ia_provider' => env('IA_PROVIDER', 'gemini'),
+
 ];

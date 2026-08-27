@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LogsSugestaoIa;
 use App\Models\Produto;
+use App\Services\PrecificacaoIaInterface;
 use App\Services\PrecificacaoPayloadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class PrecificacaoController extends Controller
 {
     public function __construct(
         private readonly PrecificacaoPayloadService $payloadService,
-        private readonly \App\Services\GeminiService $geminiService,
+        private readonly PrecificacaoIaInterface $iaService,
         private readonly \App\Services\PricingEngine $pricingEngine,
     ) {}
 
@@ -51,12 +52,13 @@ class PrecificacaoController extends Controller
         $log = LogsSugestaoIa::create([
             'produto_id'      => $produto->id,
             'payload_enviado' => $payload,
+            'provedor_ia'     => $this->iaService->identificador(),
         ]);
 
         try {
-            $resultado = $this->geminiService->sugerirCenarios($payload);
+            $resultado = $this->iaService->sugerirCenarios($payload);
         } catch (\RuntimeException $e) {
-            Log::error('Falha ao obter sugestão de preço via Gemini', [
+            Log::error('Falha ao obter sugestão de preço via ' . $this->iaService->identificador(), [
                 'log_id' => $log->id,
                 'erro'   => $e->getMessage(),
             ]);
@@ -82,7 +84,7 @@ class PrecificacaoController extends Controller
     /**
      * Converte a margem_lucro_percentual de cada cenário (vinda da IA) em
      * preco_sugerido, via PricingEngine. A IA nunca calcula o preço final —
-     * ver GeminiService::sugerirCenarios().
+     * ver PrecificacaoIaInterface::sugerirCenarios().
      *
      * @param  array<array{id: string, tipo: string, margem_lucro_percentual: float, explicacao: string}>  $cenariosIa
      * @return array<array{id: string, tipo: string, margem_lucro_percentual: float, explicacao: string, preco_sugerido: float, preco_piso_referencia: float}>
