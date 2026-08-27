@@ -45,6 +45,11 @@ return [
         'model' => env('ANTHROPIC_MODEL', 'claude-haiku-4-5'),
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+    ],
+
     // Seleciona qual provedor de IA gera as sugestões de margem de
     // precificação (ver App\Services\PrecificacaoIaInterface). 'gemini' é o
     // default para não quebrar o comportamento já existente.
