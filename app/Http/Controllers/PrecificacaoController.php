@@ -75,7 +75,7 @@ class PrecificacaoController extends Controller
 
         try {
             $resultado = $this->geminiService->sugerirCenarios($payload);
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $e) {
             Log::error('Falha ao obter sugestão de preço via Gemini', [
                 'log_id' => $log->id,
                 'erro'   => $e->getMessage(),
