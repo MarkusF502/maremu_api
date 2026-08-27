@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\AnthropicService;
 use App\Services\GeminiService;
+use App\Services\OpenAiService;
 use App\Services\PrecificacaoIaInterface;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PrecificacaoIaInterface::class, function () {
             return match (config('services.ia_provider')) {
                 'anthropic' => $this->app->make(AnthropicService::class),
+                'openai'    => $this->app->make(OpenAiService::class),
                 default     => $this->app->make(GeminiService::class),
             };
         });

@@ -21,7 +21,7 @@ class TestarVarianciaPrecificacao extends Command
      */
     protected $signature = 'precificacao:testar-variancia
         {--amostras=20 : Número de chamadas à IA}
-        {--provider=gemini : Provedor de IA a testar: gemini | anthropic}';
+        {--provider=gemini : Provedor de IA a testar: gemini | anthropic | openai}';
 
     /**
      * The console command description.
@@ -35,8 +35,8 @@ class TestarVarianciaPrecificacao extends Command
         $amostras = (int) $this->option('amostras');
         $provider = $this->option('provider');
 
-        if (! in_array($provider, ['gemini', 'anthropic'], true)) {
-            $this->error("Provider '{$provider}' desconhecido. Use: gemini, anthropic.");
+        if (! in_array($provider, ['gemini', 'anthropic', 'openai'], true)) {
+            $this->error("Provider '{$provider}' desconhecido. Use: gemini, anthropic, openai.");
 
             return;
         }
