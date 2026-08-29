@@ -63,11 +63,13 @@ services:
       - key: GEMINI_MODEL
         value: gemini-flash-latest
       # Seleciona qual provedor de IA gera as sugestões de margem de
-      # precificação (ver App\Services\PrecificacaoIaInterface). 'gemini' é
-      # o default para não quebrar o comportamento já existente — troque
-      # para 'anthropic' no dashboard do Render se quiser rodar com Claude.
+      # precificação (ver App\Services\PrecificacaoIaInterface) E as
+      # estimativas do onboarding via IA (ver App\Services\OnboardingIaInterface).
+      # 'anthropic' porque o projeto migrou de Gemini pra Claude — troque pra
+      # 'gemini' no dashboard do Render se algum dia voltar a usar Gemini
+      # (nesse caso GEMINI_API_KEY também precisa estar preenchida).
       - key: IA_PROVIDER
-        value: gemini
+        value: anthropic
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: ANTHROPIC_MODEL

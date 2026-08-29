@@ -1,7 +1,8 @@
 # Render não tem runtime nativo de PHP — este Dockerfile é o que ele usa pra
 # buildar e rodar a API. Apache (não `artisan serve`) de propósito: algumas
-# rotas (ex.: onboarding por IA em OnboardingIaService) podem levar até ~150s
-# por causa dos retries contra o Gemini, e `artisan serve` é single-threaded
+# rotas (ex.: onboarding por IA em OnboardingIaGeminiService/OnboardingIaAnthropicService)
+# podem levar até ~150s por causa dos retries contra o provedor de IA (Gemini
+# ou Anthropic, conforme IA_PROVIDER), e `artisan serve` é single-threaded
 # — uma única requisição lenta travaria a API inteira pra todo mundo.
 
 FROM php:8.2-apache

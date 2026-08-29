@@ -12,7 +12,8 @@ namespace App\Services;
  *    aceitáveis de negócio (pós-API)
  *
  * Extraído como classe própria (em vez de método privado do
- * OnboardingIaService) para ser testável isoladamente, sem HTTP nem mocks —
+ * OnboardingIaGeminiService/OnboardingIaAnthropicService) para ser testável
+ * isoladamente, sem HTTP nem mocks —
  * ver SPEC §11.1 (OnboardingGuardrailTest / OnboardingGuardrailClampTest).
  */
 class OnboardingGuardrail

@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\LogsOnboardingIa;
 use App\Models\User;
-use App\Services\OnboardingIaService;
+use App\Services\OnboardingIaInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
 use Tests\TestCase;
@@ -51,7 +51,7 @@ class OnboardingIaTest extends TestCase
 
     public function test_fluxo_feliz_retorna_estimativas_e_grava_log(): void
     {
-        $this->mock(OnboardingIaService::class, function ($mock) {
+        $this->mock(OnboardingIaInterface::class, function ($mock) {
             $mock->shouldReceive('estimarDadosLoja')->once()->andReturn($this->estimativasFake());
         });
 
@@ -69,7 +69,7 @@ class OnboardingIaTest extends TestCase
 
     public function test_fallback_por_texto_insuficiente_nao_chama_a_ia(): void
     {
-        $this->mock(OnboardingIaService::class, function ($mock) {
+        $this->mock(OnboardingIaInterface::class, function ($mock) {
             $mock->shouldNotReceive('estimarDadosLoja');
         });
 
@@ -86,7 +86,7 @@ class OnboardingIaTest extends TestCase
 
     public function test_fallback_por_erro_de_api(): void
     {
-        $this->mock(OnboardingIaService::class, function ($mock) {
+        $this->mock(OnboardingIaInterface::class, function ($mock) {
             $mock->shouldReceive('estimarDadosLoja')->once()->andThrow(new RuntimeException('timeout'));
         });
 
@@ -101,7 +101,7 @@ class OnboardingIaTest extends TestCase
 
     public function test_fallback_por_confianca_insuficiente(): void
     {
-        $this->mock(OnboardingIaService::class, function ($mock) {
+        $this->mock(OnboardingIaInterface::class, function ($mock) {
             $mock->shouldReceive('estimarDadosLoja')->once()->andReturn([
                 'confianca_suficiente'   => false,
                 'motivo_baixa_confianca' => 'texto muito vago',
@@ -126,7 +126,7 @@ class OnboardingIaTest extends TestCase
         $estimativas = $this->estimativasFake();
         $estimativas['canais_sugeridos'] = ['marketplace'];
 
-        $this->mock(OnboardingIaService::class, function ($mock) use ($estimativas) {
+        $this->mock(OnboardingIaInterface::class, function ($mock) use ($estimativas) {
             $mock->shouldReceive('estimarDadosLoja')->once()->andReturn($estimativas);
         });
 
@@ -139,7 +139,7 @@ class OnboardingIaTest extends TestCase
 
     public function test_confirmar_persiste_loja_e_marca_origem_por_campo(): void
     {
-        $this->mock(OnboardingIaService::class, function ($mock) {
+        $this->mock(OnboardingIaInterface::class, function ($mock) {
             $mock->shouldReceive('estimarDadosLoja')->once()->andReturn($this->estimativasFake());
         });
 

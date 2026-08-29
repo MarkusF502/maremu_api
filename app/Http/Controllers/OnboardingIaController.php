@@ -8,7 +8,7 @@ use App\Models\CanalVendaLoja;
 use App\Models\LogsOnboardingIa;
 use App\Models\Loja;
 use App\Services\OnboardingGuardrail;
-use App\Services\OnboardingIaService;
+use App\Services\OnboardingIaInterface;
 use App\Services\OnboardingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +27,7 @@ use RuntimeException;
 class OnboardingIaController extends Controller
 {
     public function __construct(
-        private readonly OnboardingIaService $onboardingIaService,
+        private readonly OnboardingIaInterface $onboardingIaService,
         private readonly OnboardingGuardrail $guardrail,
         private readonly OnboardingService $onboardingService,
     ) {}
