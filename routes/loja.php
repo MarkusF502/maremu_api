@@ -33,6 +33,10 @@ Route::middleware('auth:sanctum')->prefix('loja/onboarding')->group(function () 
     // throttle:5,1 protege a quota do Gemini (SPEC §6.1 / S7)
     Route::middleware('throttle:5,1')->post('/analisar-texto', [OnboardingIaController::class, 'analisarTexto']);
 
+    // Wizard de pendências (Spec-Extracao-Assertiva-Onboarding-Maremu §8.2):
+    // resolve custo_fixo_mensal/faturamento_medio_mensal por termos — nunca chama IA.
+    Route::post('/responder-pendencias', [OnboardingIaController::class, 'responderPendencias']);
+
     // Tela 3: confirma/edita as estimativas e cria a loja
     Route::post('/confirmar-ia', [OnboardingIaController::class, 'confirmar']);
 

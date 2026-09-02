@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OnboardingAnalisarTextoRequest;
 use App\Http\Requests\OnboardingIaConfirmarRequest;
+use App\Http\Requests\OnboardingResponderPendenciasRequest;
 use App\Models\CanalVendaLoja;
 use App\Models\LogsOnboardingIa;
 use App\Models\Loja;
 use App\Services\OnboardingGuardrail;
 use App\Services\OnboardingIaInterface;
 use App\Services\OnboardingService;
+use App\Services\OnboardingTermosService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -30,6 +32,7 @@ class OnboardingIaController extends Controller
         private readonly OnboardingIaInterface $onboardingIaService,
         private readonly OnboardingGuardrail $guardrail,
         private readonly OnboardingService $onboardingService,
+        private readonly OnboardingTermosService $termosService,
     ) {}
 
     /**
@@ -106,20 +109,163 @@ class OnboardingIaController extends Controller
             ]);
         }
 
+        // Spec-Extracao-Assertiva-Onboarding-Maremu §3: custo_fixo_mensal e
+        // faturamento_medio_mensal não vêm mais como número final da IA —
+        // vêm como termos componentes com citação, que o backend valida
+        // (§5) e roteia deterministicamente (§6).
+        $estado = $this->termosService->construirEstadoInicial(
+            termosCustoFixoIa: $resultado['termos_custo_fixo'] ?? [],
+            termosFaturamentoIa: $resultado['termos_faturamento'] ?? [],
+            textoOriginal: $request->texto_descritivo,
+            regimeTributario: $request->regime_tributario,
+            termosVolumeVendasIa: $resultado['termos_volume_vendas'] ?? [],
+            termosMargemLucroIa: $resultado['termos_margem_lucro'] ?? [],
+        );
+
+        $roteamento = $this->termosService->gerarPendencias($estado);
+        $pendencias = $roteamento['pendencias'];
+
+        $custoFixoMensal = null;
+        $faturamentoMedioMensal = null;
+        $volumeVendasEsperado = null;
+        $margemLucroDesejada = null;
+        $status = 'pendente';
+
+        if (empty($pendencias)) {
+            [$custoFixoMensal, $faturamentoMedioMensal, $volumeVendasEsperado, $margemLucroDesejada] = $this->calcularValoresFinais($estado);
+            $status = 'concluido';
+        }
+
         $log = LogsOnboardingIa::create([
-            'user_id'        => $user->id,
-            'texto_original' => $request->texto_descritivo,
-            'dados_factuais' => $dadosFactuais,
-            'estimativas_ia' => $resultado,
-            'usou_fallback'  => false,
+            'user_id'           => $user->id,
+            'texto_original'    => $request->texto_descritivo,
+            'dados_factuais'    => $dadosFactuais,
+            'estimativas_ia'    => $resultado,
+            'usou_fallback'     => false,
+            'termos_detalhados' => array_merge(
+                $this->termosService->montarTermosDetalhados($estado, $custoFixoMensal, $faturamentoMedioMensal, $volumeVendasEsperado, $margemLucroDesejada),
+                ['_estado_interno' => $estado]
+            ),
+            'status'            => $status,
+        ]);
+
+        $estimativasResolvidas = $resultado['estimativas'];
+        $estimativasResolvidas['custo_fixo_mensal'] = ['valor' => $custoFixoMensal, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
+        $estimativasResolvidas['faturamento_medio_mensal'] = ['valor' => $faturamentoMedioMensal, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
+        $estimativasResolvidas['volume_vendas_esperado'] = ['valor' => $volumeVendasEsperado, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
+        $estimativasResolvidas['margem_lucro_desejada'] = ['valor' => $margemLucroDesejada, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
+
+        return response()->json([
+            'sucesso'               => true,
+            'sessao_id'             => $log->id,
+            'log_id'                => $log->id,
+            'estimativas_resolvidas'=> $estimativasResolvidas,
+            'estimativas'           => $estimativasResolvidas,
+            'pendencias'            => $pendencias,
+            'canais_sugeridos'      => $resultado['canais_sugeridos'],
+        ]);
+    }
+
+    /**
+     * POST /api/loja/onboarding/responder-pendencias
+     *
+     * Nunca chama IA (SPEC §8.2) — lê o draft de termos salvo em
+     * analisar-texto, mescla as respostas do wizard e reusa a mesma função
+     * de roteamento/cálculo determinístico.
+     */
+    public function responderPendencias(OnboardingResponderPendenciasRequest $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $log = LogsOnboardingIa::where('user_id', $user->id)->findOrFail($request->sessao_id);
+
+        $estado = $log->termos_detalhados['_estado_interno'] ?? null;
+
+        if ($estado === null) {
+            return response()->json(['message' => 'Sessão de onboarding inválida.'], 422);
+        }
+
+        $estado = $this->termosService->mesclarRespostas($estado, $request->respostas);
+
+        $roteamento = $this->termosService->gerarPendencias($estado);
+        $pendencias = $roteamento['pendencias'];
+
+        if (! empty($pendencias)) {
+            $log->update([
+                'termos_detalhados' => array_merge(
+                    $this->termosService->montarTermosDetalhados($estado, null, null, null, null),
+                    ['_estado_interno' => $estado]
+                ),
+                'status' => 'pendente',
+            ]);
+
+            return response()->json([
+                'status'               => 'pendente',
+                'sessao_id'            => $log->id,
+                'pendencias_restantes' => $pendencias,
+            ]);
+        }
+
+        [$custoFixoMensal, $faturamentoMedioMensal, $volumeVendasEsperado, $margemLucroDesejada] = $this->calcularValoresFinais($estado);
+
+        $estimativasIa = $log->estimativas_ia ?? [];
+        $estimativasIa['estimativas']['volume_vendas_esperado'] = ['valor' => $volumeVendasEsperado, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
+        $estimativasIa['estimativas']['margem_lucro_desejada'] = ['valor' => $margemLucroDesejada, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
+
+        $log->update([
+            'termos_detalhados' => array_merge(
+                $this->termosService->montarTermosDetalhados($estado, $custoFixoMensal, $faturamentoMedioMensal, $volumeVendasEsperado, $margemLucroDesejada),
+                ['_estado_interno' => $estado]
+            ),
+            'estimativas_ia' => $estimativasIa,
+            'status'         => 'concluido',
         ]);
 
         return response()->json([
-            'sucesso'          => true,
-            'log_id'           => $log->id,
-            'estimativas'      => $resultado['estimativas'],
-            'canais_sugeridos' => $resultado['canais_sugeridos'],
+            'status'                   => 'concluido',
+            'sessao_id'                => $log->id,
+            'custo_fixo_mensal'        => $custoFixoMensal,
+            'faturamento_medio_mensal' => $faturamentoMedioMensal,
+            'volume_vendas_esperado'   => $volumeVendasEsperado,
+            'margem_lucro_desejada'    => $margemLucroDesejada,
+            'redirecionar_para'        => 'tela_2',
         ]);
+    }
+
+    /**
+     * Calcula custo_fixo_mensal, faturamento_medio_mensal,
+     * volume_vendas_esperado e margem_lucro_desejada a partir do estado de
+     * termos já totalmente resolvido, aplicando o mesmo OnboardingGuardrail
+     * (clamp) usado para as demais estimativas — agora sobre o valor final,
+     * não mais por termo (SPEC: fora de escopo não alterar o guardrail em
+     * si, só o que ele recebe).
+     *
+     * @return array{0: ?float, 1: ?float, 2: ?int, 3: ?float}
+     */
+    private function calcularValoresFinais(array $estado): array
+    {
+        $custoFixoMensal = $this->termosService->calcularCustoFixo($estado['custo_fixo_mensal']);
+        $faturamentoMedioMensal = $this->termosService->calcularFaturamento($estado['faturamento_medio_mensal']);
+        $volumeVendasEsperado = $this->termosService->calcularVolumeVendas($estado['volume_vendas_esperado']);
+        $margemLucroDesejada = $this->termosService->calcularMargemLucro($estado['margem_lucro_desejada']);
+
+        if ($custoFixoMensal !== null) {
+            $custoFixoMensal = $this->guardrail->clampar('custo_fixo_mensal', $custoFixoMensal)['valor'];
+        }
+
+        if ($faturamentoMedioMensal !== null) {
+            $faturamentoMedioMensal = $this->guardrail->clampar('faturamento_medio_mensal', $faturamentoMedioMensal)['valor'];
+        }
+
+        if ($volumeVendasEsperado !== null) {
+            $volumeVendasEsperado = $this->guardrail->clampar('volume_vendas_esperado', $volumeVendasEsperado)['valor'];
+        }
+
+        if ($margemLucroDesejada !== null) {
+            $margemLucroDesejada = $this->guardrail->clampar('margem_lucro_desejada', $margemLucroDesejada)['valor'];
+        }
+
+        return [$custoFixoMensal, $faturamentoMedioMensal, $volumeVendasEsperado, $margemLucroDesejada];
     }
 
     /**
@@ -143,6 +289,12 @@ class OnboardingIaController extends Controller
         $log = LogsOnboardingIa::where('user_id', $user->id)->findOrFail($request->log_id);
 
         $estimativasIa = $log->estimativas_ia['estimativas'] ?? [];
+        // Nenhum dos quatro campos abaixo vem mais direto da IA
+        // (SPEC-Extracao-Assertiva-Onboarding) — vêm do valor final
+        // calculado a partir dos termos, já persistido em termos_detalhados.
+        foreach (['custo_fixo_mensal', 'faturamento_medio_mensal', 'volume_vendas_esperado', 'margem_lucro_desejada'] as $campo) {
+            $estimativasIa[$campo] = ['valor' => $log->termos_detalhados[$campo]['valor'] ?? null];
+        }
 
         $camposEstimados = [
             'posicionamento'           => $request->posicionamento,

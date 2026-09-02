@@ -148,11 +148,51 @@ class OnboardingIaAnthropicService implements OnboardingIaInterface
 
         $schema['properties']['posicionamento']['additionalProperties'] = false;
 
-        foreach (['faturamento_medio_mensal', 'custo_fixo_mensal', 'margem_lucro_desejada', 'volume_vendas_esperado'] as $campo) {
-            unset($schema['properties'][$campo]['properties']['valor']['minimum'], $schema['properties'][$campo]['properties']['valor']['maximum']);
-            $schema['properties'][$campo]['additionalProperties'] = false;
+        foreach (['termos_custo_fixo', 'termos_faturamento', 'termos_volume_vendas', 'termos_margem_lucro'] as $grupoTermos) {
+            $schema['properties'][$grupoTermos]['additionalProperties'] = false;
+            foreach ($schema['properties'][$grupoTermos]['properties'] as $chave => &$termoSchema) {
+                // periodicidade_informada é um enum de string simples (com o
+                // sentinela 'nao_informada' no lugar de null) — nada a ajustar.
+                if ($chave === 'periodicidade_informada') {
+                    continue;
+                }
+                $termoSchema['additionalProperties'] = false;
+                $termoSchema['properties']['valor'] = $this->tornarNullavelPadraoJsonSchema($termoSchema['properties']['valor']);
+                // 'citacao' fica como string simples (não nullable) aqui — a
+                // Anthropic rejeita a requisição com "too many parameters
+                // with union types" quando os 4 grupos de termos (12 campos)
+                // viram 24 propriedades union-typed. citacaoValida() já trata
+                // string vazia como "sem citação" (mesmo efeito de null), e
+                // só é lida quando origem é explicito/explicito_zero — então
+                // perder a distinção null vs "" não muda nenhuma regra.
+                unset($termoSchema['properties']['citacao']['nullable']);
+            }
+            unset($termoSchema);
         }
 
         return $schema;
+    }
+
+    /**
+     * A Anthropic (JSON Schema padrão) não entende a keyword `nullable`
+     * usada pelo schema do Gemini (OpenAPI 3.0) — converte para o
+     * equivalente em JSON Schema: `type` como array incluindo "null".
+     */
+    private function tornarNullavelPadraoJsonSchema(array $propriedade): array
+    {
+        if (! ($propriedade['nullable'] ?? false)) {
+            return $propriedade;
+        }
+
+        unset($propriedade['nullable']);
+        $propriedade['type'] = [$propriedade['type'], 'null'];
+
+        // Se houver enum, o valor "null" precisa constar nele — a Anthropic
+        // rejeita um enum cujos valores não cobrem todos os tipos declarados.
+        if (isset($propriedade['enum']) && ! in_array(null, $propriedade['enum'], true)) {
+            $propriedade['enum'][] = null;
+        }
+
+        return $propriedade;
     }
 }

@@ -35,15 +35,20 @@ class OnboardingIaTest extends TestCase
 
     private function estimativasFake(): array
     {
+        // custo_fixo_mensal/faturamento_medio_mensal/volume_vendas_esperado/
+        // margem_lucro_desejada não vêm mais como número final da IA — os
+        // quatro saem como termos componentes (SPEC-Extracao-Assertiva-
+        // Onboarding-Maremu). termos_custo_fixo/termos_faturamento/
+        // termos_volume_vendas/termos_margem_lucro ficam ausentes de
+        // propósito aqui: este teste cobre o fluxo básico (fallback,
+        // estrutura de resposta, propagação de canais); a cobertura do
+        // pipeline determinístico em si (rotas, citação, pendências) já
+        // está em OnboardingTermosServiceTest e OnboardingPendenciasTest.
         return [
             'confianca_suficiente'   => true,
             'motivo_baixa_confianca' => null,
             'estimativas' => [
-                'posicionamento'           => ['valor' => 'popular', 'explicacao' => 'texto menciona preço acessível'],
-                'faturamento_medio_mensal' => ['valor' => 12000.0, 'explicacao' => 'texto menciona R$ 12 mil', 'clampado' => false],
-                'custo_fixo_mensal'        => ['valor' => 2500.0, 'explicacao' => 'aluguel mencionado', 'clampado' => false],
-                'margem_lucro_desejada'    => ['valor' => 0.25, 'explicacao' => 'texto menciona 25% de lucro', 'clampado' => false],
-                'volume_vendas_esperado'   => ['valor' => 80, 'explicacao' => 'texto menciona 80 peças/mês', 'clampado' => false],
+                'posicionamento' => ['valor' => 'popular', 'explicacao' => 'texto menciona preço acessível'],
             ],
             'canais_sugeridos' => [],
         ];

@@ -21,6 +21,8 @@ class LogsOnboardingIa extends Model
         'estimativas_finais',
         'usou_fallback',
         'motivo_fallback',
+        'termos_detalhados',
+        'status',
     ];
 
     protected $casts = [
@@ -28,6 +30,7 @@ class LogsOnboardingIa extends Model
         'estimativas_ia'      => 'array',
         'estimativas_finais'  => 'array',
         'usou_fallback'       => 'boolean',
+        'termos_detalhados'   => 'array',
     ];
 
     public function user(): BelongsTo
