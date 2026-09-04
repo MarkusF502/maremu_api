@@ -55,6 +55,38 @@ class OnboardingTermosServiceTest extends TestCase
         $this->assertSame('pendente_escolha', $estado['custo_fixo_mensal']['custos_do_local']['status']);
     }
 
+    public function test_explicito_zero_sem_valor_e_normalizado_para_zero(): void
+    {
+        // Regressão: a IA às vezes retorna origem='explicito_zero' com
+        // valor=null (leu "zero" como "nada a reportar", não como o número
+        // 0) — isso não pode travar o cálculo final num null silencioso.
+        // Cobre tanto custos_do_local (ex: "a loja é minha, não pago
+        // aluguel") quanto outros_custos_fixos (ex: "fora isso não tenho
+        // nenhum outro custo fixo").
+        $estado = $this->service->construirEstadoInicial(
+            termosCustoFixoIa: [
+                'custos_do_local' => ['valor' => null, 'origem' => 'explicito_zero', 'citacao' => 'x'],
+                'n_funcionarios' => ['valor' => 0, 'origem' => 'explicito', 'citacao' => 'x'],
+                'custo_total_por_funcionario' => ['valor' => null, 'origem' => 'ausente', 'citacao' => null],
+                'outros_custos_fixos' => ['valor' => null, 'origem' => 'explicito_zero', 'citacao' => 'x'],
+            ],
+            termosFaturamentoIa: ['faturamento_direto' => ['valor' => 12000, 'origem' => 'explicito', 'citacao' => 'x']],
+            textoOriginal: 'x',
+            regimeTributario: 'simples_nacional',
+            termosVolumeVendasIa: ['volume_vendas_direto' => ['valor' => 100, 'origem' => 'explicito', 'citacao' => 'x']],
+            termosMargemLucroIa: ['margem_direta' => ['valor' => 25, 'origem' => 'explicito', 'citacao' => 'x']],
+        );
+
+        $this->assertSame(0, $estado['custo_fixo_mensal']['custos_do_local']['valor']);
+        $this->assertSame(0, $estado['custo_fixo_mensal']['outros_custos_fixos']['valor']);
+        $this->assertSame('aceito', $estado['custo_fixo_mensal']['custos_do_local']['status']);
+        $this->assertSame('aceito', $estado['custo_fixo_mensal']['outros_custos_fixos']['status']);
+
+        $roteamento = $this->service->gerarPendencias($estado);
+        $this->assertSame([], $roteamento['pendencias']);
+        $this->assertEquals(0.0, $this->service->calcularCustoFixo($estado['custo_fixo_mensal']));
+    }
+
     public function test_n_funcionarios_ausente_nunca_e_assumido_como_zero(): void
     {
         $estado = $this->service->construirEstadoInicial(

@@ -47,11 +47,11 @@ Para esse campo, escreva uma explicação em português simples, sem jargão té
 
 Além disso, para custo_fixo_mensal, faturamento_medio_mensal, volume_vendas_esperado e margem_lucro_desejada, você NÃO deve retornar um valor final agregado — retorne os TERMOS componentes que embasam esse valor, cada um com origem e citação literal:
 
-custo_fixo_mensal (termos_custo_fixo): cada termo abaixo tem seu PRÓPRIO valor — nunca some dois valores mencionados separadamente no texto dentro de um único termo (ex: "pago 2500 de aluguel e 1000 de anúncios" são DOIS termos, 2500 em custos_do_local e 1000 em outros_custos_fixos, nunca 3500 num só). O backend soma os termos depois; sua tarefa é separar, não agregar.
+custo_fixo_mensal (termos_custo_fixo): cada termo abaixo tem seu PRÓPRIO valor — nunca some dois valores mencionados separadamente no texto dentro de um único termo (ex: "pago 2500 de aluguel e 1000 de anúncios" são DOIS termos, 2500 em custos_do_local e 1000 em outros_custos_fixos, nunca 3500 num só). O backend soma os termos depois; sua tarefa é separar, não agregar. Quando origem for 'explicito_zero', "valor" deve ser o número 0 (não null) — o texto confirmou que esse custo é zero, então zero é o dado, não a ausência de um.
 - custos_do_local: aluguel + contas do local (água, luz, internet) — só o que é fisicamente do imóvel/ponto de venda. origem='explicito' se o texto informa valor; origem='explicito_zero' se o texto deixa claro que o local é próprio (ex: "a loja é minha, não pago aluguel") — isso é diferente de não mencionar; origem='ausente' se o texto não menciona nada sobre isso.
 - n_funcionarios: número de funcionários contratados. origem='explicito' só se o texto disser um número (mesmo que seja zero, explicitamente). Nunca assuma 0 por padrão — se não for mencionado, origem='ausente'.
 - custo_total_por_funcionario: custo total (salário + encargos) por funcionário, se o texto informar isso explicitamente (raro). Caso contrário origem='ausente'.
-- outros_custos_fixos: qualquer custo fixo mensal que NÃO seja do imóvel — ex: anúncios/tráfego pago (Instagram, Facebook, marketplace), aluguel de equipamento, mensalidade de sistema, contador. Se o texto mencionar "contas" ou "outras despesas" junto com algo desse tipo (marketing, anúncios, sistema), esse valor vai aqui, não em custos_do_local. origem='explicito' ou 'ausente'.
+- outros_custos_fixos: qualquer custo fixo mensal que NÃO seja do imóvel — ex: anúncios/tráfego pago (Instagram, Facebook, marketplace), aluguel de equipamento, mensalidade de sistema, contador. Se o texto mencionar "contas" ou "outras despesas" junto com algo desse tipo (marketing, anúncios, sistema), esse valor vai aqui, não em custos_do_local. origem='explicito' se o texto informa um valor; origem='explicito_zero' se o texto deixa claro que não há outros custos fixos além dos já mencionados (ex: "fora isso não tenho nenhum outro custo fixo", "não tenho mais nenhuma despesa fixa") — isso é diferente de simplesmente não mencionar o assunto; origem='ausente' se o texto não toca nesse assunto.
 
 faturamento_medio_mensal (termos_faturamento): identifique qual das duas rotas o texto sustenta e retorne SÓ essa rota:
 - Rota "direto": o texto informa um faturamento/venda mensal em reais diretamente → retorne faturamento_direto {valor, citacao}.
@@ -142,7 +142,7 @@ PROMPT;
                 'custos_do_local'             => $this->schemaTermo(['explicito', 'explicito_zero', 'ausente']),
                 'n_funcionarios'              => $this->schemaTermo(['explicito', 'ausente'], 'integer'),
                 'custo_total_por_funcionario' => $this->schemaTermo(['explicito', 'ausente']),
-                'outros_custos_fixos'         => $this->schemaTermo(['explicito', 'ausente']),
+                'outros_custos_fixos'         => $this->schemaTermo(['explicito', 'explicito_zero', 'ausente']),
             ],
             'required' => ['custos_do_local', 'n_funcionarios', 'custo_total_por_funcionario', 'outros_custos_fixos'],
         ];

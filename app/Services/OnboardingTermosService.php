@@ -301,9 +301,17 @@ class OnboardingTermosService
         $origem = $termo['origem'] ?? 'ausente';
 
         if (in_array($origem, ['explicito', 'explicito_zero'], true)) {
+            // 'explicito_zero' significa "o texto deixa claro que esse custo é
+            // zero" (ex: "não pago aluguel", "fora isso não tenho mais nenhum
+            // custo") — o valor é sempre 0 por definição. A IA às vezes retorna
+            // valor=null nesse caso (não há "número" a reportar, na leitura
+            // dela) em vez de 0 explícito; normalizamos aqui para não deixar
+            // o cálculo final travar num null silencioso por causa disso.
+            $valor = $origem === 'explicito_zero' ? ($termo['valor'] ?? 0) : $termo['valor'];
+
             return [
                 'nome'    => $nome,
-                'valor'   => $termo['valor'],
+                'valor'   => $valor,
                 'origem'  => $origem,
                 'citacao' => $termo['citacao'] ?? null,
                 'status'  => 'aceito',
