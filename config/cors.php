@@ -3,7 +3,10 @@
 return [
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => array_filter([
+    // FRONTEND_URL aceita uma ou mais URLs separadas por vírgula
+    // (mesma lógica do allowedOrigins.split(',') usado no Node/Express),
+    // permitindo configurar múltiplos front-ends sem editar este arquivo.
+    'allowed_origins' => array_values(array_filter(array_merge([
         'http://localhost:3000',
         'http://localhost:3001',
         'https://maremu-l2cr.vercel.app',
@@ -11,8 +14,10 @@ return [
         'https://maremu-app.vercel.app',
         'https://maremu.com.br',
         'https://www.maremu.com.br',
-        env('FRONTEND_URL'),
-    ]),
+    ], array_map(
+        'trim',
+        explode(',', env('FRONTEND_URL', ''))
+    )))),
 
     // Preview deploys da Vercel usam URLs geradas por branch/commit
     // (ex.: maremu-git-minha-branch-usuario.vercel.app, maremu-abc123.vercel.app),
