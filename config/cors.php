@@ -5,7 +5,10 @@ return [
     'allowed_methods' => ['*'],
     'allowed_origins' => array_filter([
         'http://localhost:3000',
+        'http://localhost:3001',
         'https://maremu-l2cr.vercel.app',
+        'https://maremu.vercel.app',
+        'https://maremu-app.vercel.app',
         'https://maremu.com.br',
         'https://www.maremu.com.br',
         env('FRONTEND_URL'),
