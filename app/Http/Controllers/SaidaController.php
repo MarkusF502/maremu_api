@@ -347,6 +347,7 @@ class SaidaController extends Controller
                 DB::table('metricas_categoria_loja')
                     ->where('loja_id', $loja->id)
                     ->whereIn('categoria_id', $categoriasAfetadas)
+                    ->where('fechada', false) // janelas fechadas são histórico imutável
                     ->update(['desatualizada' => true]);
             });
 
