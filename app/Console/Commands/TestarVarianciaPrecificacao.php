@@ -9,6 +9,7 @@ use App\Models\Categoria;
 use App\Models\Produto;
 use App\Models\LogsSugestaoIa;
 use App\Models\MetricasCategoriaLoja;
+use App\Models\VarianteProduto;
 use App\Services\PrecificacaoPayloadService;
 use App\Services\PrecificacaoIaInterface;
 use Illuminate\Support\Str;
@@ -232,8 +233,8 @@ class TestarVarianciaPrecificacao extends Command
      * cenario_liquidacao, que agora é decisão livre da IA guiada por esses
      * sinais (não mais calculada deterministicamente pelo sistema).
      *
-     * loja.volume_vendas_esperado = 120 (fixture fixa) → giro_esperado_dias
-     * = 30 / (120/30) = 7.5 dias. giro_medio_dias abaixo é escolhido para
+     * O giro esperado vem de PrecificacaoPayloadService::giroEsperadoDias
+     * (30 × produtos com estoque / volume). giro_medio_dias abaixo é escolhido para
      * manter razao_giro = 1.0 (neutro) nos cenários de margem, isolando o
      * sinal que está sendo testado.
      */
@@ -251,7 +252,14 @@ class TestarVarianciaPrecificacao extends Command
         }
 
         $margemPlanejada = 0.30;
-        $giroEsperadoDias = 30 / ($loja->volume_vendas_esperado / 30); // 7.5 com volume=120
+        // O giro esperado depende dos produtos com estoque, então o produto
+        // de laboratório precisa de uma variante com saldo. Com 1 produto e
+        // volume=120, giro esperado = 30 × 1 / 120 = 0,25 dia por unidade.
+        VarianteProduto::firstOrCreate(
+            ['produto_id' => $produto->id, 'tamanho' => 'U'],
+            ['quantidade_estoque' => 10]
+        );
+        $giroEsperadoDias = app(PrecificacaoPayloadService::class)->giroEsperadoDias($loja);
 
         $fixtures = [
             // razao_margem bem abaixo de 0.70, razao_giro bem acima de 1.5 —

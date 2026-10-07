@@ -159,8 +159,8 @@ class PrecificacaoPayloadService
         );
 
         $dados['razao_giro'] = $this->calcularRazaoGiro(
-            $metrica->giro_medio_dias,
-            (int) $loja->volume_vendas_esperado
+            $metrica->giro_medio_dias !== null ? (float) $metrica->giro_medio_dias : null,
+            $this->giroEsperadoDias($loja)
         );
 
         // candidatos_liquidacao é JSON nullable — só inclui se houver dados
@@ -177,28 +177,58 @@ class PrecificacaoPayloadService
     }
 
     /**
-     * Razão de giro: giro real da categoria vs. giro esperado pela própria
-     * loja, derivado de volume_vendas_esperado. Normaliza dias absolutos
-     * pelo ritmo que cada loja projetou para si mesma — uma loja pequena e
-     * uma grande não são comparáveis em dias fixos (ver nota metodológica
-     * na Especificação Técnica).
+     * Giro esperado de um produto, em dias por unidade, segundo o que a
+     * própria loja projetou: se ela espera vender V unidades por mês e tem
+     * N produtos à venda, cada produto deveria vender V/N por mês, ou seja,
+     * uma unidade a cada 30 × N / V dias.
+     *
+     * N são os produtos não inativos com estoque. Usar o catálogo real
+     * importa: com um N fixo, a razão de giro passaria a medir o tamanho do
+     * catálogo, e não o ritmo de venda.
+     *
+     * Limitações: depende de volume_vendas_esperado, que vem do onboarding,
+     * e supõe o volume distribuído por igual entre os produtos.
+     *
+     * Retorna null quando não dá para calcular (volume zerado ou nenhum
+     * produto com estoque). null é fallback, nunca zero.
+     */
+    public function giroEsperadoDias($loja): ?float
+    {
+        $volume = (int) $loja->volume_vendas_esperado;
+        if ($volume <= 0) {
+            return null;
+        }
+
+        $produtosAVenda = Produto::where('loja_id', $loja->id)
+            ->where('status', '!=', 'inativo')
+            ->whereIn('id', function ($query) {
+                $query->select('produto_id')
+                    ->from('variantes_produto')
+                    ->groupBy('produto_id')
+                    ->havingRaw('SUM(quantidade_estoque) > 0');
+            })
+            ->count();
+
+        if ($produtosAVenda === 0) {
+            return null;
+        }
+
+        return 30 * $produtosAVenda / $volume;
+    }
+
+    /**
+     * Razão de giro: giro real da categoria (mediana de dias por unidade
+     * entre os produtos que venderam) vs. giro esperado por produto.
      *
      * > 1.5  → categoria girando bem mais devagar que o esperado
      * 0.8–1.5 → dentro do esperado
      * < 0.8  → girando mais rápido que o esperado
-     *
-     * Retorna null quando não é possível calcular (dado ausente ou
-     * volume_vendas_esperado = 0 — loja recém-cadastrada sem essa
-     * informação ainda preenchida). null aqui é tratado como fallback,
-     * nunca como zero.
      */
-    private function calcularRazaoGiro(?float $giroMedioDias, int $volumeVendasEsperado): ?float
+    private function calcularRazaoGiro(?float $giroMedioDias, ?float $giroEsperadoDias): ?float
     {
-        if ($giroMedioDias === null || $volumeVendasEsperado <= 0) {
+        if ($giroMedioDias === null || $giroEsperadoDias === null || $giroEsperadoDias <= 0) {
             return null;
         }
-
-        $giroEsperadoDias = 30 / ($volumeVendasEsperado / 30);
 
         return round($giroMedioDias / $giroEsperadoDias, 4);
     }
