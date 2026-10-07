@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\SaidaController;
+use App\Http\Controllers\TaxonomiaController;
 use App\Http\Middleware\EnsureLojaExists;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PrecificacaoController;
@@ -26,6 +27,8 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
 Route::middleware(['auth:sanctum', EnsureLojaExists::class])->group(function () {
     Route::get('/categorias', [CategoriaController::class, 'index']);
     Route::post('/categorias', [CategoriaController::class, 'store']);
+    Route::patch('/categorias/{categoria}', [CategoriaController::class, 'update']);
+    Route::get('/taxonomia', [TaxonomiaController::class, 'index']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/produtos', [ProdutoController::class, 'index']);
     Route::post('/produtos', [ProdutoController::class, 'store']);

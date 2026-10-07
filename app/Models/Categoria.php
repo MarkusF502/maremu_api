@@ -20,6 +20,7 @@ class Categoria extends Model
     protected $fillable = [
         'loja_id', 
         'nome',
+        'sub_categoria_id',
     ];
 
     public function loja(): BelongsTo
@@ -30,5 +31,10 @@ class Categoria extends Model
     public function produtos(): HasMany
     {
         return $this->hasMany(Produto::class);
+    }
+
+    public function subCategoria(): BelongsTo
+    {
+        return $this->belongsTo(SubCategoria::class);
     }
 }

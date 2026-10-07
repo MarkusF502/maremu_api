@@ -24,6 +24,9 @@ class StoreCategoriaRequest extends FormRequest
                 'max:100',
                 Rule::unique('categorias', 'nome')->where(fn ($query) => $query->where('loja_id', $lojaId)),
             ],
+            // Opcional enquanto o frontend não envia o campo; passa a ser
+            // obrigatório junto com o dropdown de taxonomia no cadastro.
+            'sub_categoria_id' => ['nullable', 'integer', 'exists:sub_categorias,id'],
         ];
     }
 }
