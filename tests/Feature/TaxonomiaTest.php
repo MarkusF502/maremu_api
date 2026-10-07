@@ -63,6 +63,19 @@ class TaxonomiaTest extends TestCase
         app(TaxonomiaService::class)->sincronizar([['nome' => 'Vestidos', 'sub_categorias' => []]]);
     }
 
+    public function test_arquivo_da_taxonomia_carrega_as_14_categorias_pai(): void
+    {
+        $servico = app(TaxonomiaService::class);
+
+        $resultado = $servico->sincronizar($servico->lerArquivo());
+
+        $this->assertSame(14, $resultado['categorias_pai']);
+        $this->assertSame(SubCategoria::count(), $resultado['sub_categorias']);
+        // "Outros" só existe onde há sub-categorias de verdade, e nunca é comparável.
+        $this->assertSame(7, SubCategoria::where('comparavel', false)->count());
+        $this->assertSame(0, SubCategoria::where('slug', 'outros')->where('comparavel', true)->count());
+    }
+
     public function test_endpoint_devolve_a_arvore_ordenada(): void
     {
         app(TaxonomiaService::class)->sincronizar($this->taxonomia());

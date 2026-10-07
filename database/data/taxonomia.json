@@ -1,0 +1,279 @@
+[
+  {
+    "nome": "Calças",
+    "google_taxonomy_id": 204,
+    "sub_categorias": [
+      {
+        "nome": "Geral"
+      }
+    ]
+  },
+  {
+    "nome": "Camisetas e tops",
+    "google_taxonomy_id": 212,
+    "sub_categorias": [
+      {
+        "nome": "Geral"
+      }
+    ]
+  },
+  {
+    "nome": "Vestidos",
+    "google_taxonomy_id": 2271,
+    "sub_categorias": [
+      {
+        "nome": "Geral"
+      }
+    ]
+  },
+  {
+    "nome": "Shorts",
+    "google_taxonomy_id": 207,
+    "sub_categorias": [
+      {
+        "nome": "Geral"
+      }
+    ]
+  },
+  {
+    "nome": "Conjuntos de roupas",
+    "google_taxonomy_id": 7313,
+    "sub_categorias": [
+      {
+        "nome": "Geral"
+      }
+    ]
+  },
+  {
+    "nome": "Roupas de banho",
+    "google_taxonomy_id": 211,
+    "sub_categorias": [
+      {
+        "nome": "Geral"
+      }
+    ]
+  },
+  {
+    "nome": "Short-saia",
+    "google_taxonomy_id": 5344,
+    "sub_categorias": [
+      {
+        "nome": "Geral"
+      }
+    ]
+  },
+  {
+    "nome": "Casacos",
+    "google_taxonomy_id": 203,
+    "sub_categorias": [
+      {
+        "nome": "Casacos e jaquetas",
+        "google_taxonomy_id": 5598
+      },
+      {
+        "nome": "Coletes",
+        "google_taxonomy_id": 1831
+      },
+      {
+        "nome": "Roupas para chuva",
+        "google_taxonomy_id": 3066
+      },
+      {
+        "nome": "Outros",
+        "comparavel": false
+      }
+    ]
+  },
+  {
+    "nome": "Saias",
+    "google_taxonomy_id": 1581,
+    "sub_categorias": [
+      {
+        "nome": "Minissaias",
+        "google_taxonomy_id": 2331
+      },
+      {
+        "nome": "Saias até o joelho",
+        "google_taxonomy_id": 6229
+      },
+      {
+        "nome": "Saias longas",
+        "google_taxonomy_id": 6228
+      },
+      {
+        "nome": "Outros",
+        "comparavel": false
+      }
+    ]
+  },
+  {
+    "nome": "Ternos",
+    "google_taxonomy_id": 1594,
+    "sub_categorias": [
+      {
+        "nome": "Conjuntos com calça",
+        "google_taxonomy_id": 5183
+      },
+      {
+        "nome": "Conjuntos com saia",
+        "google_taxonomy_id": 1516
+      },
+      {
+        "nome": "Smokings",
+        "google_taxonomy_id": 1580
+      },
+      {
+        "nome": "Outros",
+        "comparavel": false
+      }
+    ]
+  },
+  {
+    "nome": "Roupas íntimas e meias",
+    "google_taxonomy_id": 213,
+    "sub_categorias": [
+      {
+        "nome": "Sutiãs",
+        "google_taxonomy_id": 214
+      },
+      {
+        "nome": "Meias",
+        "google_taxonomy_id": 209
+      },
+      {
+        "nome": "Meias-calças",
+        "google_taxonomy_id": 215
+      },
+      {
+        "nome": "Lingerie",
+        "google_taxonomy_id": 1772
+      },
+      {
+        "nome": "Roupas íntimas",
+        "google_taxonomy_id": 2562
+      },
+      {
+        "nome": "Camisetas interiores",
+        "google_taxonomy_id": 2745
+      },
+      {
+        "nome": "Ceroulas",
+        "google_taxonomy_id": 1807
+      },
+      {
+        "nome": "Cinta modeladora",
+        "google_taxonomy_id": 1578
+      },
+      {
+        "nome": "Babydolls",
+        "google_taxonomy_id": 5834
+      },
+      {
+        "nome": "Anáguas",
+        "google_taxonomy_id": 2963
+      },
+      {
+        "nome": "Outros",
+        "comparavel": false
+      }
+    ]
+  },
+  {
+    "nome": "Pijamas e roupas casuais",
+    "google_taxonomy_id": 208,
+    "sub_categorias": [
+      {
+        "nome": "Pijamas",
+        "google_taxonomy_id": 2580
+      },
+      {
+        "nome": "Camisolas",
+        "google_taxonomy_id": 5513
+      },
+      {
+        "nome": "Roupas casuais",
+        "google_taxonomy_id": 5713
+      },
+      {
+        "nome": "Roupões",
+        "google_taxonomy_id": 2302
+      },
+      {
+        "nome": "Outros",
+        "comparavel": false
+      }
+    ]
+  },
+  {
+    "nome": "Peças únicas",
+    "google_taxonomy_id": 5182,
+    "sub_categorias": [
+      {
+        "nome": "Colants",
+        "google_taxonomy_id": 5490
+      },
+      {
+        "nome": "Macacões e macaquinhos",
+        "google_taxonomy_id": 5250
+      },
+      {
+        "nome": "Macacões overall",
+        "google_taxonomy_id": 7132
+      },
+      {
+        "nome": "Outros",
+        "comparavel": false
+      }
+    ]
+  },
+  {
+    "nome": "Roupas infantis",
+    "google_taxonomy_id": 182,
+    "sub_categorias": [
+      {
+        "nome": "Blusas infantis",
+        "google_taxonomy_id": 5410
+      },
+      {
+        "nome": "Calças infantis",
+        "google_taxonomy_id": 5408
+      },
+      {
+        "nome": "Vestidos infantis",
+        "google_taxonomy_id": 5424
+      },
+      {
+        "nome": "Macacões para bebês",
+        "google_taxonomy_id": 5411
+      },
+      {
+        "nome": "Pijamas e mantas para bebês",
+        "google_taxonomy_id": 5412
+      },
+      {
+        "nome": "Roupas de banho infantis",
+        "google_taxonomy_id": 5409
+      },
+      {
+        "nome": "Roupas de frio infantis",
+        "google_taxonomy_id": 5425
+      },
+      {
+        "nome": "Roupas para bebês e crianças",
+        "google_taxonomy_id": 5622
+      },
+      {
+        "nome": "Roupas íntimas de crianças",
+        "google_taxonomy_id": 5621
+      },
+      {
+        "nome": "Meias e calças para bebês e crianças",
+        "google_taxonomy_id": 5423
+      },
+      {
+        "nome": "Outros",
+        "comparavel": false
+      }
+    ]
+  }
+]
