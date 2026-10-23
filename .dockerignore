@@ -13,3 +13,5 @@ storage/framework/views/*
 .phpunit.result.cache
 tests
 README.md
+maremu.dump
+deploy-azure.sh
