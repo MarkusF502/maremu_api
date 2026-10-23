@@ -98,6 +98,13 @@ class TaxonomiaTest extends TestCase
             ->assertJsonPath('categoria.sub_categoria_id', $sub->id);
     }
 
+    public function test_rejeita_categoria_sem_sub_categoria(): void
+    {
+        $this->postJson('/api/categorias', ['nome' => 'Jeans da casa'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('sub_categoria_id');
+    }
+
     public function test_rejeita_sub_categoria_inexistente(): void
     {
         $this->postJson('/api/categorias', ['nome' => 'Jeans da casa', 'sub_categoria_id' => 9999])
