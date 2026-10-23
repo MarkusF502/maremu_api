@@ -35,10 +35,35 @@ return [
     'semente' => 20261023,
 
     /*
+    | PREMISSA (sem fonte) — fator de loja pequena aplicado a todo preço base.
+    |
+    | O levantamento abaixo foi feito em lojas online de rede, que compram em
+    | volume. Lojas pequenas não têm essa escala: compram mais caro e repassam.
+    | 1,15 é o ajuste assumido para trazer a tabela de rede para o patamar de
+    | uma loja pequena. Não foi medido.
+    */
+    'fator_loja_pequena' => 1.15,
+
+    /*
+    | PREMISSA (sem fonte) — fator de preço de cada loja, sorteado uma vez por
+    | loja e aplicado a todos os produtos dela.
+    |
+    | Sem ele a faixa de mercado fica artificialmente estreita: se todas as
+    | lojas sorteiam produtos em torno do mesmo preço base, a mediana de cada
+    | uma converge para esse mesmo número e p25 e p75 quase se encostam. Lojas
+    | de verdade se posicionam em patamares diferentes dentro do mesmo
+    | posicionamento — é esse espalhamento que a faixa precisa mostrar.
+    |
+    | 0,80 a 1,25 dá uma faixa de largura plausível — p75 ÷ p25 por volta de
+    | 15% a 25% nas amostras de 5 a 12 lojas deste cenário — sem deixar duas
+    | lojas do mesmo posicionamento em mundos diferentes.
+    */
+    'fator_preco_por_loja' => [0.80, 1.25],
+
+    /*
     | LEVANTAMENTO (23/10/2026) — preço de tabela em reais, por sub-categoria
-    | e posicionamento. É o centro em torno do qual o preço de cada produto é
-    | sorteado; a mediana de preço que a camada 3 devolve para uma amostra
-    | grande converge para este valor.
+    | e posicionamento, no patamar de loja de REDE. O preço efetivo de cada
+    | loja demo é este valor × fator_loja_pequena × fator da loja.
     |
     | `pai` e `sub` precisam casar exatamente com database/data/taxonomia.json.
     | `estimado` lista os posicionamentos cujo preço não foi observado.
@@ -119,11 +144,15 @@ return [
     'preco_bazar' => ['popular' => 40.00, 'medio' => 60.00, 'premium' => 110.00],
 
     /*
-    | Variação do preço de cada produto em torno do preço base: ±20%.
-    | É o que dá largura à distribuição — sem ela, p25, mediana e p75 de uma
-    | loja seriam o mesmo número.
+    | Variação do preço de cada produto em torno do preço base da loja: ±10%.
+    |
+    | Dá largura ao catálogo de uma loja (sem ela, p25, mediana e p75 de uma
+    | loja seriam o mesmo número), mas é metade do que era: a largura da faixa
+    | entre lojas agora vem de fator_preco_por_loja, que é onde ela pertence.
+    | A mediana de 4 produtos em torno do mesmo preço converge, então variação
+    | por produto quase não aparece na faixa.
     */
-    'variacao_preco' => 0.20,
+    'variacao_preco' => 0.10,
 
     /*
     | PREMISSA (sem fonte) — margem bruta média por posicionamento, como
@@ -191,6 +220,58 @@ return [
     'desconto_a_cada' => 5,
     'desconto_percentual' => 0.10,
     'canais' => ['loja_fisica', 'instagram_whatsapp', 'marketplace'],
+
+    /*
+    | PREMISSA (sem fonte) — configuração financeira da Loja Demo Apresentação.
+    |
+    | O onboarding estima R$ 4.500 de custo fixo e 120 peças/mês para a faixa
+    | de_10k_a_30k, o que daria R$ 37,50 de custo fixo por peça — alto demais
+    | para o patamar de preço de uma loja pequena, e empurraria o piso de
+    | qualquer camiseta para fora da faixa de mercado.
+    |
+    | Os valores abaixo representam uma lojista que conferiu os próprios
+    | números (daí custo_fixo_origem = confirmado_pelo_lojista):
+    |
+    |   custo fixo por peça   = 2.700 ÷ 180 = R$ 15,00
+    |   ticket médio implícito = 20.000 ÷ 180 ≈ R$ 111
+    |
+    | R$ 2.700/mês cobre aluguel pequeno, energia, internet, contador e
+    | sistema; 180 peças/mês são 6 por dia. Nenhum dos dois foi medido.
+    */
+    'consulente' => [
+        'custo_fixo_mensal' => 2_700.00,
+        'volume_vendas_esperado' => 180,
+        'custo_fixo_origem' => 'confirmado_pelo_lojista',
+    ],
+
+    /*
+    | Sondas de piso: produtos criados na Loja Demo Apresentação cujo PREÇO
+    | PISO cai, de propósito, em cada zona em relação à faixa de mercado.
+    |
+    | O custo de aquisição é resolvido ao contrário, a partir do piso desejado
+    | (PricingEngine::custoBaseParaPiso). Os cenários da IA variam a cada
+    | chamada, mas o piso é determinístico: é ele que ancora a demonstração.
+    |
+    | `referencia` é o ponto da faixa (p25, mediana ou p75) e `fator` o quanto
+    | o piso desejado se afasta dele.
+    |
+    | A última sonda é impossível de propósito: meia custa menos que o custo
+    | fixo por peça da loja, então nenhum custo de aquisição positivo leva o
+    | piso para baixo do p25. O seeder não força — relata e segue.
+    */
+    'sondas_de_piso' => [
+        ['zona' => 'acima_do_p75', 'sub' => 'Camisetas e tops|Geral', 'referencia' => 'p75', 'fator' => 1.15],
+        ['zona' => 'entre_p25_e_p75', 'sub' => 'Calças|Geral', 'referencia' => 'mediana', 'fator' => 1.00],
+        ['zona' => 'abaixo_do_p25', 'sub' => 'Vestidos|Geral', 'referencia' => 'p25', 'fator' => 0.85],
+        ['zona' => 'abaixo_do_p25', 'sub' => 'Roupas íntimas e meias|Meias', 'referencia' => 'p25', 'fator' => 0.85],
+    ],
+
+    /*
+    | Custo de aquisição mínimo para uma sonda ser considerada possível.
+    | Abaixo disso o custo resolvido é negativo ou irrisório, e criar o produto
+    | só produziria um dado absurdo.
+    */
+    'custo_minimo_plausivel' => 1.00,
 
     /*
     | Idade do cadastro de cada produto, em dias. Sempre acima do horizonte de

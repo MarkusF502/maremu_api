@@ -9,6 +9,7 @@ use App\Models\SubCategoria;
 use App\Models\User;
 use App\Services\Camada3MercadoService;
 use App\Services\OnboardingService;
+use App\Services\PricingEngine;
 use App\Services\TaxonomiaService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -204,6 +205,12 @@ class DemoSeeder extends Seeder
     /** Contador de itens vendidos, para aplicar desconto a cada N. */
     private int $itensVendidos = 0;
 
+    /** @var array<string, float> fator de preço por loja, indexado pelo id */
+    private array $fatorPreco = [];
+
+    /** @var array<int, array<string, mixed>> resultado das sondas de piso, para o resumo */
+    private array $sondas = [];
+
     public function run(): void
     {
         $senha = $this->ambienteSeguro();
@@ -220,6 +227,15 @@ class DemoSeeder extends Seeder
 
         $consulente = $this->criarConsulente($senha);
         $this->criarLojasSemelhantes($senha);
+        $this->descarregarFilas();
+
+        AgregarMetricasCategoria::dispatchSync();
+
+        // As sondas de piso precisam da faixa já calculada: o custo de cada uma
+        // é resolvido a partir do p25/mediana/p75 que o job acabou de produzir.
+        // A consulente não entra na própria amostra, então criar produtos nela
+        // não move a faixa — a segunda passada só atualiza as métricas dela.
+        $this->criarSondasDePiso($consulente);
         $this->descarregarFilas();
 
         AgregarMetricasCategoria::dispatchSync();
@@ -270,6 +286,9 @@ class DemoSeeder extends Seeder
      */
     private function limparDemo(): void
     {
+        $this->fatorPreco = [];
+        $this->sondas = [];
+
         $usuarios = DB::table('lojas')->where('is_demo', true)->pluck('user_id')->all();
 
         $lojas = fn () => DB::table('lojas')->select('id')->where('is_demo', true);
@@ -351,6 +370,8 @@ class DemoSeeder extends Seeder
             posicionamento: 'medio',
             faixa: 'de_10k_a_30k',
             canais: self::CANAIS_POR_PERFIL[1],
+            // Custo fixo e volume conferidos pela lojista: R$ 15,00 por peça.
+            ajustes: $this->premissas['consulente'],
         );
 
         // Giro rápido: vende muito mais que a faixa normal de camisetas.
@@ -414,6 +435,7 @@ class DemoSeeder extends Seeder
         string $posicionamento,
         string $faixa,
         array $canais,
+        array $ajustes = [],
     ): Loja {
         $user = User::create([
             'name' => $nomeUsuario,
@@ -425,7 +447,7 @@ class DemoSeeder extends Seeder
         $inferido = app(OnboardingService::class)
             ->inferirDadosDaLoja($faixa, $posicionamento, 'simples_nacional', $canais);
 
-        $loja = new Loja(array_merge($inferido['loja'], [
+        $loja = new Loja(array_merge($inferido['loja'], $ajustes, [
             'user_id' => $user->id,
             'nome' => $nome,
         ]));
@@ -436,6 +458,11 @@ class DemoSeeder extends Seeder
         foreach ($inferido['canais'] as $canal) {
             $loja->canais()->create(array_merge($canal, ['ativo' => true]));
         }
+
+        // Patamar de preço da loja: sorteado uma vez e válido para todo o
+        // catálogo dela. É o que dá largura à faixa de mercado.
+        [$min, $max] = $this->premissas['fator_preco_por_loja'];
+        $this->fatorPreco[$loja->id] = $this->entre((int) round($min * 1000), (int) round($max * 1000)) / 1000;
 
         return $loja;
     }
@@ -466,7 +493,10 @@ class DemoSeeder extends Seeder
      */
     private function criarProdutos(Loja $loja, Categoria $categoria, string $chave, array $precoBase, ?array $vendas = null): void
     {
-        $base = $precoBase[$loja->posicionamento];
+        // Preço de rede → patamar de loja pequena → patamar desta loja.
+        $base = $precoBase[$loja->posicionamento]
+            * $this->premissas['fator_loja_pequena']
+            * $this->fatorPreco[$loja->id];
         $margemBase = $this->premissas['margem_bruta'][$loja->posicionamento];
         $faixaVendas = $vendas
             ?? $this->premissas['vendas_90_dias'][$chave]
@@ -489,8 +519,10 @@ class DemoSeeder extends Seeder
      */
     private function criarProdutoEncalhado(Loja $loja, Categoria $categoria): void
     {
-        $base = $this->precoBase[self::CASACOS][$loja->posicionamento];
-        $preco = round($base * 1.15, 2); // caro para o posicionamento: parte do motivo de encalhar
+        $base = $this->precoBase[self::CASACOS][$loja->posicionamento]
+            * $this->premissas['fator_loja_pequena']
+            * $this->fatorPreco[$loja->id];
+        $preco = round($base * 1.15, 2); // caro para o patamar da loja: parte do motivo de encalhar
         $custo = round($preco * (1 - $this->premissas['margem_bruta'][$loja->posicionamento]), 2);
 
         $produtoId = $this->registrarProduto($loja, $categoria, 'Casaco de inverno encalhado', $preco, $custo, estoquePorTamanho: 6);
@@ -499,7 +531,113 @@ class DemoSeeder extends Seeder
         $this->registrarPedido($loja, $produtoId, $preco, $custo, 1, $this->premissas['dias_sem_venda_encalhado']);
     }
 
-    private function registrarProduto(Loja $loja, Categoria $categoria, string $nome, float $preco, float $custo, ?int $estoquePorTamanho = null): string
+    /**
+     * Sondas de piso: produtos da Loja Demo Apresentação cujo preço piso cai,
+     * de propósito, acima do p75, dentro da faixa e abaixo do p25.
+     *
+     * O custo é resolvido de trás para frente, a partir do piso desejado, e o
+     * piso efetivo é reconferido no PricingEngine — o custo é arredondado em
+     * centavos, então o piso sai perto do alvo, não idêntico a ele.
+     */
+    private function criarSondasDePiso(Loja $consulente): void
+    {
+        $engine = app(PricingEngine::class);
+        $mercado = app(Camada3MercadoService::class);
+
+        // Mesma taxa que o PrecificacaoController usa: a maior entre os
+        // canais ativos, para o piso cobrir o canal mais caro.
+        $taxaCanal = (float) $consulente->canaisAtivos()->max('taxa_percentual');
+        $aliquota = (float) $consulente->aliquota_efetiva;
+        $custoFixo = (float) $consulente->custo_fixo_mensal;
+        $volume = (int) $consulente->volume_vendas_esperado;
+
+        foreach ($this->premissas['sondas_de_piso'] as $sonda) {
+            $categoria = $consulente->categorias()
+                ->where('sub_categoria_id', $this->subCategorias[$sonda['sub']]->id)
+                ->sole();
+
+            $faixa = $mercado->faixaDeMercado($consulente, $categoria);
+
+            if (! $faixa['disponivel']) {
+                $this->sondas[] = $sonda + [
+                    'categoria' => $categoria->nome,
+                    'resultado' => 'sem faixa disponível ('.$faixa['motivo'].')',
+                ];
+
+                continue;
+            }
+
+            $pisoAlvo = $faixa['preco'][$sonda['referencia']] * $sonda['fator'];
+            $custoBase = $engine->custoBaseParaPiso($pisoAlvo, $aliquota, $taxaCanal, $custoFixo, $volume);
+
+            if ($custoBase < $this->premissas['custo_minimo_plausivel']) {
+                // Não força: um custo negativo ou de centavos seria dado falso.
+                $this->sondas[] = $sonda + [
+                    'categoria' => $categoria->nome,
+                    'resultado' => sprintf(
+                        'impossível — piso alvo de R$ %s exigiria custo de aquisição de R$ %s, '
+                        .'abaixo do mínimo plausível: o custo fixo por peça (R$ %s) já supera o piso alvo',
+                        $this->moeda($pisoAlvo),
+                        $this->moeda($custoBase),
+                        $this->moeda(round($custoFixo / $volume, 2)),
+                    ),
+                ];
+
+                continue;
+            }
+
+            $calculo = $engine->calcularPreco(
+                custoAquisicao: $custoBase,
+                freteEntradaUnitario: 0.0,
+                aliquotaEfetiva: $aliquota,
+                taxaCanal: $taxaCanal,
+                custoFixoMensal: $custoFixo,
+                volumeVendasEsperado: $volume,
+                margemLucroDesejada: (float) $consulente->margem_lucro_desejada,
+            );
+
+            $this->registrarProduto(
+                $consulente,
+                $categoria,
+                $this->nomeDaSonda($sonda['zona']),
+                // Sem preço de venda: é produto novo, aguardando precificação.
+                // É esse o produto que a demonstração manda para a camada 1.
+                preco: null,
+                custo: $custoBase,
+                precoPiso: $calculo['preco_piso'],
+            );
+
+            $this->sondas[] = $sonda + [
+                'categoria' => $categoria->nome,
+                'piso' => $calculo['preco_piso'],
+                'custo_base' => $custoBase,
+                'faixa' => $faixa['preco'],
+                'resultado' => $this->zonaDoPiso($calculo['preco_piso'], $faixa['preco']),
+            ];
+        }
+    }
+
+    /** Em que zona da faixa o piso efetivo caiu. */
+    private function zonaDoPiso(float $piso, array $preco): string
+    {
+        return match (true) {
+            $piso > $preco['p75'] => 'acima_do_p75',
+            $piso < $preco['p25'] => 'abaixo_do_p25',
+            default => 'entre_p25_e_p75',
+        };
+    }
+
+    /** Nome do tecido, para a sonda parecer produto e não fixture. */
+    private function nomeDaSonda(string $zona): string
+    {
+        return match ($zona) {
+            'acima_do_p75' => 'Linho importado',
+            'abaixo_do_p25' => 'Malha simples',
+            default => 'Algodão pima',
+        };
+    }
+
+    private function registrarProduto(Loja $loja, Categoria $categoria, string $nome, ?float $preco, float $custo, ?int $estoquePorTamanho = null, ?float $precoPiso = null): string
     {
         $id = (string) Str::uuid();
         $cadastro = now()->subDays($this->entre(...$this->premissas['idade_cadastro_dias']));
@@ -515,9 +653,9 @@ class DemoSeeder extends Seeder
             // Zero de propósito: a margem efetiva do produto fica igual à
             // margem sorteada, sem um frete embutido para explicar depois.
             'frete_entrada_unitario' => 0,
-            'preco_piso' => null,
+            'preco_piso' => $precoPiso,
             'preco_venda_atual' => $preco,
-            'preco_origem' => 'manual',
+            'preco_origem' => $preco === null ? null : 'manual',
             'status' => 'ativo',
             'data_cadastro' => $cadastro,
             'created_at' => $cadastro,
@@ -698,6 +836,20 @@ class DemoSeeder extends Seeder
             ];
         }
         $this->command->table(['categoria', 'sub-categoria', 'amostra', 'preço p25 / mediana / p75'], $linhas);
+
+        $this->command->info('Sondas de piso (custo resolvido a partir do piso desejado):');
+
+        $linhas = [];
+        foreach ($this->sondas as $sonda) {
+            $linhas[] = [
+                $sonda['categoria'],
+                $sonda['zona'].' ('.$sonda['referencia'].' × '.$sonda['fator'].')',
+                isset($sonda['custo_base']) ? 'R$ '.$this->moeda($sonda['custo_base']) : '—',
+                isset($sonda['piso']) ? 'R$ '.$this->moeda($sonda['piso']) : '—',
+                $sonda['resultado'],
+            ];
+        }
+        $this->command->table(['categoria', 'zona pedida', 'custo resolvido', 'piso efetivo', 'zona alcançada'], $linhas);
     }
 
     private function moeda(float $valor): string

@@ -168,28 +168,137 @@ class DemoSeederTest extends TestCase
 
     // ─── premissas e estatística ─────────────────────────────────────────
 
-    public function test_mediana_de_preco_fica_a_menos_de_vinte_por_cento_do_preco_base(): void
+    public function test_mediana_de_preco_fica_a_menos_de_vinte_e_cinco_por_cento_do_preco_base(): void
     {
         $this->semear();
 
-        $variacao = $this->premissas['variacao_preco'];
+        // O preço base efetivo é o de rede ajustado para loja pequena; o fator
+        // sorteado por loja espalha as medianas em torno dele.
+        $tolerancia = 0.25;
 
         foreach ($this->premissas['precos_base'] as $linha) {
-            $categoria = $this->categoriaDaSubCategoria($linha['pai'], $linha['sub']);
-            $faixa = $this->mercado->faixaDeMercado($this->consulente, $categoria);
+            $faixa = $this->faixaDaSubCategoria($linha['pai'], $linha['sub']);
 
             if (! $faixa['disponivel']) {
                 continue; // Casacos é insuficiente de propósito
             }
 
-            $base = $linha['medio'];
+            $base = $linha['medio'] * $this->premissas['fator_loja_pequena'];
+
             $this->assertEqualsWithDelta(
                 $base,
                 $faixa['preco']['mediana'],
-                $base * $variacao,
-                "{$linha['pai']} › {$linha['sub']}: mediana fora de ±".($variacao * 100).'% do preço base.',
+                $base * $tolerancia,
+                "{$linha['pai']} › {$linha['sub']}: mediana fora de ±".($tolerancia * 100).'% do preço base.',
             );
         }
+    }
+
+    public function test_largura_da_faixa_fica_entre_dez_e_cinquenta_por_cento(): void
+    {
+        $this->semear();
+
+        $casos = 0;
+
+        foreach ($this->premissas['precos_base'] as $linha) {
+            $faixa = $this->faixaDaSubCategoria($linha['pai'], $linha['sub']);
+
+            if (! $faixa['disponivel']) {
+                continue;
+            }
+
+            $casos++;
+            $largura = $faixa['preco']['p75'] / $faixa['preco']['p25'] - 1;
+            $rotulo = "{$linha['pai']} › {$linha['sub']}: largura de ".round($largura * 100, 1).'%';
+
+            // Faixa estreita demais reprovaria qualquer preço; larga demais
+            // não diria nada. O fator de preço por loja é o que a sustenta.
+            $this->assertGreaterThanOrEqual(0.10, $largura, $rotulo);
+            $this->assertLessThanOrEqual(0.50, $largura, $rotulo);
+        }
+
+        $this->assertSame(5, $casos, 'Só Casacos deveria ficar sem faixa.');
+    }
+
+    public function test_sondas_de_piso_caem_nas_zonas_pedidas(): void
+    {
+        $this->semear();
+
+        $alcancadas = [];
+
+        foreach ($this->premissas['sondas_de_piso'] as $sonda) {
+            [$pai, $sub] = explode('|', $sonda['sub']);
+            $faixa = $this->faixaDaSubCategoria($pai, $sub);
+            $categoria = $this->categoriaDaSubCategoria($pai, $sub);
+
+            $sondaCriada = Produto::where('loja_id', $this->consulente->id)
+                ->where('categoria_id', $categoria->id)
+                ->whereNull('preco_venda_atual')
+                ->first();
+
+            // Meias é impossível de propósito: o custo fixo por peça da loja
+            // já supera o piso alvo, então o seeder não cria o produto.
+            if ($sub === 'Meias') {
+                $this->assertNull($sondaCriada, 'A sonda de meias não deveria existir.');
+
+                continue;
+            }
+
+            $this->assertNotNull($sondaCriada, "Sonda ausente em {$pai} › {$sub}.");
+
+            $piso = (float) $sondaCriada->preco_piso;
+            $alcancadas[] = match (true) {
+                $piso > $faixa['preco']['p75'] => 'acima_do_p75',
+                $piso < $faixa['preco']['p25'] => 'abaixo_do_p25',
+                default => 'entre_p25_e_p75',
+            };
+
+            $this->assertSame($sonda['zona'], end($alcancadas), "{$pai} › {$sub}: piso R$ {$piso}");
+        }
+
+        $this->assertSame(['acima_do_p75', 'entre_p25_e_p75', 'abaixo_do_p25'], $alcancadas);
+    }
+
+    public function test_piso_da_sonda_e_o_que_o_pricing_engine_calcula(): void
+    {
+        $this->semear();
+
+        $taxaCanal = (float) $this->consulente->canaisAtivos()->max('taxa_percentual');
+        $engine = app(\App\Services\PricingEngine::class);
+
+        $sondas = Produto::where('loja_id', $this->consulente->id)->whereNull('preco_venda_atual')->get();
+
+        $this->assertCount(3, $sondas);
+
+        foreach ($sondas as $sonda) {
+            $composicao = $engine->composicao(
+                custoAquisicao: (float) $sonda->custo_aquisicao,
+                freteEntradaUnitario: (float) $sonda->frete_entrada_unitario,
+                aliquotaEfetiva: (float) $this->consulente->aliquota_efetiva,
+                taxaCanal: $taxaCanal,
+                custoFixoMensal: (float) $this->consulente->custo_fixo_mensal,
+                volumeVendasEsperado: (int) $this->consulente->volume_vendas_esperado,
+            );
+
+            $this->assertEqualsWithDelta((float) $sonda->preco_piso, $composicao['preco_piso'], 0.01, $sonda->nome);
+            // O custo fixo por peça da consulente é o documentado na premissa.
+            $this->assertEqualsWithDelta(15.00, $composicao['custo_fixo_unitario'], 0.01);
+        }
+    }
+
+    public function test_custo_fixo_por_peca_da_consulente_e_o_documentado(): void
+    {
+        $this->semear();
+
+        $premissa = $this->premissas['consulente'];
+
+        $this->assertEqualsWithDelta($premissa['custo_fixo_mensal'], (float) $this->consulente->custo_fixo_mensal, 0.01);
+        $this->assertSame($premissa['volume_vendas_esperado'], (int) $this->consulente->volume_vendas_esperado);
+        $this->assertEqualsWithDelta(
+            15.00,
+            (float) $this->consulente->custo_fixo_mensal / (int) $this->consulente->volume_vendas_esperado,
+            0.01,
+        );
     }
 
     public function test_margem_mediana_segue_a_premissa_do_posicionamento(): void
@@ -358,6 +467,14 @@ class DemoSeederTest extends TestCase
         $categoria = $this->consulente->categorias()->where('nome', $nomeDaCategoria)->sole();
 
         return $this->mercado->faixaDeMercado($this->consulente, $categoria);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function faixaDaSubCategoria(string $pai, string $sub): array
+    {
+        return $this->mercado->faixaDeMercado($this->consulente, $this->categoriaDaSubCategoria($pai, $sub));
     }
 
     private function categoriaDaSubCategoria(string $pai, string $sub): Categoria
