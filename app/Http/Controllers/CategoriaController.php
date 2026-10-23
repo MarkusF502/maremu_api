@@ -9,12 +9,21 @@ use Illuminate\Http\JsonResponse;
 
 class CategoriaController extends Controller
 {
+    /**
+     * Relação carregada nas respostas, para o frontend receber a classificação
+     * no mesmo formato da listagem.
+     */
+    private const COM_CLASSIFICACAO = [
+        'subCategoria:id,categoria_pai_id,nome,complementar',
+        'subCategoria.categoriaPai:id,nome',
+    ];
+
     public function index(): JsonResponse
     {
         $loja = request()->user()->loja()->firstOrFail();
 
         $categorias = $loja->categorias()
-            ->with('subCategoria:id,categoria_pai_id,nome', 'subCategoria.categoriaPai:id,nome')
+            ->with(self::COM_CLASSIFICACAO)
             ->orderBy('nome')
             ->get();
 
@@ -38,7 +47,7 @@ class CategoriaController extends Controller
 
         return response()->json([
             'message' => 'Categoria criada com sucesso.',
-            'categoria' => $categoria,
+            'categoria' => $categoria->load(self::COM_CLASSIFICACAO),
         ], 201);
     }
 
@@ -55,7 +64,7 @@ class CategoriaController extends Controller
 
         return response()->json([
             'message' => 'Categoria classificada com sucesso.',
-            'categoria' => $categoria->load('subCategoria:id,categoria_pai_id,nome', 'subCategoria.categoriaPai:id,nome'),
+            'categoria' => $categoria->load(self::COM_CLASSIFICACAO),
         ]);
     }
 }

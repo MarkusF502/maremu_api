@@ -129,21 +129,53 @@ class TaxonomiaTest extends TestCase
 
         $this->postJson('/api/categorias', ['nome' => 'Jeans da casa', 'sub_categoria_id' => $sub->id])
             ->assertCreated()
-            ->assertJsonPath('categoria.sub_categoria_id', $sub->id);
+            ->assertJsonPath('categoria.sub_categoria_id', $sub->id)
+            ->assertJsonPath('categoria.sub_categoria.nome', 'Jeans')
+            ->assertJsonPath('categoria.sub_categoria.categoria_pai.nome', 'Calças');
     }
 
     public function test_rejeita_categoria_sem_sub_categoria(): void
     {
         $this->postJson('/api/categorias', ['nome' => 'Jeans da casa'])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('sub_categoria_id');
+            ->assertJsonValidationErrors(['sub_categoria_id' => 'Escolha a sub-categoria.']);
     }
 
     public function test_rejeita_sub_categoria_inexistente(): void
     {
         $this->postJson('/api/categorias', ['nome' => 'Jeans da casa', 'sub_categoria_id' => 9999])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('sub_categoria_id');
+            ->assertJsonValidationErrors(['sub_categoria_id' => 'Sub-categoria inválida.']);
+    }
+
+    public function test_rejeita_nome_repetido_na_mesma_loja(): void
+    {
+        app(TaxonomiaService::class)->sincronizar($this->taxonomia());
+        $sub = SubCategoria::where('slug', 'jeans')->first();
+        Categoria::factory()->create(['loja_id' => $this->loja->id, 'nome' => 'Jeans da casa']);
+
+        $this->postJson('/api/categorias', ['nome' => 'Jeans da casa', 'sub_categoria_id' => $sub->id])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['nome' => 'Você já tem uma categoria com esse nome.']);
+    }
+
+    public function test_rejeita_categoria_sem_nome(): void
+    {
+        app(TaxonomiaService::class)->sincronizar($this->taxonomia());
+        $sub = SubCategoria::where('slug', 'jeans')->first();
+
+        $this->postJson('/api/categorias', ['sub_categoria_id' => $sub->id])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['nome' => 'Informe o nome da categoria.']);
+    }
+
+    public function test_classificacao_sem_sub_categoria_responde_em_portugues(): void
+    {
+        $categoria = Categoria::factory()->create(['loja_id' => $this->loja->id]);
+
+        $this->patchJson("/api/categorias/{$categoria->id}", [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['sub_categoria_id' => 'Escolha a sub-categoria.']);
     }
 
     public function test_listagem_conta_categorias_pendentes_de_classificacao(): void

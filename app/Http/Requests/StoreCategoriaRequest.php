@@ -27,4 +27,21 @@ class StoreCategoriaRequest extends FormRequest
             'sub_categoria_id' => ['required', 'integer', 'exists:sub_categorias,id'],
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'nome.required'             => 'Informe o nome da categoria.',
+            'nome.string'               => 'Informe o nome da categoria.',
+            'nome.min'                  => 'O nome deve ter entre 2 e 100 caracteres.',
+            'nome.max'                  => 'O nome deve ter entre 2 e 100 caracteres.',
+            'nome.unique'               => 'Você já tem uma categoria com esse nome.',
+            'sub_categoria_id.required' => 'Escolha a sub-categoria.',
+            'sub_categoria_id.integer'  => 'Sub-categoria inválida.',
+            'sub_categoria_id.exists'   => 'Sub-categoria inválida.',
+        ];
+    }
 }
