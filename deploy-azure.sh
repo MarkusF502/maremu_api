@@ -72,7 +72,7 @@ build_config() {
     DB_CONNECTION=pgsql DB_URL=secretref:db-url DB_SSLMODE=require
     LOG_CHANNEL=stderr CACHE_STORE=database QUEUE_CONNECTION=sync FILESYSTEM_DISK=local
     IA_PROVIDER=anthropic ANTHROPIC_API_KEY=secretref:anthropic-key ANTHROPIC_MODEL=claude-haiku-4-5 GEMINI_MODEL=gemini-flash-latest
-    VERCEL_PROJECT=maremu FRONTEND_URL=https://maremu.com.br
+    VERCEL_PROJECT=maremu FRONTEND_URL=https://maremu.vercel.app
     "APP_URL=https://$(app_fqdn)"
   )
   # Login no ACR por usuário/senha (admin): sem isso o `containerapp create` tenta managed identity
