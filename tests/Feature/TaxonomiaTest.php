@@ -169,13 +169,13 @@ class TaxonomiaTest extends TestCase
             ->assertJsonValidationErrors(['nome' => 'Informe o nome da categoria.']);
     }
 
-    public function test_classificacao_sem_sub_categoria_responde_em_portugues(): void
+    public function test_patch_vazio_exige_nome_ou_sub_categoria(): void
     {
         $categoria = Categoria::factory()->create(['loja_id' => $this->loja->id]);
 
         $this->patchJson("/api/categorias/{$categoria->id}", [])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['sub_categoria_id' => 'Escolha a sub-categoria.']);
+            ->assertJsonValidationErrors(['sub_categoria_id' => 'Informe o nome ou a sub-categoria.']);
     }
 
     public function test_listagem_conta_categorias_pendentes_de_classificacao(): void
@@ -204,6 +204,65 @@ class TaxonomiaTest extends TestCase
             ->assertJsonPath('categoria.sub_categoria.nome', 'Jeans');
 
         $this->assertSame($sub->id, $categoria->fresh()->sub_categoria_id);
+    }
+
+    public function test_renomeia_categoria(): void
+    {
+        $categoria = Categoria::factory()->create(['loja_id' => $this->loja->id, 'nome' => 'Antiga']);
+
+        $this->patchJson("/api/categorias/{$categoria->id}", ['nome' => 'Camisetas da casa'])
+            ->assertOk()
+            ->assertJsonPath('categoria.nome', 'Camisetas da casa');
+
+        $this->assertSame('Camisetas da casa', $categoria->fresh()->nome);
+    }
+
+    public function test_renomear_nao_desclassifica_a_categoria(): void
+    {
+        app(TaxonomiaService::class)->sincronizar($this->taxonomia());
+        $sub = SubCategoria::where('slug', 'jeans')->first();
+        $categoria = Categoria::factory()->create([
+            'loja_id' => $this->loja->id,
+            'nome' => 'Antiga',
+            'sub_categoria_id' => $sub->id,
+        ]);
+
+        $this->patchJson("/api/categorias/{$categoria->id}", ['nome' => 'Jeans da casa'])
+            ->assertOk()
+            ->assertJsonPath('categoria.sub_categoria.nome', 'Jeans');
+
+        $this->assertSame($sub->id, $categoria->fresh()->sub_categoria_id);
+    }
+
+    public function test_renomear_para_nome_ja_usado_na_loja_responde_em_portugues(): void
+    {
+        Categoria::factory()->create(['loja_id' => $this->loja->id, 'nome' => 'Camisetas']);
+        $categoria = Categoria::factory()->create(['loja_id' => $this->loja->id, 'nome' => 'Antiga']);
+
+        $this->patchJson("/api/categorias/{$categoria->id}", ['nome' => 'Camisetas'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['nome' => 'Você já tem uma categoria com esse nome.']);
+
+        $this->assertSame('Antiga', $categoria->fresh()->nome);
+    }
+
+    public function test_renomear_para_o_proprio_nome_e_aceito(): void
+    {
+        $categoria = Categoria::factory()->create(['loja_id' => $this->loja->id, 'nome' => 'Camisetas']);
+
+        $this->patchJson("/api/categorias/{$categoria->id}", ['nome' => 'Camisetas'])
+            ->assertOk()
+            ->assertJsonPath('categoria.nome', 'Camisetas');
+    }
+
+    public function test_nao_renomeia_categoria_de_outra_loja(): void
+    {
+        $alheia = Categoria::factory()->create(['nome' => 'Da outra loja']);
+
+        $this->patchJson("/api/categorias/{$alheia->id}", ['nome' => 'Minha agora'])
+            ->assertNotFound();
+
+        $this->assertSame('Da outra loja', $alheia->fresh()->nome);
     }
 
     public function test_nao_classifica_categoria_de_outra_loja(): void

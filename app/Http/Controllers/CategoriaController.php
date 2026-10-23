@@ -52,7 +52,7 @@ class CategoriaController extends Controller
     }
 
     /**
-     * Classifica uma categoria da loja na taxonomia fixa.
+     * Renomeia e/ou classifica uma categoria da loja na taxonomia fixa.
      */
     public function update(UpdateCategoriaRequest $request, Categoria $categoria): JsonResponse
     {
@@ -60,10 +60,11 @@ class CategoriaController extends Controller
 
         abort_unless($categoria->loja_id === $loja->id, 404);
 
-        $categoria->update(['sub_categoria_id' => $request->integer('sub_categoria_id')]);
+        // Só os campos enviados: um PATCH com o nome não desclassifica a categoria.
+        $categoria->update($request->validated());
 
         return response()->json([
-            'message' => 'Categoria classificada com sucesso.',
+            'message' => 'Categoria atualizada com sucesso.',
             'categoria' => $categoria->load(self::COM_CLASSIFICACAO),
         ]);
     }

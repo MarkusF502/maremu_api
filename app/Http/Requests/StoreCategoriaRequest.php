@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RegrasDeCategoria;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreCategoriaRequest extends FormRequest
 {
+    use RegrasDeCategoria;
+
     public function authorize(): bool
     {
         return true;
@@ -14,17 +16,9 @@ class StoreCategoriaRequest extends FormRequest
 
     public function rules(): array
     {
-        $lojaId = $this->user()?->loja?->id;
-
         return [
-            'nome' => [
-                'required',
-                'string',
-                'min:2',
-                'max:100',
-                Rule::unique('categorias', 'nome')->where(fn ($query) => $query->where('loja_id', $lojaId)),
-            ],
-            'sub_categoria_id' => ['required', 'integer', 'exists:sub_categorias,id'],
+            'nome' => ['required', ...$this->regrasDoNome()],
+            'sub_categoria_id' => ['required', ...$this->regrasDaSubCategoria()],
         ];
     }
 
@@ -35,13 +29,8 @@ class StoreCategoriaRequest extends FormRequest
     {
         return [
             'nome.required'             => 'Informe o nome da categoria.',
-            'nome.string'               => 'Informe o nome da categoria.',
-            'nome.min'                  => 'O nome deve ter entre 2 e 100 caracteres.',
-            'nome.max'                  => 'O nome deve ter entre 2 e 100 caracteres.',
-            'nome.unique'               => 'Você já tem uma categoria com esse nome.',
             'sub_categoria_id.required' => 'Escolha a sub-categoria.',
-            'sub_categoria_id.integer'  => 'Sub-categoria inválida.',
-            'sub_categoria_id.exists'   => 'Sub-categoria inválida.',
+            ...$this->mensagensDaCategoria(),
         ];
     }
 }
