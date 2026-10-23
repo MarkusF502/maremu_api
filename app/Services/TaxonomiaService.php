@@ -18,7 +18,7 @@ use InvalidArgumentException;
 class TaxonomiaService
 {
     /**
-     * @param  array<int, array{nome: string, google_taxonomy_id?: ?int, sub_categorias: array<int, array{nome: string, google_taxonomy_id?: ?int, comparavel?: bool}>}>  $taxonomia
+     * @param  array<int, array{nome: string, google_taxonomy_id?: ?int, sub_categorias: array<int, array{nome: string, google_taxonomy_id?: ?int, comparavel?: bool, complementar?: bool}>}>  $taxonomia
      * @return array{categorias_pai: int, sub_categorias: int}
      */
     public function sincronizar(array $taxonomia): array
@@ -51,6 +51,7 @@ class TaxonomiaService
                             'nome' => $sub['nome'],
                             'google_taxonomy_id' => $sub['google_taxonomy_id'] ?? null,
                             'comparavel' => $sub['comparavel'] ?? true,
+                            'complementar' => $sub['complementar'] ?? false,
                             'ordem' => $ordemSub,
                         ]
                     );

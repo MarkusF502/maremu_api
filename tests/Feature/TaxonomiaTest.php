@@ -76,6 +76,38 @@ class TaxonomiaTest extends TestCase
         $this->assertSame(0, SubCategoria::where('slug', 'outros')->where('comparavel', true)->count());
     }
 
+    public function test_arquivo_marca_oito_sub_categorias_complementares(): void
+    {
+        $servico = app(TaxonomiaService::class);
+        $servico->sincronizar($servico->lerArquivo());
+
+        $complementares = SubCategoria::with('categoriaPai')->where('complementar', true)->get();
+
+        $this->assertSame(8, $complementares->count());
+        $this->assertSame(
+            ['Roupas infantis', 'Roupas íntimas e meias'],
+            $complementares->pluck('categoriaPai.nome')->unique()->sort()->values()->all(),
+        );
+        // Peças principais da mesma categoria-pai seguem fora da marcação.
+        $this->assertFalse(SubCategoria::where('slug', 'sutias')->first()->complementar);
+        $this->assertFalse(SubCategoria::where('slug', 'lingerie')->first()->complementar);
+    }
+
+    public function test_sincronizar_atualiza_complementar_sem_trocar_o_id(): void
+    {
+        $servico = app(TaxonomiaService::class);
+        $servico->sincronizar($this->taxonomia());
+        $idJeans = SubCategoria::where('slug', 'jeans')->value('id');
+        $this->assertFalse(SubCategoria::find($idJeans)->complementar);
+
+        $nova = $this->taxonomia();
+        $nova[0]['sub_categorias'][0]['complementar'] = true;
+        $servico->sincronizar($nova);
+
+        $this->assertSame($idJeans, SubCategoria::where('slug', 'jeans')->value('id'));
+        $this->assertTrue(SubCategoria::find($idJeans)->complementar);
+    }
+
     public function test_endpoint_devolve_a_arvore_ordenada(): void
     {
         app(TaxonomiaService::class)->sincronizar($this->taxonomia());
@@ -85,6 +117,8 @@ class TaxonomiaTest extends TestCase
             ->assertJsonCount(2, 'categorias_pai')
             ->assertJsonPath('categorias_pai.0.nome', 'Calças')
             ->assertJsonPath('categorias_pai.0.sub_categorias.0.nome', 'Jeans')
+            ->assertJsonPath('categorias_pai.0.sub_categorias.0.complementar', false)
+            ->assertJsonPath('categorias_pai.0.sub_categorias.1.complementar', true)
             ->assertJsonPath('categorias_pai.1.sub_categorias.0.nome', 'Geral');
     }
 
@@ -160,7 +194,7 @@ class TaxonomiaTest extends TestCase
                 'google_taxonomy_id' => 204,
                 'sub_categorias' => [
                     ['nome' => 'Jeans'],
-                    ['nome' => 'Moletom'],
+                    ['nome' => 'Moletom', 'complementar' => true],
                     ['nome' => 'Outros', 'comparavel' => false],
                 ],
             ],

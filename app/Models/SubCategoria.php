@@ -9,10 +9,11 @@ class SubCategoria extends Model
 {
     protected $table = 'sub_categorias';
 
-    protected $fillable = ['categoria_pai_id', 'nome', 'slug', 'google_taxonomy_id', 'comparavel', 'ordem'];
+    protected $fillable = ['categoria_pai_id', 'nome', 'slug', 'google_taxonomy_id', 'comparavel', 'complementar', 'ordem'];
 
     protected $casts = [
         'comparavel' => 'boolean',
+        'complementar' => 'boolean',
     ];
 
     public function categoriaPai(): BelongsTo

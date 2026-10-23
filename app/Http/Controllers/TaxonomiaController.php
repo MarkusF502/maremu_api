@@ -12,7 +12,7 @@ class TaxonomiaController extends Controller
      */
     public function index(): JsonResponse
     {
-        $pais = CategoriaPai::with('subCategorias:id,categoria_pai_id,nome')
+        $pais = CategoriaPai::with('subCategorias:id,categoria_pai_id,nome,complementar')
             ->orderBy('ordem')->orderBy('nome')
             ->get(['id', 'nome']);
 
@@ -23,6 +23,7 @@ class TaxonomiaController extends Controller
                 'sub_categorias' => $pai->subCategorias->map(fn ($sub) => [
                     'id' => $sub->id,
                     'nome' => $sub->nome,
+                    'complementar' => $sub->complementar,
                 ])->values(),
             ])->values(),
         ]);

@@ -138,11 +138,13 @@
       },
       {
         "nome": "Meias",
-        "google_taxonomy_id": 209
+        "google_taxonomy_id": 209,
+        "complementar": true
       },
       {
         "nome": "Meias-calças",
-        "google_taxonomy_id": 215
+        "google_taxonomy_id": 215,
+        "complementar": true
       },
       {
         "nome": "Lingerie",
@@ -150,15 +152,18 @@
       },
       {
         "nome": "Roupas íntimas",
-        "google_taxonomy_id": 2562
+        "google_taxonomy_id": 2562,
+        "complementar": true
       },
       {
         "nome": "Camisetas interiores",
-        "google_taxonomy_id": 2745
+        "google_taxonomy_id": 2745,
+        "complementar": true
       },
       {
         "nome": "Ceroulas",
-        "google_taxonomy_id": 1807
+        "google_taxonomy_id": 1807,
+        "complementar": true
       },
       {
         "nome": "Cinta modeladora",
@@ -170,7 +175,8 @@
       },
       {
         "nome": "Anáguas",
-        "google_taxonomy_id": 2963
+        "google_taxonomy_id": 2963,
+        "complementar": true
       },
       {
         "nome": "Outros",
@@ -264,11 +270,13 @@
       },
       {
         "nome": "Roupas íntimas de crianças",
-        "google_taxonomy_id": 5621
+        "google_taxonomy_id": 5621,
+        "complementar": true
       },
       {
         "nome": "Meias e calças para bebês e crianças",
-        "google_taxonomy_id": 5423
+        "google_taxonomy_id": 5423,
+        "complementar": true
       },
       {
         "nome": "Outros",
