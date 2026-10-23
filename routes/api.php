@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\MercadoController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\SaidaController;
@@ -38,6 +39,9 @@ Route::middleware(['auth:sanctum', EnsureLojaExists::class])->group(function () 
     Route::post('/precificacao/sugerir/{produto}', [PrecificacaoController::class, 'sugerir']);
     Route::post('/precificacao/confirmar', [PrecificacaoController::class, 'confirmar']);
     Route::get('/relatorio', [RelatorioController::class, 'index']);
+
+    // Camada 3: faixa de mercado de lojas semelhantes na mesma sub-categoria
+    Route::get('/mercado/faixa', [MercadoController::class, 'faixa']);
 
     Route::get('/saidas/catalogo', [SaidaController::class, 'catalogo']);
     Route::get('/saidas', [SaidaController::class, 'index']);
