@@ -105,6 +105,77 @@ class PricingEngine
     }
 
     /**
+     * Composição do preço: as quatro parcelas que o PricingEngine usou para
+     * chegar ao preço, para o frontend poder abrir qualquer preço P em
+     * impostos/taxas e lucro, sem recalcular nada:
+     *
+     *   impostos e taxas = P × percentual_variavel
+     *   lucro            = P − custo_base − custo_fixo_unitario − impostos e taxas
+     *
+     * No preço piso esse lucro é zero, por construção: o piso é exatamente
+     * (custo_base + custo_fixo_unitario) ÷ (1 − percentual_variavel).
+     *
+     * Reaproveita calcularPreco() de propósito, para que piso e custo base
+     * sejam os mesmos números dos cenários, e não uma segunda conta.
+     *
+     * @return array{preco_piso: float, custo_base: float, custo_fixo_unitario: float, percentual_variavel: float}
+     */
+    public function composicao(
+        float $custoAquisicao,
+        float $freteEntradaUnitario,
+        float $aliquotaEfetiva,
+        float $taxaCanal,
+        float $custoFixoMensal,
+        int   $volumeVendasEsperado
+    ): array {
+        $calculo = $this->calcularPreco(
+            custoAquisicao: $custoAquisicao,
+            freteEntradaUnitario: $freteEntradaUnitario,
+            aliquotaEfetiva: $aliquotaEfetiva,
+            taxaCanal: $taxaCanal,
+            custoFixoMensal: $custoFixoMensal,
+            volumeVendasEsperado: $volumeVendasEsperado,
+            margemLucroDesejada: 0.0,
+        );
+
+        return [
+            'preco_piso'          => $calculo['preco_piso'],
+            'custo_base'          => $calculo['custo_base'],
+            'custo_fixo_unitario' => round($custoFixoMensal / $volumeVendasEsperado, 2),
+            // 6 casas, como o markup_divisor: com 4 o erro de arredondamento
+            // já apareceria no lucro recalculado de um preço de três dígitos.
+            'percentual_variavel' => round($aliquotaEfetiva + $taxaCanal, 6),
+        ];
+    }
+
+    /**
+     * Inverso do preço piso: qual custo base (aquisição + frete) faz o piso
+     * cair exatamente no valor pedido.
+     *
+     *   piso = (custoBase + custoFixoUnitario) ÷ (1 − percentualVariavel)
+     *   ⇒ custoBase = piso × (1 − percentualVariavel) − custoFixoUnitario
+     *
+     * Pode devolver valor negativo: significa que, com esse custo fixo por
+     * peça, nenhum custo de aquisição positivo chega a um piso tão baixo.
+     * Quem chama decide o que fazer — o motor só responde a conta.
+     */
+    public function custoBaseParaPiso(
+        float $precoPiso,
+        float $aliquotaEfetiva,
+        float $taxaCanal,
+        float $custoFixoMensal,
+        int   $volumeVendasEsperado
+    ): float {
+        $this->guard($volumeVendasEsperado > 0, 'volumeVendasEsperado deve ser maior que zero.');
+
+        $percentualVariavel = $aliquotaEfetiva + $taxaCanal;
+
+        $this->guard($percentualVariavel < 1, 'aliquotaEfetiva + taxaCanal não pode chegar a 100%.');
+
+        return round($precoPiso * (1 - $percentualVariavel) - $custoFixoMensal / $volumeVendasEsperado, 2);
+    }
+
+    /**
      * Calcula o Markup Multiplicador (inverso do divisor).
      *
      * Fórmula: MarkupMultiplicador = 1 / MarkupDivisor

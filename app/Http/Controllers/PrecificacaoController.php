@@ -76,9 +76,37 @@ class PrecificacaoController extends Controller
         $log->update(['cenarios_retornados' => $cenarios]);
 
         return response()->json([
-            'log_id'   => $log->id,
-            'cenarios' => $cenarios,
+            'log_id'     => $log->id,
+            'cenarios'   => $cenarios,
+            // Composição do preço: o frontend usa para diagnosticar a diferença
+            // entre o preço que os custos pedem e a faixa de mercado da camada 3.
+            // Nem a faixa nem esta composição entram no prompt da IA.
+            'composicao' => $this->composicaoDoPreco($produto),
         ]);
+    }
+
+    /**
+     * As quatro parcelas que o PricingEngine usou nos cenários desta resposta.
+     *
+     * Chama taxaCanalAplicavel() de novo em vez de receber a taxa por
+     * parâmetro: é função pura dos canais já carregados, então devolve
+     * exatamente a mesma taxa dos cenários, e a ordem das operações de
+     * sugerir() continua intocada.
+     *
+     * @return array{preco_piso: float, custo_base: float, custo_fixo_unitario: float, percentual_variavel: float}
+     */
+    private function composicaoDoPreco(Produto $produto): array
+    {
+        $loja = $produto->loja;
+
+        return $this->pricingEngine->composicao(
+            custoAquisicao: (float) $produto->custo_aquisicao,
+            freteEntradaUnitario: (float) $produto->frete_entrada_unitario,
+            aliquotaEfetiva: (float) $loja->aliquota_efetiva,
+            taxaCanal: $this->taxaCanalAplicavel($loja),
+            custoFixoMensal: (float) $loja->custo_fixo_mensal,
+            volumeVendasEsperado: (int) $loja->volume_vendas_esperado,
+        );
     }
 
     /**
