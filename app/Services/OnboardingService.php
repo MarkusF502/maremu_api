@@ -36,6 +36,20 @@ class OnboardingService
     ];
 
     /**
+     * Limite superior (inclusive) de cada faixa de faturamento, em reais.
+     *
+     * É a mesma régua das 4 opções do onboarding, lida no sentido inverso: a
+     * camada 3 precisa reconhecer a faixa de uma loja já cadastrada a partir
+     * do valor guardado em `lojas.faturamento_medio_mensal`.
+     */
+    private const LIMITE_SUPERIOR_POR_FAIXA = [
+        'ate_10k'       => 10_000.00,
+        'de_10k_a_30k'  => 30_000.00,
+        'de_30k_a_80k'  => 80_000.00,
+        'acima_80k'     => INF,
+    ];
+
+    /**
      * Custo fixo mensal típico por faixa de faturamento (em reais).
      * Referência: aluguel + energia + sistema + contador + pró-labore simplificado.
      */
@@ -271,6 +285,31 @@ class OnboardingService
     {
         $taxas = array_map(fn($c) => self::TAXA_POR_CANAL[$c] ?? 0.0, $canais);
         return max($taxas);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // UTILITÁRIO: faixa de faturamento de uma loja já cadastrada
+    // ─────────────────────────────────────────────────────────────────────
+
+    /**
+     * Faixa de faturamento derivada do faturamento médio mensal da loja.
+     *
+     * Não existe coluna de faixa: a camada 3 deriva a faixa na consulta, para
+     * que ela acompanhe sempre o cadastro atual — se o lojista corrige o
+     * faturamento nas configurações, a comparação muda junto.
+     *
+     * O limite é inclusivo: R$ 10.000,00 exatos caem em 'ate_10k'.
+     */
+    public function faixaDoFaturamento(float $faturamentoMedioMensal): string
+    {
+        foreach (self::LIMITE_SUPERIOR_POR_FAIXA as $faixa => $limite) {
+            if ($faturamentoMedioMensal <= $limite) {
+                return $faixa;
+            }
+        }
+
+        // Inalcançável: a última faixa não tem limite superior.
+        return array_key_last(self::LIMITE_SUPERIOR_POR_FAIXA);
     }
 
     /**
