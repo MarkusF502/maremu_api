@@ -28,7 +28,12 @@ class Loja extends Model
         'volume_vendas_esperado',
     ];
 
+    /**
+     * `is_demo` não entra em `$fillable`: nenhuma rota pode marcar uma loja
+     * como demonstração. Seeders e testes atribuem o valor direto.
+     */
     protected $casts = [
+        'is_demo'                  => 'boolean',
         'faturamento_medio_mensal' => 'decimal:2',
         'custo_fixo_mensal'        => 'decimal:2',
         'margem_lucro_desejada'    => 'decimal:4',

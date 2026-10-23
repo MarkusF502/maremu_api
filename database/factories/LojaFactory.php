@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Loja;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -28,5 +29,16 @@ class LojaFactory extends Factory
             'aliquota_efetiva'         => $this->faker->randomFloat(3, 0.06, 0.12),
             'volume_vendas_esperado'   => $this->faker->numberBetween(100, 500),
         ];
+    }
+
+    /**
+     * Loja de demonstração. Como `is_demo` fica fora de `$fillable`, o estado
+     * atribui o valor direto no modelo antes de ele ser gravado.
+     */
+    public function demo(): static
+    {
+        return $this->afterMaking(function (Loja $loja): void {
+            $loja->is_demo = true;
+        });
     }
 }
