@@ -299,4 +299,45 @@ class OnboardingServiceTest extends TestCase
         $this->assertGreaterThan(0, $resultado['preco_piso']);
         $this->assertGreaterThan($resultado['preco_piso'], $resultado['preco_venda']);
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // FAIXA DE FATURAMENTO DE UMA LOJA JÁ CADASTRADA (camada 3)
+    // ─────────────────────────────────────────────────────────────────────
+
+    public function test_faixa_do_faturamento_usa_as_faixas_do_onboarding(): void
+    {
+        $this->assertSame('ate_10k', $this->service->faixaDoFaturamento(6_000.00));
+        $this->assertSame('de_10k_a_30k', $this->service->faixaDoFaturamento(20_000.00));
+        $this->assertSame('de_30k_a_80k', $this->service->faixaDoFaturamento(55_000.00));
+        $this->assertSame('acima_80k', $this->service->faixaDoFaturamento(120_000.00));
+    }
+
+    public function test_faixa_do_faturamento_tem_limite_superior_inclusivo(): void
+    {
+        $this->assertSame('ate_10k', $this->service->faixaDoFaturamento(10_000.00));
+        $this->assertSame('de_10k_a_30k', $this->service->faixaDoFaturamento(10_000.01));
+        $this->assertSame('de_10k_a_30k', $this->service->faixaDoFaturamento(30_000.00));
+        $this->assertSame('de_30k_a_80k', $this->service->faixaDoFaturamento(30_000.01));
+        $this->assertSame('de_30k_a_80k', $this->service->faixaDoFaturamento(80_000.00));
+        $this->assertSame('acima_80k', $this->service->faixaDoFaturamento(80_000.01));
+    }
+
+    public function test_faixa_do_faturamento_cobre_a_ponta_de_baixo(): void
+    {
+        $this->assertSame('ate_10k', $this->service->faixaDoFaturamento(0.0));
+    }
+
+    public function test_cada_faixa_do_onboarding_derruba_no_proprio_ponto_medio(): void
+    {
+        // A régua é a mesma nos dois sentidos: o ponto médio usado para
+        // estimar os campos cai de volta na faixa que o gerou.
+        foreach (['ate_10k', 'de_10k_a_30k', 'de_30k_a_80k', 'acima_80k'] as $faixa) {
+            $inferido = $this->service->inferirDadosDaLoja($faixa, 'medio', 'simples_nacional', ['loja_fisica']);
+
+            $this->assertSame(
+                $faixa,
+                $this->service->faixaDoFaturamento($inferido['loja']['faturamento_medio_mensal']),
+            );
+        }
+    }
 }
