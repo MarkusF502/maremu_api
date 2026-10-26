@@ -18,12 +18,18 @@ class OnboardingResponderPendenciasRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $regras = [
             'sessao_id'            => ['required', 'uuid'],
             'respostas'            => ['required', 'array', 'min:1'],
             'respostas.*.id'       => ['required', 'string'],
             'respostas.*.resposta' => ['required'],
         ];
+        foreach ($this->input('respostas', []) as $indice => $resposta) {
+            if (is_array($resposta) && ($resposta['id'] ?? null) === 'margem_lucro_desejada') {
+                $regras["respostas.$indice.resposta"] = ['required', ...\App\Support\MargemLiquida::regras(100)];
+            }
+        }
+        return $regras;
     }
 
     public function messages(): array

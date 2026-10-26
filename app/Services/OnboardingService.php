@@ -73,8 +73,8 @@ class OnboardingService
     ];
 
     /**
-     * Margem de lucro desejada por posicionamento (como decimal).
-     * Referência: prática de mercado para varejo de moda no Brasil.
+     * Sugestão inicial de margem líquida por posicionamento (como decimal).
+     * Premissa sem fonte, a revisar; o lojista deve informar sua meta.
      *   popular  → margens mais apertadas, volume maior
      *   médio    → margem equilibrada
      *   premium  → margem alta, volume menor

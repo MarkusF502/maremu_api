@@ -28,7 +28,7 @@ class OnboardingGuardrail
     public const RANGES = [
         'faturamento_medio_mensal' => ['min' => 1000,  'max' => 500000],
         'custo_fixo_mensal'        => ['min' => 200,   'max' => 100000],
-        'margem_lucro_desejada'    => ['min' => 0.05,  'max' => 0.60],
+        'margem_lucro_desejada'    => \App\Support\MargemLiquida::RANGE,
         'volume_vendas_esperado'   => ['min' => 10,    'max' => 5000],
     ];
 

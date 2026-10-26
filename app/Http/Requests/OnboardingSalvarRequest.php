@@ -30,7 +30,7 @@ class OnboardingSalvarRequest extends FormRequest
             'faturamento_medio_mensal' => ['required', 'numeric', 'min:0'],
             'custo_fixo_mensal'        => ['required', 'numeric', 'min:0'],
             'custo_fixo_origem'        => ['required', 'in:estimado_pelo_sistema,confirmado_pelo_lojista,editado_pelo_lojista'],
-            'margem_lucro_desejada'    => ['required', 'numeric', 'min:0.01', 'max:0.99'],
+            'margem_lucro_desejada'    => ['required', ...\App\Support\MargemLiquida::regras()],
             'aliquota_efetiva'         => ['required', 'numeric', 'min:0.001', 'max:0.99'],
             'aliquota_origem'          => ['required', 'in:estimado_pelo_sistema,confirmado_pelo_lojista,editado_pelo_lojista'],
             'volume_vendas_esperado'   => ['required', 'integer', 'min:1'],
@@ -46,8 +46,8 @@ class OnboardingSalvarRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'margem_lucro_desejada.min'  => 'A margem de lucro deve ser maior que 0.',
-            'margem_lucro_desejada.max'  => 'A margem de lucro não pode ser 99% ou mais.',
+            'margem_lucro_desejada.min'  => 'A margem líquida deve ser de ao menos 1%.',
+            'margem_lucro_desejada.max'  => 'A margem líquida não pode ultrapassar 60%.',
             'aliquota_efetiva.min'       => 'A alíquota deve ser maior que 0.',
             'volume_vendas_esperado.min' => 'O volume de vendas esperado deve ser ao menos 1.',
             'canais.min'                 => 'Ao menos um canal de venda é obrigatório.',

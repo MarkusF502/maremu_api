@@ -31,7 +31,7 @@ class OnboardingIaConfirmarRequest extends FormRequest
             'regime_tributario'        => ['required', 'in:simples_nacional,lucro_presumido,lucro_real'],
             'faturamento_medio_mensal' => ['required', 'numeric', "min:{$r['faturamento_medio_mensal']['min']}", "max:{$r['faturamento_medio_mensal']['max']}"],
             'custo_fixo_mensal'        => ['required', 'numeric', "min:{$r['custo_fixo_mensal']['min']}", "max:{$r['custo_fixo_mensal']['max']}"],
-            'margem_lucro_desejada'    => ['required', 'numeric', "min:{$r['margem_lucro_desejada']['min']}", "max:{$r['margem_lucro_desejada']['max']}"],
+            'margem_lucro_desejada'    => ['required', ...\App\Support\MargemLiquida::regras()],
             'volume_vendas_esperado'   => ['required', 'integer', "min:{$r['volume_vendas_esperado']['min']}", "max:{$r['volume_vendas_esperado']['max']}"],
             'canais'                   => ['required', 'array', 'min:1'],
             'canais.*'                 => ['in:loja_fisica,instagram_whatsapp,marketplace'],

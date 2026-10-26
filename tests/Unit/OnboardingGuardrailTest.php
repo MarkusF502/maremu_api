@@ -91,7 +91,7 @@ class OnboardingGuardrailTest extends TestCase
         $this->guardrail->clampar('campo_inexistente', 100);
     }
 
-    // ── clampar() — margem_lucro_desejada (range: 0.05 a 0.60) ─────────────
+    // ── clampar() — margem_lucro_desejada (range: 0.01 a 0.60) ─────────────
 
     public function test_margem_lucro_dentro_do_range_nao_e_clampada(): void
     {
@@ -103,7 +103,7 @@ class OnboardingGuardrailTest extends TestCase
 
     public function test_margem_lucro_acima_do_teto_mas_clampavel_e_ajustada_ao_limite(): void
     {
-        // amplitude 0.55, 3x = 1.65. 0.70 está a 0.10 do teto — clampável.
+        // amplitude 0.59, 3x = 1.77. 0.70 está a 0.10 do teto — clampável.
         $resultado = $this->guardrail->clampar('margem_lucro_desejada', 0.70);
 
         $this->assertSame(0.60, $resultado['valor']);
@@ -112,10 +112,10 @@ class OnboardingGuardrailTest extends TestCase
 
     public function test_margem_lucro_abaixo_do_piso_mas_clampavel_e_ajustada_ao_limite(): void
     {
-        // 0.03 está a 0.02 do piso — clampável.
-        $resultado = $this->guardrail->clampar('margem_lucro_desejada', 0.03);
+        // 0.005 está a 0.005 do piso — clampável.
+        $resultado = $this->guardrail->clampar('margem_lucro_desejada', 0.005);
 
-        $this->assertSame(0.05, $resultado['valor']);
+        $this->assertSame(0.01, $resultado['valor']);
         $this->assertTrue($resultado['clampado']);
     }
 
