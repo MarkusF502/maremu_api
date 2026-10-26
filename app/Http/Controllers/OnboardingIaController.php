@@ -119,7 +119,7 @@ class OnboardingIaController extends Controller
             textoOriginal: $request->texto_descritivo,
             regimeTributario: $request->regime_tributario,
             termosVolumeVendasIa: $resultado['termos_volume_vendas'] ?? [],
-            termosMargemLucroIa: $resultado['termos_margem_lucro'] ?? [],
+            posicionamento: $resultado['estimativas']['posicionamento']['valor'] ?? 'medio',
         );
 
         $roteamento = $this->termosService->gerarPendencias($estado);
@@ -153,7 +153,7 @@ class OnboardingIaController extends Controller
         $estimativasResolvidas['custo_fixo_mensal'] = ['valor' => $custoFixoMensal, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
         $estimativasResolvidas['faturamento_medio_mensal'] = ['valor' => $faturamentoMedioMensal, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
         $estimativasResolvidas['volume_vendas_esperado'] = ['valor' => $volumeVendasEsperado, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
-        $estimativasResolvidas['margem_lucro_desejada'] = ['valor' => $margemLucroDesejada, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
+        $estimativasResolvidas['margem_lucro_desejada'] = ['valor' => $margemLucroDesejada, 'explicacao' => 'Lucro limpo sobre o preço de venda, informado por você.'];
 
         return response()->json([
             'sucesso'               => true,
@@ -210,7 +210,7 @@ class OnboardingIaController extends Controller
 
         $estimativasIa = $log->estimativas_ia ?? [];
         $estimativasIa['estimativas']['volume_vendas_esperado'] = ['valor' => $volumeVendasEsperado, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
-        $estimativasIa['estimativas']['margem_lucro_desejada'] = ['valor' => $margemLucroDesejada, 'explicacao' => 'Calculado a partir dos itens que você descreveu.'];
+        $estimativasIa['estimativas']['margem_lucro_desejada'] = ['valor' => $margemLucroDesejada, 'explicacao' => 'Lucro limpo sobre o preço de venda, informado por você.'];
 
         $log->update([
             'termos_detalhados' => array_merge(
@@ -310,7 +310,7 @@ class OnboardingIaController extends Controller
             // Reaproveita o enum já existente (D4): 'estimado_pelo_sistema'
             // quando o lojista não mexeu no valor sugerido pela IA,
             // 'editado_pelo_lojista' quando ele alterou.
-            $origens[$campo] = ($valorIa !== null && $this->valoresIguais($valorIa, $valorFinal))
+            $origens[$campo] = ($campo !== 'margem_lucro_desejada' && $valorIa !== null && $this->valoresIguais($valorIa, $valorFinal))
                 ? 'estimado_pelo_sistema'
                 : 'editado_pelo_lojista';
         }

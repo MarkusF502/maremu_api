@@ -74,8 +74,8 @@ class OnboardingTermosServiceTest extends TestCase
             textoOriginal: 'x',
             regimeTributario: 'simples_nacional',
             termosVolumeVendasIa: ['volume_vendas_direto' => ['valor' => 100, 'origem' => 'explicito', 'citacao' => 'x']],
-            termosMargemLucroIa: ['margem_direta' => ['valor' => 25, 'origem' => 'explicito', 'citacao' => 'x']],
         );
+        $estado = $this->service->mesclarRespostas($estado, [['id' => 'margem_lucro_desejada', 'resposta' => 25]]);
 
         $this->assertSame(0, $estado['custo_fixo_mensal']['custos_do_local']['valor']);
         $this->assertSame(0, $estado['custo_fixo_mensal']['outros_custos_fixos']['valor']);
@@ -183,8 +183,8 @@ class OnboardingTermosServiceTest extends TestCase
             // Rota 1 do faturamento — volume/margem precisam vir resolvidos
             // para que só a checagem cruzada (Grupo C) sobre no resultado.
             termosVolumeVendasIa: ['volume_vendas_direto' => ['valor' => 100, 'origem' => 'explicito', 'citacao' => 'x']],
-            termosMargemLucroIa: ['margem_direta' => ['valor' => 25, 'origem' => 'explicito', 'citacao' => 'x']],
         );
+        $estado = $this->service->mesclarRespostas($estado, [['id' => 'margem_lucro_desejada', 'resposta' => 25]]);
 
         $roteamento = $this->service->gerarPendencias($estado);
 
@@ -209,8 +209,8 @@ class OnboardingTermosServiceTest extends TestCase
             // e margem_lucro_desejada não têm de onde ser derivados — precisam vir
             // explícitos também para que Grupo D não gere pendência.
             termosVolumeVendasIa: ['volume_vendas_direto' => ['valor' => 200, 'origem' => 'explicito', 'citacao' => 'x']],
-            termosMargemLucroIa: ['margem_direta' => ['valor' => 25, 'origem' => 'explicito', 'citacao' => 'x']],
         );
+        $estado = $this->service->mesclarRespostas($estado, [['id' => 'margem_lucro_desejada', 'resposta' => 25]]);
 
         $roteamento = $this->service->gerarPendencias($estado);
         $this->assertSame([], $roteamento['pendencias']);
@@ -261,8 +261,8 @@ class OnboardingTermosServiceTest extends TestCase
             textoOriginal: 'x',
             regimeTributario: 'simples_nacional',
             termosVolumeVendasIa: ['volume_vendas_direto' => ['valor' => 100, 'origem' => 'explicito', 'citacao' => 'x']],
-            termosMargemLucroIa: ['margem_direta' => ['valor' => 25, 'origem' => 'explicito', 'citacao' => 'x']],
         );
+        $estado = $this->service->mesclarRespostas($estado, [['id' => 'margem_lucro_desejada', 'resposta' => 25]]);
 
         $estado = $this->service->mesclarRespostas($estado, [
             ['id' => 'custo_total_por_funcionario', 'resposta' => 'confirmado'],
@@ -383,73 +383,14 @@ class OnboardingTermosServiceTest extends TestCase
         $this->assertNull($this->service->calcularVolumeVendas($estado['volume_vendas_esperado']));
     }
 
-    // ── margem_lucro_desejada: rota direta ou decomposição por preços ───
-
-    public function test_margem_direta_com_citacao_valida_e_aceita(): void
+    public function test_margem_no_texto_sempre_exige_resposta_direta(): void
     {
-        $texto = 'Quero ter uns 30% de margem nas vendas.';
-        $estado = $this->service->construirEstadoInicial(
-            termosCustoFixoIa: [
-                'custos_do_local' => ['valor' => 2500, 'origem' => 'explicito', 'citacao' => 'x'],
-                'n_funcionarios' => ['valor' => 0, 'origem' => 'explicito', 'citacao' => 'x'],
-                'custo_total_por_funcionario' => ['valor' => null, 'origem' => 'ausente', 'citacao' => null],
-                'outros_custos_fixos' => ['valor' => 0, 'origem' => 'explicito_zero', 'citacao' => 'x'],
-            ],
-            termosFaturamentoIa: ['faturamento_direto' => ['valor' => 12000, 'origem' => 'explicito', 'citacao' => 'x']],
-            textoOriginal: $texto,
-            regimeTributario: 'simples_nacional',
-            termosMargemLucroIa: ['margem_direta' => ['valor' => 30, 'origem' => 'explicito', 'citacao' => '30% de margem']],
-        );
-
-        $this->assertSame('direta', $estado['margem_lucro_desejada']['rota']);
-        $this->assertSame('aceito', $estado['margem_lucro_desejada']['margem_direta']['status']);
-        $this->assertEquals(0.30, $this->service->calcularMargemLucro($estado['margem_lucro_desejada']));
-    }
-
-    public function test_margem_por_decomposicao_de_precos_e_calculada_sobre_a_venda(): void
-    {
-        $texto = 'Compro por 50 e revendo por 80.';
-        $estado = $this->service->construirEstadoInicial(
-            termosCustoFixoIa: [
-                'custos_do_local' => ['valor' => 2500, 'origem' => 'explicito', 'citacao' => 'x'],
-                'n_funcionarios' => ['valor' => 0, 'origem' => 'explicito', 'citacao' => 'x'],
-                'custo_total_por_funcionario' => ['valor' => null, 'origem' => 'ausente', 'citacao' => null],
-                'outros_custos_fixos' => ['valor' => 0, 'origem' => 'explicito_zero', 'citacao' => 'x'],
-            ],
-            termosFaturamentoIa: ['faturamento_direto' => ['valor' => 12000, 'origem' => 'explicito', 'citacao' => 'x']],
-            textoOriginal: $texto,
-            regimeTributario: 'simples_nacional',
-            termosMargemLucroIa: [
-                'margem_direta' => ['valor' => null, 'origem' => 'ausente', 'citacao' => null],
-                'preco_custo' => ['valor' => 50, 'origem' => 'explicito', 'citacao' => 'Compro por 50'],
-                'preco_venda' => ['valor' => 80, 'origem' => 'explicito', 'citacao' => 'revendo por 80'],
-            ],
-        );
-
-        $this->assertSame('decomposicao_precos', $estado['margem_lucro_desejada']['rota']);
-        $this->assertSame('aceito', $estado['margem_lucro_desejada']['preco_custo']['status']);
-        $this->assertSame('aceito', $estado['margem_lucro_desejada']['preco_venda']['status']);
-        $this->assertEqualsWithDelta(0.375, $this->service->calcularMargemLucro($estado['margem_lucro_desejada']), 0.0001);
-    }
-
-    public function test_margem_ausente_em_ambas_as_rotas_fica_pendente_escolha(): void
-    {
-        $estado = $this->service->construirEstadoInicial(
-            termosCustoFixoIa: [
-                'custos_do_local' => ['valor' => 2500, 'origem' => 'explicito', 'citacao' => 'x'],
-                'n_funcionarios' => ['valor' => 0, 'origem' => 'explicito', 'citacao' => 'x'],
-                'custo_total_por_funcionario' => ['valor' => null, 'origem' => 'ausente', 'citacao' => null],
-                'outros_custos_fixos' => ['valor' => 0, 'origem' => 'explicito_zero', 'citacao' => 'x'],
-            ],
-            termosFaturamentoIa: ['faturamento_direto' => ['valor' => 12000, 'origem' => 'explicito', 'citacao' => 'x']],
-            textoOriginal: 'x',
-            regimeTributario: 'simples_nacional',
-        );
-
-        $this->assertSame('decomposicao_precos', $estado['margem_lucro_desejada']['rota']);
-        $this->assertSame('pendente_escolha', $estado['margem_lucro_desejada']['preco_custo']['status']);
-        $this->assertSame('pendente_escolha', $estado['margem_lucro_desejada']['preco_venda']['status']);
-        $this->assertNull($this->service->calcularMargemLucro($estado['margem_lucro_desejada']));
+        foreach (['Quero 30% de margem.', 'Compro por 50 e vendo por 80.'] as $texto) {
+            $estado = $this->service->construirEstadoInicial([], [], $texto, 'simples_nacional');
+            $this->assertSame('pendente_confirmacao', $estado['margem_lucro_desejada']['margem_direta']['status']);
+            $this->assertNull($this->service->calcularMargemLucro($estado['margem_lucro_desejada']));
+            $this->assertSame(35.0, $estado['margem_lucro_desejada']['margem_direta']['valor_sugerido']);
+        }
     }
 
     // ── calcularVolumeVendas() / calcularMargemLucro() isolados ─────────
@@ -463,12 +404,12 @@ class OnboardingTermosServiceTest extends TestCase
 
     public function test_calcular_margem_lucro_rota_direta_divide_por_100(): void
     {
-        $this->assertEquals(0.4, $this->service->calcularMargemLucro(['rota' => 'direta', 'margem_direta' => ['valor' => 40]]));
+        $this->assertEquals(0.4, $this->service->calcularMargemLucro(['rota' => 'direta', 'margem_direta' => ['valor' => 40, 'origem' => 'respondido_pelo_lojista']]));
     }
 
     public function test_calcular_margem_lucro_rota_decomposicao_precos(): void
     {
-        $this->assertEquals(0.4, $this->service->calcularMargemLucro([
+        $this->assertNull($this->service->calcularMargemLucro([
             'rota' => 'decomposicao_precos',
             'preco_custo' => ['valor' => 60],
             'preco_venda' => ['valor' => 100],
@@ -503,8 +444,8 @@ class OnboardingTermosServiceTest extends TestCase
             termosFaturamentoIa: ['faturamento_direto' => ['valor' => 12000, 'origem' => 'explicito', 'citacao' => 'x']],
             textoOriginal: 'x',
             regimeTributario: 'simples_nacional',
-            termosMargemLucroIa: ['margem_direta' => ['valor' => 25, 'origem' => 'explicito', 'citacao' => 'x']],
         );
+        $estado = $this->service->mesclarRespostas($estado, [['id' => 'margem_lucro_desejada', 'resposta' => 25]]);
 
         $roteamento = $this->service->gerarPendencias($estado);
         $ids = array_column($roteamento['pendencias'], 'id');
@@ -559,8 +500,8 @@ class OnboardingTermosServiceTest extends TestCase
             ],
             textoOriginal: 'x',
             regimeTributario: 'simples_nacional',
-            termosMargemLucroIa: ['margem_direta' => ['valor' => 25, 'origem' => 'explicito', 'citacao' => 'x']],
         );
+        $estado = $this->service->mesclarRespostas($estado, [['id' => 'margem_lucro_desejada', 'resposta' => 25]]);
 
         $roteamento = $this->service->gerarPendencias($estado);
         $this->assertSame([], $roteamento['pendencias']);

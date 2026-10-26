@@ -142,6 +142,13 @@ class OnboardingPendenciasTest extends TestCase
             'respostas' => [['id' => 'ticket_medio', 'resposta' => 150]],
         ])->json();
 
+        $this->assertSame('pendente', $r5['status']);
+        $this->assertSame('margem_lucro_desejada', $r5['pendencias_restantes'][0]['id']);
+        $this->assertSame('Quanto você quer que sobre de lucro limpo em cada venda?', $r5['pendencias_restantes'][0]['pergunta']);
+        $r5 = $this->postJson('/api/loja/onboarding/responder-pendencias', [
+            'sessao_id' => $sessaoId,
+            'respostas' => [['id' => 'margem_lucro_desejada', 'resposta' => 25]],
+        ])->assertOk()->json();
         $this->assertSame('concluido', $r5['status']);
         $this->assertEquals(2500 + 2280.50, $r5['custo_fixo_mensal']);
         $this->assertEquals(15000, $r5['faturamento_medio_mensal']);
@@ -191,6 +198,13 @@ class OnboardingPendenciasTest extends TestCase
             'respostas' => [['id' => 'ticket_medio', 'resposta' => 30]],
         ])->json();
 
+        if ($final['status'] === 'pendente') {
+            $this->assertSame('margem_lucro_desejada', $final['pendencias_restantes'][0]['id']);
+            $final = $this->postJson('/api/loja/onboarding/responder-pendencias', [
+                'sessao_id' => $sessaoId,
+                'respostas' => [['id' => 'margem_lucro_desejada', 'resposta' => 30]],
+            ])->assertOk()->json();
+        }
         $this->assertSame('concluido', $final['status']);
         $this->assertEquals(6000, $final['faturamento_medio_mensal']);
         $this->assertSame(200, $final['volume_vendas_esperado']);
@@ -232,6 +246,13 @@ class OnboardingPendenciasTest extends TestCase
             'respostas' => [['id' => 'volume_vendas_direto', 'resposta' => 60]],
         ])->json();
 
+        if ($final['status'] === 'pendente') {
+            $this->assertSame('margem_lucro_desejada', $final['pendencias_restantes'][0]['id']);
+            $final = $this->postJson('/api/loja/onboarding/responder-pendencias', [
+                'sessao_id' => $sessaoId,
+                'respostas' => [['id' => 'margem_lucro_desejada', 'resposta' => 30]],
+            ])->assertOk()->json();
+        }
         $this->assertSame('concluido', $final['status']);
         $this->assertEquals(12000, $final['faturamento_medio_mensal']);
         $this->assertSame(60, $final['volume_vendas_esperado']);
@@ -280,6 +301,13 @@ class OnboardingPendenciasTest extends TestCase
             'respostas' => [['id' => 'margem_lucro_desejada', 'resposta' => 30]],
         ])->json();
 
+        if ($final['status'] === 'pendente') {
+            $this->assertSame('margem_lucro_desejada', $final['pendencias_restantes'][0]['id']);
+            $final = $this->postJson('/api/loja/onboarding/responder-pendencias', [
+                'sessao_id' => $sessaoId,
+                'respostas' => [['id' => 'margem_lucro_desejada', 'resposta' => 30]],
+            ])->assertOk()->json();
+        }
         $this->assertSame('concluido', $final['status']);
         $this->assertEqualsWithDelta(0.30, $final['margem_lucro_desejada'], 0.0001);
     }

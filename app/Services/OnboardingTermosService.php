@@ -127,7 +127,7 @@ class OnboardingTermosService
         string $textoOriginal,
         string $regimeTributario,
         array $termosVolumeVendasIa = [],
-        array $termosMargemLucroIa = [],
+        string $posicionamento = 'medio',
     ): array {
         $faturamento = $this->construirTermosFaturamento($termosFaturamentoIa, $textoOriginal);
 
@@ -135,7 +135,10 @@ class OnboardingTermosService
             'custo_fixo_mensal'        => $this->construirTermosCustoFixo($termosCustoFixoIa, $textoOriginal, $regimeTributario),
             'faturamento_medio_mensal' => $faturamento,
             'volume_vendas_esperado'   => $this->construirTermosVolumeVendas($termosVolumeVendasIa, $textoOriginal, $faturamento),
-            'margem_lucro_desejada'    => $this->construirTermosMargemLucro($termosMargemLucroIa, $textoOriginal),
+            'margem_lucro_desejada'    => [
+                'rota' => 'direta',
+                'margem_direta' => $this->rotear('margem_direta', ['origem' => 'ausente', 'valor' => null, 'citacao' => null], OnboardingService::MARGEM_POR_POSICIONAMENTO[$posicionamento] * 100),
+            ],
         ];
     }
 
@@ -253,43 +256,6 @@ class OnboardingTermosService
         return [
             'rota' => 'direto',
             'volume_vendas_direto' => $this->rotear('volume_vendas_direto', $volumeVendasDireto, null),
-        ];
-    }
-
-    /**
-     * margem_lucro_desejada: mesmo princípio de rota dupla do faturamento —
-     * ou o texto informa a margem diretamente, ou informa preço de custo e
-     * de venda para o backend calcular deterministicamente.
-     */
-    private function construirTermosMargemLucro(array $bruto, string $textoOriginal): array
-    {
-        $origemMargemDireta = $bruto['margem_direta']['origem'] ?? 'ausente';
-
-        if ($origemMargemDireta === 'explicito') {
-            $margemDireta = $this->validarCitacaoDoTermo(
-                array_merge(['origem' => 'explicito'], $bruto['margem_direta']),
-                $textoOriginal
-            );
-
-            return [
-                'rota'          => 'direta',
-                'margem_direta' => $this->rotear('margem_direta', $margemDireta, null),
-            ];
-        }
-
-        $precoCusto = $this->validarCitacaoDoTermo(
-            array_merge(['origem' => 'explicito'], $bruto['preco_custo'] ?? []),
-            $textoOriginal
-        );
-        $precoVenda = $this->validarCitacaoDoTermo(
-            array_merge(['origem' => 'explicito'], $bruto['preco_venda'] ?? []),
-            $textoOriginal
-        );
-
-        return [
-            'rota'        => 'decomposicao_precos',
-            'preco_custo' => $this->rotear('preco_custo', $precoCusto, null),
-            'preco_venda' => $this->rotear('preco_venda', $precoVenda, null),
         ];
     }
 
@@ -626,18 +592,15 @@ class OnboardingTermosService
             ]);
 
             $margemLucro = $estado['margem_lucro_desejada'];
-            $margemResolvida = ($margemLucro['rota'] ?? null) === 'direta'
-                ? $margemLucro['margem_direta']['status'] === 'aceito'
-                : ($margemLucro['preco_custo']['status'] === 'aceito' && $margemLucro['preco_venda']['status'] === 'aceito');
+            $margemResolvida = $margemLucro['margem_direta']['status'] === 'aceito';
 
-            // Nenhuma das duas rotas trouxe dado suficiente: uma única
-            // pendência combinada, campo percentual aberto — não perguntamos
-            // preço de custo/venda separadamente (SPEC §2.3).
             if (! $margemResolvida && empty($pendencias)) {
                 $pendencias[] = [
                     'id'         => 'margem_lucro_desejada',
                     'tipo'       => 'confirmacao_valor_faixa',
-                    'pergunta'   => 'Não conseguimos identificar sua margem de lucro desejada no texto. Qual margem você pretende praticar?',
+                    'pergunta'   => 'Quanto você quer que sobre de lucro limpo em cada venda?',
+                    'detalhe' => 'Em percentual do preço de venda, depois de pagar a peça, as contas da loja e os impostos.',
+                    'valor_sugerido' => $margemLucro['margem_direta']['valor_sugerido'] ?? null,
                     'depende_de' => null,
                 ];
             }
@@ -726,28 +689,12 @@ class OnboardingTermosService
         return $valor !== null ? (int) $valor : null;
     }
 
-    /**
-     * margem_lucro_desejada: valor direto, ou calculada deterministicamente
-     * a partir dos preços de referência — margem sobre o preço de venda,
-     * (preco_venda - preco_custo) / preco_venda, mantida como fração
-     * decimal (mesma unidade já usada por OnboardingGuardrail::RANGES).
-     */
+    /** Margem líquida informada pelo lojista em percentual; retorna fração decimal. */
     public function calcularMargemLucro(array $termosMargemLucro): ?float
     {
-        if (($termosMargemLucro['rota'] ?? null) === 'direta') {
-            $margemDireta = $termosMargemLucro['margem_direta']['valor'] ?? null;
-
-            return $margemDireta !== null ? (float) $margemDireta / 100 : null;
-        }
-
-        $precoCusto = $termosMargemLucro['preco_custo']['valor'] ?? null;
-        $precoVenda = $termosMargemLucro['preco_venda']['valor'] ?? null;
-
-        if ($precoCusto === null || $precoVenda === null || (float) $precoVenda <= 0.0) {
-            return null;
-        }
-
-        return ((float) $precoVenda - (float) $precoCusto) / (float) $precoVenda;
+        $termo = $termosMargemLucro['margem_direta'] ?? [];
+        return ($termo['origem'] ?? null) === 'respondido_pelo_lojista' && isset($termo['valor'])
+            ? (float) $termo['valor'] / 100 : null;
     }
 
     public function calcularFaturamento(array $termosFaturamento): ?float

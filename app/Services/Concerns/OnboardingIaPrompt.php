@@ -14,8 +14,8 @@ namespace App\Services\Concerns;
  * um schema mais estrito — ver responseSchemaEstrito() em
  * OnboardingIaAnthropicService).
  *
- * O clamping de margem_lucro_desejada/volume_vendas_esperado/custo_fixo_mensal/
- * faturamento_medio_mensal não acontece mais aqui — todos os quatro campos
+ * O clamping de volume_vendas_esperado/custo_fixo_mensal/
+ * faturamento_medio_mensal não acontece mais aqui — todos os três campos
  * saem da IA como termos componentes com citação, e o OnboardingGuardrail é
  * aplicado só sobre o valor final calculado por OnboardingTermosService (ver
  * OnboardingIaController::calcularValoresFinais()).
@@ -45,7 +45,7 @@ Sua tarefa: estimar, a partir do texto, o seguinte campo:
 
 Para esse campo, escreva uma explicação em português simples, sem jargão técnico, citando os trechos do texto que embasaram a estimativa. Se foi estimado por inferência indireta, deixe isso explícito na explicação.
 
-Além disso, para custo_fixo_mensal, faturamento_medio_mensal, volume_vendas_esperado e margem_lucro_desejada, você NÃO deve retornar um valor final agregado — retorne os TERMOS componentes que embasam esse valor, cada um com origem e citação literal:
+Além disso, para custo_fixo_mensal, faturamento_medio_mensal e volume_vendas_esperado, você NÃO deve retornar um valor final agregado — retorne os TERMOS componentes que embasam esse valor, cada um com origem e citação literal:
 
 custo_fixo_mensal (termos_custo_fixo): cada termo abaixo tem seu PRÓPRIO valor — nunca some dois valores mencionados separadamente no texto dentro de um único termo (ex: "pago 2500 de aluguel e 1000 de anúncios" são DOIS termos, 2500 em custos_do_local e 1000 em outros_custos_fixos, nunca 3500 num só). O backend soma os termos depois; sua tarefa é separar, não agregar. Quando origem for 'explicito_zero', "valor" deve ser o número 0 (não null) — o texto confirmou que esse custo é zero, então zero é o dado, não a ausência de um.
 - custos_do_local: aluguel + contas do local (água, luz, internet) — só o que é fisicamente do imóvel/ponto de venda. origem='explicito' se o texto informa valor; origem='explicito_zero' se o texto deixa claro que o local é próprio (ex: "a loja é minha, não pago aluguel") — isso é diferente de não mencionar; origem='ausente' se o texto não menciona nada sobre isso.
@@ -59,14 +59,9 @@ faturamento_medio_mensal (termos_faturamento): identifique qual das duas rotas o
 
 volume_vendas_esperado (termos_volume_vendas): só é relevante quando a rota do faturamento for "direto" — nesse caso o número de peças vendidas por mês não está implícito em nenhum outro termo, então retorne volume_vendas_direto {valor, citacao} se o texto mencionar explicitamente uma quantidade de peças/vendas por mês, ou origem='ausente' caso contrário. Se a rota do faturamento for "decomposição", ainda assim preencha volume_vendas_direto com origem='ausente' (o sistema já usa quantidade_vendida nesse caso, o campo é ignorado).
 
-margem_lucro_desejada (termos_margem_lucro): identifique qual das duas rotas o texto sustenta e retorne SÓ essa rota, priorizando um valor direto de margem quando presente:
-- Rota "direta": o texto informa a margem de lucro desejada diretamente (ex: "quero uns 30% de margem") → retorne margem_direta {valor, citacao}, como percentual (0 a 100). Retorne preco_custo e preco_venda com origem='ausente'.
-- Rota "decomposição por preços": o texto não informa a margem direta, mas informa o preço de custo e o preço de venda de referência → retorne preco_custo {valor, citacao} e preco_venda {valor, citacao}. Retorne margem_direta com origem='ausente'.
-Se nenhuma das duas rotas puder ser identificada, retorne os três termos com origem='ausente'.
-
 CITAÇÃO LITERAL OBRIGATÓRIA: toda "citacao" precisa ser um recorte EXATO de texto_do_lojista — não parafraseie, não resuma, não reformule. Copie a substring literal que embasa o termo. Se não houver um trecho exato que sustente o valor, marque o termo como origem='ausente' em vez de inventar uma citação aproximada.
 
-confianca_suficiente: custo_fixo_mensal, faturamento_medio_mensal, volume_vendas_esperado e margem_lucro_desejada NÃO precisam estar todos presentes no texto — o que faltar vira uma pergunta pro lojista depois (o sistema já sabe perguntar por qualquer um desses quatro, individualmente, quando ausente). Por isso, retorne false, com motivo_baixa_confianca preenchido, SOMENTE quando o texto não sustentar nenhuma estimativa realista em NENHUM dos 5 campos (posicionamento, margem_lucro_desejada, volume_vendas_esperado, custo_fixo_mensal, faturamento_medio_mensal — os quatro últimos contam como "com base" se ao menos um termo componente tiver origem explícita). Um texto como "loja de roupas" sem nenhum detalhe quantitativo ou qualitativo deve retornar false; um texto que descreve o segmento/estilo da loja e informa qualquer valor concreto (aluguel, faturamento, quantidade vendida, margem, preços, número de funcionários etc.) deve retornar true, mesmo que vários desses campos fiquem totalmente ausentes.
+confianca_suficiente: custo_fixo_mensal, faturamento_medio_mensal e volume_vendas_esperado NÃO precisam estar todos presentes no texto — o que faltar vira uma pergunta pro lojista depois (o sistema já sabe perguntar por qualquer um desses quatro, individualmente, quando ausente). Por isso, retorne false, com motivo_baixa_confianca preenchido, SOMENTE quando o texto não sustentar nenhuma estimativa realista em NENHUM dos 4 campos (posicionamento, volume_vendas_esperado, custo_fixo_mensal, faturamento_medio_mensal — os três últimos contam como "com base" se ao menos um termo componente tiver origem explícita). Um texto como "loja de roupas" sem nenhum detalhe quantitativo ou qualitativo deve retornar false; um texto que descreve o segmento/estilo da loja e informa qualquer valor concreto (aluguel, faturamento, quantidade vendida, número de funcionários etc.) deve retornar true, mesmo que vários desses campos fiquem totalmente ausentes.
 
 canais_sugeridos: liste apenas canais dentre ['loja_fisica', 'instagram_whatsapp', 'marketplace'] que o texto menciona explicitamente e que NÃO estão em dados_factuais.canais_marcados. Nunca re-sugira um canal já marcado. Se nenhum canal novo for mencionado, retorne uma lista vazia.
 
@@ -95,7 +90,6 @@ PROMPT;
                 'termos_custo_fixo'        => $this->schemaTermosCustoFixo(),
                 'termos_faturamento'       => $this->schemaTermosFaturamento(),
                 'termos_volume_vendas'     => $this->schemaTermosVolumeVendas(),
-                'termos_margem_lucro'      => $this->schemaTermosMargemLucro(),
                 'canais_sugeridos' => [
                     'type'  => 'array',
                     'items' => [
@@ -110,7 +104,6 @@ PROMPT;
                 'termos_custo_fixo',
                 'termos_faturamento',
                 'termos_volume_vendas',
-                'termos_margem_lucro',
                 'canais_sugeridos',
             ],
         ];
@@ -179,19 +172,6 @@ PROMPT;
         ];
     }
 
-    protected function schemaTermosMargemLucro(): array
-    {
-        return [
-            'type' => 'object',
-            'properties' => [
-                'margem_direta' => $this->schemaTermo(['explicito', 'ausente']),
-                'preco_custo'   => $this->schemaTermo(['explicito', 'ausente']),
-                'preco_venda'   => $this->schemaTermo(['explicito', 'ausente']),
-            ],
-            'required' => ['margem_direta', 'preco_custo', 'preco_venda'],
-        ];
-    }
-
     /**
      * Aplica os guardrails de clamping (SPEC §5.2) e filtra canais já
      * marcados (SPEC diretriz §5.4.7) antes de devolver ao controller.
@@ -210,7 +190,6 @@ PROMPT;
                 'termos_custo_fixo'      => null,
                 'termos_faturamento'     => null,
                 'termos_volume_vendas'   => null,
-                'termos_margem_lucro'    => null,
                 'canais_sugeridos'       => [],
             ];
         }
@@ -223,7 +202,7 @@ PROMPT;
         ];
 
         // custo_fixo_mensal, faturamento_medio_mensal, volume_vendas_esperado
-        // e margem_lucro_desejada saíram do clamp por campo (não são mais
+        // saíram do clamp por campo (não são mais
         // número final da IA) — o guardrail agora se aplica só sobre o valor
         // final calculado a partir dos termos (ver OnboardingTermosService +
         // controller).
@@ -240,7 +219,6 @@ PROMPT;
             'termos_custo_fixo'      => data_get($resposta, 'termos_custo_fixo', []),
             'termos_faturamento'     => data_get($resposta, 'termos_faturamento', []),
             'termos_volume_vendas'   => data_get($resposta, 'termos_volume_vendas', []),
-            'termos_margem_lucro'    => data_get($resposta, 'termos_margem_lucro', []),
             'canais_sugeridos'       => $canaisSugeridos,
         ];
     }

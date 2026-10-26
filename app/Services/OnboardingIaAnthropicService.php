@@ -148,7 +148,7 @@ class OnboardingIaAnthropicService implements OnboardingIaInterface
 
         $schema['properties']['posicionamento']['additionalProperties'] = false;
 
-        foreach (['termos_custo_fixo', 'termos_faturamento', 'termos_volume_vendas', 'termos_margem_lucro'] as $grupoTermos) {
+        foreach (['termos_custo_fixo', 'termos_faturamento', 'termos_volume_vendas'] as $grupoTermos) {
             $schema['properties'][$grupoTermos]['additionalProperties'] = false;
             foreach ($schema['properties'][$grupoTermos]['properties'] as $chave => &$termoSchema) {
                 // periodicidade_informada é um enum de string simples (com o

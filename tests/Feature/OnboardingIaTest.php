@@ -180,4 +180,16 @@ class OnboardingIaTest extends TestCase
         $this->assertNotNull($log->loja_id);
         $this->assertNotNull($log->estimativas_finais);
     }
+    public function test_prompt_e_schema_nao_pedem_margem_a_ia(): void
+    {
+        $prompt = new class {
+            use \App\Services\Concerns\OnboardingIaPrompt;
+            public function contrato(): array { return [$this->systemPrompt(), $this->responseSchema()]; }
+        };
+        [$texto, $schema] = $prompt->contrato();
+        $this->assertStringNotContainsString('margem_lucro_desejada', $texto);
+        $this->assertArrayNotHasKey('termos_margem_lucro', $schema['properties']);
+        $this->assertNotContains('termos_margem_lucro', $schema['required']);
+    }
+
 }

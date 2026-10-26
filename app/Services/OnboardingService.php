@@ -79,7 +79,7 @@ class OnboardingService
      *   médio    → margem equilibrada
      *   premium  → margem alta, volume menor
      */
-    private const MARGEM_POR_POSICIONAMENTO = [
+    public const MARGEM_POR_POSICIONAMENTO = [
         'popular' => 0.25,  // 25%
         'medio'   => 0.35,  // 35%
         'premium' => 0.50,  // 50%
