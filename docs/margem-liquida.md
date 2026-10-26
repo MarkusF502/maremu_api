@@ -91,3 +91,18 @@ Permanecem os mesmos oito testes antigos:
 Os seis testes de relatório usam `/api/relatorios`, recebendo 404 (a rota existente é `/api/relatorio`). Não foram alterados nesta tarefa.
 
 Foi adicionado `Http::preventStrayRequests()` à classe base dos testes após descobrir a tentativa externa da linha de base. Nenhuma chamada de IA foi concluída; as execuções seguintes bloqueiam HTTP não simulado. O comando `precificacao:testar-variancia` não foi executado. A tradução visual em tempo real no frontend fica com o consumidor deste endpoint, conforme o escopo da tarefa no `maremu-api`.
+
+## Complemento: contexto de simulação no wizard
+
+As respostas de `analisar-texto` e `responder-pendencias` (pendentes ou concluídas) agora incluem `dados_simulacao` com apenas campos resolvidos:
+
+- `custo_fixo_mensal`: após todos os componentes aplicáveis serem aceitos; omitido enquanto a checagem cruzada aguarda confirmação.
+- `volume_vendas_esperado`: após o termo correspondente ser aceito.
+- `aliquota_efetiva`: obtida do regime factual já validado pela mesma função `OnboardingService::aliquotaPorRegime` usada na confirmação da loja. Na regra atual, alíquota depende apenas do regime; não existe uma pergunta separada de alíquota no wizard.
+- `taxa_canal`: maior taxa dos canais factuais conhecidos. Canais meramente sugeridos pela IA não entram.
+
+Custo e volume usam o mesmo guardrail da conclusão. Campos não resolvidos são omitidos, sem valores provisórios. A pergunta da margem ocorre somente depois dos grupos de custo/faturamento, volume e checagem cruzada.
+
+Validação do complemento: 7 casos novos cobrem contexto completo na pergunta da margem, omissão durante pendências (incluindo salário sugerido ainda não confirmado), ordem das perguntas, fatos desconhecidos e igualdade entre simulação no wizard e motor para a loja criada na confirmação, nos três regimes e com múltiplos canais.
+
+Suíte completa atualizada: **239 passaram, as mesmas 8 falhas antigas permaneceram** (863 assertions). Recorte onboarding, simulação e motor: **128 passaram** (452 assertions). Sem chamadas externas de IA, push ou deploy.

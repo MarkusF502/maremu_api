@@ -205,9 +205,16 @@ class OnboardingService
 
             // Regime e alíquota
             'regime_tributario'        => $regime,
-            'aliquota_efetiva'         => self::ALIQUOTA_POR_REGIME[$regime],
+            'aliquota_efetiva'         => $this->aliquotaPorRegime($regime),
             'aliquota_origem'          => 'estimado_pelo_sistema',
         ];
+    }
+
+    /** Premissa tributária determinística, compartilhada com a confirmação IA. */
+    public function aliquotaPorRegime(string $regime): float
+    {
+        return self::ALIQUOTA_POR_REGIME[$regime]
+            ?? throw new \InvalidArgumentException("Regime tributário inválido: {$regime}");
     }
 
     private function inferirCanais(array $canais): array

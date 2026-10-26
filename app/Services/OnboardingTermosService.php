@@ -574,7 +574,7 @@ class OnboardingTermosService
             }
         }
 
-        // ── Grupo D: volume de vendas (Rota 1) e margem de lucro ─────────
+        // ── Grupo D: volume de vendas (Rota 1) ─────────
         // Independente de A/B/C — nada depende deles e eles não dependem de
         // custo/faturamento. Só entra na fila depois que A e B estiverem
         // livres de pendência, por conveniência de fluxo (SPEC §3).
@@ -590,20 +590,6 @@ class OnboardingTermosService
                 'pergunta' => 'Quantas peças você vende, em média, por mês?',
                 'depende_de' => null,
             ]);
-
-            $margemLucro = $estado['margem_lucro_desejada'];
-            $margemResolvida = $margemLucro['margem_direta']['status'] === 'aceito';
-
-            if (! $margemResolvida && empty($pendencias)) {
-                $pendencias[] = [
-                    'id'         => 'margem_lucro_desejada',
-                    'tipo'       => 'confirmacao_valor_faixa',
-                    'pergunta'   => 'Quanto você quer que sobre de lucro limpo em cada venda?',
-                    'detalhe' => 'Em percentual do preço de venda, depois de pagar a peça, as contas da loja e os impostos.',
-                    'valor_sugerido' => $margemLucro['margem_direta']['valor_sugerido'] ?? null,
-                    'depende_de' => null,
-                ];
-            }
         }
 
         // ── Grupo C: checagem cruzada (só depois de A e B resolvidos) ────
@@ -625,6 +611,23 @@ class OnboardingTermosService
                         number_format($faturamentoCalculado, 2, ',', '.')
                     ),
                     'opcoes'     => ['Sim, é isso mesmo', 'Não, deixa eu revisar os valores'],
+                    'depende_de' => null,
+                ];
+            }
+        }
+
+        // A margem é a última pergunta, inclusive depois da checagem cruzada.
+        if ($grupoAResolvido && $grupoBResolvido && empty($pendencias)) {
+            $margemLucro = $estado['margem_lucro_desejada'];
+            $margemResolvida = $margemLucro['margem_direta']['status'] === 'aceito';
+
+            if (! $margemResolvida && empty($pendencias)) {
+                $pendencias[] = [
+                    'id'         => 'margem_lucro_desejada',
+                    'tipo'       => 'confirmacao_valor_faixa',
+                    'pergunta'   => 'Quanto você quer que sobre de lucro limpo em cada venda?',
+                    'detalhe' => 'Em percentual do preço de venda, depois de pagar a peça, as contas da loja e os impostos.',
+                    'valor_sugerido' => $margemLucro['margem_direta']['valor_sugerido'] ?? null,
                     'depende_de' => null,
                 ];
             }

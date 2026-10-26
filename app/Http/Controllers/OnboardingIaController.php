@@ -162,6 +162,7 @@ class OnboardingIaController extends Controller
             'estimativas_resolvidas'=> $estimativasResolvidas,
             'estimativas'           => $estimativasResolvidas,
             'pendencias'            => $pendencias,
+            'dados_simulacao'       => $this->dadosSimulacao($estado, $dadosFactuais),
             'canais_sugeridos'      => $resultado['canais_sugeridos'],
         ]);
     }
@@ -203,6 +204,7 @@ class OnboardingIaController extends Controller
                 'status'               => 'pendente',
                 'sessao_id'            => $log->id,
                 'pendencias_restantes' => $pendencias,
+                'dados_simulacao'      => $this->dadosSimulacao($estado, $log->dados_factuais),
             ]);
         }
 
@@ -229,7 +231,34 @@ class OnboardingIaController extends Controller
             'volume_vendas_esperado'   => $volumeVendasEsperado,
             'margem_lucro_desejada'    => $margemLucroDesejada,
             'redirecionar_para'        => 'tela_2',
+            'dados_simulacao'          => $this->dadosSimulacao($estado, $log->dados_factuais),
         ]);
+    }
+
+    /** Somente valores resolvidos, com o mesmo clamp aplicado na conclusão. */
+    private function dadosSimulacao(array $estado, array $dadosFactuais): array
+    {
+        $roteamento = $this->termosService->gerarPendencias($estado);
+        [$custo, , $volume] = $this->calcularValoresFinais($estado);
+        $dados = [];
+        $checagemPendente = in_array('checagem_cruzada_custo_faturamento', array_column($roteamento['pendencias'], 'id'), true);
+
+        if ($roteamento['grupoAResolvido'] && ! $checagemPendente && $custo !== null) {
+            $dados['custo_fixo_mensal'] = $custo;
+        }
+        if (($estado['volume_vendas_esperado']['volume_vendas_direto']['status'] ?? null) === 'aceito' && $volume !== null) {
+            $dados['volume_vendas_esperado'] = $volume;
+        }
+        // A regra atual de alíquota depende apenas do regime já informado;
+        // não usamos faixa, faturamento ou qualquer custo provisório.
+        if (! empty($dadosFactuais['regime_tributario'])) {
+            $dados['aliquota_efetiva'] = $this->onboardingService->aliquotaPorRegime($dadosFactuais['regime_tributario']);
+        }
+        if (! empty($dadosFactuais['canais_marcados'])) {
+            $dados['taxa_canal'] = $this->onboardingService->taxaCanalConservadora($dadosFactuais['canais_marcados']);
+        }
+
+        return $dados;
     }
 
     /**
@@ -315,14 +344,8 @@ class OnboardingIaController extends Controller
                 : 'editado_pelo_lojista';
         }
 
-        // Alíquota efetiva: 100% determinística, a partir de regime +
-        // faturamento confirmado — mesmo cálculo do OnboardingService atual.
-        $aliquotaEfetiva = $this->onboardingService->inferirDadosDaLoja(
-            faixaFaturamento: $this->faixaParaFaturamento($camposEstimados['faturamento_medio_mensal']),
-            posicionamento:   $camposEstimados['posicionamento'],
-            regime:           $request->regime_tributario,
-            canais:           $request->canais,
-        )['loja']['aliquota_efetiva'];
+        // Mesma premissa usada na simulação durante as pendências.
+        $aliquotaEfetiva = $this->onboardingService->aliquotaPorRegime($request->regime_tributario);
 
         $canaisDeterministicos = $this->onboardingService->inferirCanaisPublico($request->canais);
 
@@ -373,22 +396,5 @@ class OnboardingIaController extends Controller
         }
 
         return $a === $b;
-    }
-
-    /**
-     * Converte um faturamento confirmado em faixa, para reaproveitar a
-     * tabela ALIQUOTA_POR_REGIME já validada de OnboardingService — a
-     * alíquota depende só do regime nessa tabela, então a faixa escolhida
-     * aqui não altera o resultado; existe só para reusar a interface
-     * pública existente sem duplicar a tabela.
-     */
-    private function faixaParaFaturamento(float $faturamento): string
-    {
-        return match (true) {
-            $faturamento <= 10000 => 'ate_10k',
-            $faturamento <= 30000 => 'de_10k_a_30k',
-            $faturamento <= 80000 => 'de_30k_a_80k',
-            default                => 'acima_80k',
-        };
     }
 }
