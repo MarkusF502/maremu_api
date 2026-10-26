@@ -20,6 +20,38 @@ namespace App\Services;
  */
 class PricingEngine
 {
+    /** Simulação de margem líquida; limite de viabilidade truncado a seis casas. */
+    public function simular(
+        float $custoBase,
+        float $custoFixoMensal,
+        int $volumeVendasEsperado,
+        float $aliquotaEfetiva,
+        float $taxaCanal,
+        float $margem,
+    ): array {
+        if ($aliquotaEfetiva + $taxaCanal + $margem >= 1) {
+            // Corrige apenas o ruído binário antes de truncar para baixo.
+            $limite = round(1 - ($aliquotaEfetiva + $taxaCanal), 12);
+            return [
+                'viavel' => false,
+                'motivo' => 'margem_inviavel',
+                'margem_maxima' => floor(round($limite * 1_000_000, 6)) / 1_000_000,
+            ];
+        }
+        $calculo = $this->calcularPreco($custoBase, 0, $aliquotaEfetiva, $taxaCanal,
+            $custoFixoMensal, $volumeVendasEsperado, $margem);
+        return [
+            'viavel' => true,
+            'preco' => $calculo['preco_venda'],
+            'preco_piso' => $calculo['preco_piso'],
+            'multiplo_do_custo' => round($calculo['preco_venda'] / $custoBase, 2),
+            'lucro_por_peca' => round($calculo['preco_venda'] * $margem, 2),
+            'lucro_a_cada_100' => round($margem * 100, 2),
+            'composicao' => $this->composicao($custoBase, 0, $aliquotaEfetiva, $taxaCanal,
+                $custoFixoMensal, $volumeVendasEsperado),
+        ];
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // 1. MARKUP DIVISOR / MULTIPLICADOR
     // ─────────────────────────────────────────────────────────────────────

@@ -152,13 +152,8 @@ class PrecificacaoController extends Controller
      */
     private function taxaCanalAplicavel($loja): float
     {
-        $taxas = $loja->canaisAtivos->pluck('taxa_percentual')->map(fn ($t) => (float) $t);
-
-        if ($taxas->isEmpty()) {
-            throw new \RuntimeException("Loja {$loja->id} sem canais de venda ativos — não é possível calcular preço.");
-        }
-
-        return $taxas->max();
+        return app(\App\Services\TaxaCanalPrecificacao::class)->obter($loja)
+            ?? throw new \RuntimeException("Loja {$loja->id} sem canais de venda ativos — não é possível calcular preço.");
     }
 
     /**

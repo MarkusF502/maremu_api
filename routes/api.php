@@ -47,3 +47,6 @@ Route::middleware(['auth:sanctum', EnsureLojaExists::class])->group(function () 
     Route::get('/saidas', [SaidaController::class, 'index']);
     Route::post('/saidas', [SaidaController::class, 'store']);
 });
+
+Route::post('/precificacao/simular', \App\Http\Controllers\SimularPrecificacaoController::class)
+    ->middleware('auth:sanctum');
