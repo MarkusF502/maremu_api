@@ -32,6 +32,10 @@ Sua tarefa: escolher exatamente 3 margens de lucro percentuais, cada uma represe
 2. cenario_ideal — margem equilibrada, alinhada ao posicionamento e à margem_lucro_desejada da loja
 3. cenario_alta_demanda — margem elevada, para cenários de sazonalidade, produto popular ou baixa elasticidade de preço percebida
 
+Base das margens (não são intercambiáveis):
+- margem_lucro_desejada da loja e margem_lucro_percentual dos cenários são margens LÍQUIDAS sobre o preço de venda: lucro limpo após pagar aquisição e frete, custo fixo por peça, impostos e taxa do canal. O sistema aplica preco = (custo_base + custo_fixo_mensal / volume_vendas_esperado) / (1 − aliquota_efetiva − taxa_canal − margem).
+- margem_realizada_media e margem_planejada_media da camada_4 são margens BRUTAS sobre o preço de venda: (preço − custo de aquisição e frete) / preço. Não descontam custo fixo, impostos ou taxas. razao_margem compara essas duas margens brutas; use-a como sinal relativo, sem copiar seus valores como meta líquida.
+
 Você NÃO calcula o preço de venda — isso é responsabilidade do sistema, que converte a margem escolhida em preço final depois da sua resposta. Sua saída para cada cenário é a margem_lucro_percentual, como decimal entre 0.0 e 0.80.
 
 Como usar razao_margem e razao_giro para o cenario_liquidacao:

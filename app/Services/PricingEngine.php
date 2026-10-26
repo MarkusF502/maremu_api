@@ -16,7 +16,7 @@ namespace App\Services;
  *   $taxaCanal            — % de taxa do canal de venda (cartão, marketplace)
  *   $custoFixoMensal      — total dos custos fixos da loja por mês
  *   $volumeVendasEsperado — estimativa de unidades vendidas por mês (para ratear custo fixo)
- *   $margemLucroDesejada  — % de lucro desejado (ex: 0.30 = 30%); 0.0 para calcular o preço piso
+ *   $margemLucroDesejada  — % de lucro líquido sobre o preço de venda (ex: 0.30 = 30%); 0.0 para calcular o preço piso
  */
 class PricingEngine
 {
@@ -57,48 +57,24 @@ class PricingEngine
     // ─────────────────────────────────────────────────────────────────────
 
     /**
-     * Calcula o Markup Divisor.
-     *
-        * Fórmula:
-        *   MarkupDivisor = 1 - (aliquotaEfetiva + taxaCanal + margemLucroDesejada)
-     *
-     * onde:
-        *   despesasVariaveis       = aliquotaEfetiva(%) + taxaCanal(%)
-        *   custoFixoMensal         = tratado separadamente como valor absoluto por unidade
-     *
-     * Retorna o divisor como decimal (ex: 0.54).
-     * Lança exceção se o resultado for ≤ 0 (margens insustentáveis).
-     *
-     * @param  float  $aliquotaEfetiva      % como decimal (ex: 0.06)
-     * @param  float  $taxaCanal            % como decimal (ex: 0.03)
-     * @param  float  $custoFixoMensal      valor em reais
-     * @param  int    $volumeVendasEsperado unidades/mês
-     * @param  float  $custoBase            custo unitário total (aquisição + frete)
-     * @param  float  $margemLucroDesejada  % como decimal (ex: 0.30); 0.0 para preço piso
-     * @return float
+     * Divisor = 1 − alíquota − taxa do canal − margem líquida.
+     * Todos os percentuais são frações do preço de venda.
+     * O custo fixo por peça é somado ao custo base no numerador.
      */
     public function markupDivisor(
         float $aliquotaEfetiva,
         float $taxaCanal,
-        float $custoFixoMensal,
-        int   $volumeVendasEsperado,
-        float $custoBase,
         float $margemLucroDesejada
     ): float {
-        $this->guard($volumeVendasEsperado > 0, 'volumeVendasEsperado deve ser maior que zero.');
-        $this->guard($custoBase > 0, 'custoBase deve ser maior que zero.');
-
         $divisor = 1 - ($aliquotaEfetiva + $taxaCanal + $margemLucroDesejada);
-
-        $this->guard($divisor > 0, 'Markup Divisor resultou em valor ≤ 0. Revise margens, impostos ou custo fixo.');
-
+        $this->guard($divisor > 0, 'Markup Divisor resultou em valor ≤ 0. Revise margem, impostos ou taxa do canal.');
         return $divisor;
     }
 
     /**
      * Calcula o Preço de Venda usando o Markup Divisor.
      *
-     * Fórmula: PrecoVenda = CustoBase / MarkupDivisor
+     * Fórmula: PrecoVenda = (CustoBase + CustoFixoMensal / VolumeVendasEsperado) / MarkupDivisor
      *
      * @param  float  $custoAquisicao
      * @param  float  $freteEntradaUnitario
@@ -119,13 +95,15 @@ class PricingEngine
         float $margemLucroDesejada
     ): array {
         $custoBase = $custoAquisicao + $freteEntradaUnitario;
+        $this->guard($volumeVendasEsperado > 0, 'volumeVendasEsperado deve ser maior que zero.');
+        $this->guard($custoBase > 0, 'custoBase deve ser maior que zero.');
         $custoFixoUnitario = $custoFixoMensal / $volumeVendasEsperado;
 
-        $divisor    = $this->markupDivisor($aliquotaEfetiva, $taxaCanal, $custoFixoMensal, $volumeVendasEsperado, $custoBase, $margemLucroDesejada);
+        $divisor    = $this->markupDivisor($aliquotaEfetiva, $taxaCanal, $margemLucroDesejada);
         $precoVenda = ($custoBase + $custoFixoUnitario) / $divisor;
 
         // Preço piso: margem = 0 (ponto onde não há lucro nem prejuízo)
-        $divisorPiso = $this->markupDivisor($aliquotaEfetiva, $taxaCanal, $custoFixoMensal, $volumeVendasEsperado, $custoBase, 0.0);
+        $divisorPiso = $this->markupDivisor($aliquotaEfetiva, $taxaCanal, 0.0);
         $precoPiso   = ($custoBase + $custoFixoUnitario) / $divisorPiso;
 
         return [
@@ -211,17 +189,14 @@ class PricingEngine
      * Calcula o Markup Multiplicador (inverso do divisor).
      *
      * Fórmula: MarkupMultiplicador = 1 / MarkupDivisor
-     * Uso:     PrecoVenda = CustoBase × MarkupMultiplicador
+     * Uso:     PrecoVenda = (CustoBase + CustoFixoMensal / VolumeVendasEsperado) × MarkupMultiplicador
      */
     public function markupMultiplicador(
         float $aliquotaEfetiva,
         float $taxaCanal,
-        float $custoFixoMensal,
-        int   $volumeVendasEsperado,
-        float $custoBase,
         float $margemLucroDesejada
     ): float {
-        $divisor = $this->markupDivisor($aliquotaEfetiva, $taxaCanal, $custoFixoMensal, $volumeVendasEsperado, $custoBase, $margemLucroDesejada);
+        $divisor = $this->markupDivisor($aliquotaEfetiva, $taxaCanal, $margemLucroDesejada);
         return round(1 / $divisor, 6);
     }
 

@@ -24,7 +24,8 @@ class OnboardingResponderPendenciasRequest extends FormRequest
             'respostas.*.id'       => ['required', 'string'],
             'respostas.*.resposta' => ['required'],
         ];
-        foreach ($this->input('respostas', []) as $indice => $resposta) {
+        $respostas = $this->input('respostas', []);
+        foreach (is_array($respostas) ? $respostas : [] as $indice => $resposta) {
             if (is_array($resposta) && ($resposta['id'] ?? null) === 'margem_lucro_desejada') {
                 $regras["respostas.$indice.resposta"] = ['required', ...\App\Support\MargemLiquida::regras(100)];
             }

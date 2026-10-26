@@ -42,54 +42,47 @@ class PricingEngineTest extends TestCase
 
     public function test_markup_divisor_retorna_valor_correto(): void
     {
-        // custoFixoProporcional = (3000/150) / 43 = 20/43 ≈ 0.4651
-        // somaDespesas = 0.06 + 0.03 + 0.4651 + 0.30 = 0.8551
-        // divisor = 1 - 0.8551 = 0.1449
+        // 1 − 6% − 3% − 30% = 0,61; custo fixo fica no numerador.
         $divisor = $this->engine->markupDivisor(
             $this->aliquota,
             $this->taxaCanal,
-            $this->custoFixo,
-            $this->volume,
-            43.00,
             $this->margemDesejada
         );
 
-        $this->assertEqualsWithDelta(0.1449, $divisor, 0.001);
+        $this->assertEqualsWithDelta(0.61, $divisor, 0.000001);
         $this->assertGreaterThan(0, $divisor);
     }
 
     public function test_markup_divisor_piso_ignora_margem(): void
     {
         $divisorComMargem = $this->engine->markupDivisor(
-            $this->aliquota, $this->taxaCanal, $this->custoFixo,
-            $this->volume, 43.00, 0.30
+            $this->aliquota, $this->taxaCanal, 0.30
         );
         $divisorPiso = $this->engine->markupDivisor(
-            $this->aliquota, $this->taxaCanal, $this->custoFixo,
-            $this->volume, 43.00, 0.0
+            $this->aliquota, $this->taxaCanal, 0.0
         );
 
         // divisor do piso deve ser MAIOR (menos desconto), gerando preço MENOR
         $this->assertGreaterThan($divisorComMargem, $divisorPiso);
     }
 
-    public function test_markup_divisor_lanca_excecao_se_volume_zero(): void
+    public function test_calcular_preco_lanca_excecao_se_volume_zero(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->engine->markupDivisor($this->aliquota, $this->taxaCanal, $this->custoFixo, 0, 43.00, $this->margemDesejada);
+        $this->engine->calcularPreco(40, 3, $this->aliquota, $this->taxaCanal, $this->custoFixo, 0, $this->margemDesejada);
     }
 
-    public function test_markup_divisor_lanca_excecao_se_custo_base_zero(): void
+    public function test_calcular_preco_lanca_excecao_se_custo_base_zero(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->engine->markupDivisor($this->aliquota, $this->taxaCanal, $this->custoFixo, $this->volume, 0.0, $this->margemDesejada);
+        $this->engine->calcularPreco(0, 0, $this->aliquota, $this->taxaCanal, $this->custoFixo, $this->volume, $this->margemDesejada);
     }
 
     public function test_markup_divisor_lanca_excecao_se_despesas_insustentaveis(): void
     {
         // alíquota 60% + taxaCanal 50% = impossível
         $this->expectException(InvalidArgumentException::class);
-        $this->engine->markupDivisor(0.60, 0.50, $this->custoFixo, $this->volume, 43.00, 0.30);
+        $this->engine->markupDivisor(0.60, 0.50, 0.30);
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -156,8 +149,8 @@ class PricingEngineTest extends TestCase
 
     public function test_markup_multiplicador_e_inverso_do_divisor(): void
     {
-        $divisor       = $this->engine->markupDivisor($this->aliquota, $this->taxaCanal, $this->custoFixo, $this->volume, 43.00, $this->margemDesejada);
-        $multiplicador = $this->engine->markupMultiplicador($this->aliquota, $this->taxaCanal, $this->custoFixo, $this->volume, 43.00, $this->margemDesejada);
+        $divisor       = $this->engine->markupDivisor($this->aliquota, $this->taxaCanal, $this->margemDesejada);
+        $multiplicador = $this->engine->markupMultiplicador($this->aliquota, $this->taxaCanal, $this->margemDesejada);
 
         $this->assertEqualsWithDelta(1 / $divisor, $multiplicador, 0.0001);
     }
@@ -173,11 +166,14 @@ class PricingEngineTest extends TestCase
         );
 
         $multiplicador = $this->engine->markupMultiplicador(
-            $this->aliquota, $this->taxaCanal,
-            $this->custoFixo, $this->volume, $custoBase, $this->margemDesejada
+            $this->aliquota, $this->taxaCanal, $this->margemDesejada
         );
 
-        $precoViaMult = round($custoBase * $multiplicador, 2);
+        // Custo fixo por peça = 3000 / 150 = 20; preço = (43 + 20) / 0,61 = 103,28.
+        $precoViaMult = round(($custoBase + 20) * $multiplicador, 2);
+        $this->assertEquals(103.28, $resultadoDivisor['preco_venda']);
+        $this->assertEquals(69.23, $resultadoDivisor['preco_piso']); // 63 / 0,91
+        $this->assertEquals(103.28, $precoViaMult);
         $this->assertEqualsWithDelta($resultadoDivisor['preco_venda'], $precoViaMult, 0.01);
     }
 
