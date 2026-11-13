@@ -406,6 +406,36 @@ class DemoSeederTest extends TestCase
         $this->assertSame(1, Loja::where('is_demo', false)->count());
     }
 
+    public function test_rodar_depois_do_catalogo_mapeado_mantem_as_lojas_ficticias(): void
+    {
+        $this->seed(\Database\Seeders\CatalogoMapeadoSeeder::class);
+
+        $ficticias = fn () => DB::table('lojas')
+            ->join('users', 'users.id', '=', 'lojas.user_id')
+            ->where('users.email', 'like', '%@'.\Database\Seeders\CatalogoMapeadoSeeder::DOMINIO);
+        $catalogo = fn () => DB::table('produtos')
+            ->whereIn('loja_id', $ficticias()->select('lojas.id'))
+            ->orderBy('sku')
+            ->get(['sku', 'nome', 'preco_venda_atual', 'custo_aquisicao'])
+            ->map(fn ($linha) => (array) $linha)
+            ->all();
+
+        $lojasAntes = $ficticias()->count();
+        $produtosAntes = $catalogo();
+
+        $this->semear();
+        $this->semear();
+
+        $this->assertGreaterThan(0, $lojasAntes);
+        $this->assertSame($lojasAntes, $ficticias()->count());
+        $this->assertSame($produtosAntes, $catalogo());
+        // As lojas do próprio DemoSeeder foram criadas normalmente ao lado delas.
+        $this->assertSame(
+            count((new \ReflectionClassConstant(DemoSeeder::class, 'LOJAS_SEMELHANTES'))->getValue()) + 1,
+            DB::table('lojas')->join('users', 'users.id', '=', 'lojas.user_id')->where('users.email', 'like', '%@maremu.demo')->count(),
+        );
+    }
+
     // ─── trava de ambiente ───────────────────────────────────────────────
 
     public function test_recusa_rodar_em_producao_sem_autorizacao_explicita(): void
