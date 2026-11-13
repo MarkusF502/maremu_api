@@ -8,6 +8,7 @@ use App\Models\Produto;
 use App\Models\SubCategoria;
 use App\Models\User;
 use App\Services\Camada3MercadoService;
+use App\Services\OnboardingService;
 use Database\Seeders\CatalogoMapeadoSeeder;
 use Database\Seeders\TaxonomiaSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -97,6 +98,12 @@ class CatalogoMapeadoSeederTest extends TestCase
     {
         foreach (CatalogoMapeadoSeeder::lerCatalogos() as $catalogo) {
             $this->assertContains($catalogo['posicionamento'], ['popular', 'medio', 'premium']);
+            $this->assertIsBool($catalogo['posicionamento_estimado']);
+            if (! $catalogo['posicionamento_estimado']) {
+                // A regra deixou a loja indeterminada; a loja exige um posicionamento.
+                $this->assertSame('medio', $catalogo['posicionamento']);
+                $this->assertSame('indeterminado', $catalogo['criterio_posicionamento']['resultado']);
+            }
             $this->assertStringContainsString('Mapead', $catalogo['nome_ficticio']);
             $this->assertArrayNotHasKey('nome_real', $catalogo);
             $this->assertArrayNotHasKey('cidade', $catalogo);
@@ -145,13 +152,20 @@ class CatalogoMapeadoSeederTest extends TestCase
         }
     }
 
-    public function test_faixa_pelo_preco_medio_usa_a_logica_do_onboarding(): void
+    public function test_todas_as_lojas_ficam_na_faixa_declarada_com_os_valores_do_onboarding(): void
     {
-        // Preço médio × volume da faixa tem de cair na própria faixa; vale a menor.
-        $this->assertSame('ate_10k', CatalogoMapeadoSeeder::faixaPeloPrecoMedio(80, 'medio'));
-        $this->assertSame('ate_10k', CatalogoMapeadoSeeder::faixaPeloPrecoMedio(250, 'medio'));
-        $this->assertSame('de_30k_a_80k', CatalogoMapeadoSeeder::faixaPeloPrecoMedio(260, 'medio'));
-        $this->assertSame('acima_80k', CatalogoMapeadoSeeder::faixaPeloPrecoMedio(600, 'premium'));
+        $this->seed(CatalogoMapeadoSeeder::class);
+
+        $onboarding = app(OnboardingService::class);
+
+        foreach ($this->lojasDoCatalogo()->get() as $loja) {
+            $esperado = $onboarding->inferirDadosDaLoja(CatalogoMapeadoSeeder::FAIXA, $loja->posicionamento, 'simples_nacional', ['loja_fisica'])['loja'];
+
+            $this->assertSame(CatalogoMapeadoSeeder::FAIXA, $onboarding->faixaDoFaturamento((float) $loja->faturamento_medio_mensal));
+            $this->assertEquals($esperado['custo_fixo_mensal'], (float) $loja->custo_fixo_mensal);
+            $this->assertSame($esperado['volume_vendas_esperado'], $loja->volume_vendas_esperado);
+            $this->assertEquals($esperado['margem_lucro_desejada'], (float) $loja->margem_lucro_desejada);
+        }
     }
 
     // ─── idempotência ────────────────────────────────────────────────────

@@ -28,8 +28,11 @@ use RuntimeException;
  * preço praticado. O preço é o único dado real; o resto é estimado ou sintético:
  *
  *   - faturamento, custo fixo, volume e margem desejada: OnboardingService, a
- *     partir do posicionamento do JSON e de uma faixa de faturamento derivada
- *     do preço médio do catálogo (ver faixaPeloPrecoMedio);
+ *     partir do posicionamento do JSON e da faixa FAIXA, a mesma para todas as
+ *     lojas (premissa declarada: as tabelas do onboarding aplicadas ao preço
+ *     médio do catálogo punham lojas pequenas acima de R$ 80 mil por mês);
+ *   - posicionamento: o do JSON. Loja que a regra deixou indeterminada vem
+ *     como "medio" com `posicionamento_estimado: false`, porque a loja exige um;
  *   - regime `simples_nacional` e canal `loja_fisica`: o catálogo não diz o
  *     regime, e a loja virtual própria não é um canal do onboarding;
  *   - custo de cada peça: preço × (1 − margem bruta do DemoSeeder para o mesmo
@@ -70,8 +73,8 @@ class CatalogoMapeadoSeeder extends Seeder
 
     private const CANAIS = ['loja_fisica'];
 
-    /** As faixas do onboarding, da menor para a maior. */
-    private const FAIXAS = ['ate_10k', 'de_10k_a_30k', 'de_30k_a_80k', 'acima_80k'];
+    /** Faixa de faturamento de todas as lojas fictícias (premissa, ver o cabeçalho). */
+    public const FAIXA = 'de_10k_a_30k';
 
     /** Estoque por peça: uma variante de tamanho único. */
     private const ESTOQUE_POR_PECA = [1, 10];
@@ -235,35 +238,13 @@ class CatalogoMapeadoSeeder extends Seeder
     // LOJAS
     // ─────────────────────────────────────────────────────────────────────
 
-    /**
-     * Faixa de faturamento derivada do preço médio do catálogo, só com a lógica
-     * do OnboardingService: para cada faixa, o onboarding dá um volume de vendas;
-     * a faixa é consistente quando preço médio × esse volume cai nela mesma.
-     * Havendo mais de uma, fica a menor (loja pequena). Sempre há ao menos uma:
-     * a última faixa não tem teto.
-     */
-    public static function faixaPeloPrecoMedio(float $precoMedio, string $posicionamento): string
-    {
-        $onboarding = app(OnboardingService::class);
-
-        foreach (self::FAIXAS as $faixa) {
-            $volume = $onboarding->inferirDadosDaLoja($faixa, $posicionamento, self::REGIME, self::CANAIS)['loja']['volume_vendas_esperado'];
-
-            if ($onboarding->faixaDoFaturamento($precoMedio * $volume) === $faixa) {
-                return $faixa;
-            }
-        }
-
-        return self::FAIXAS[array_key_last(self::FAIXAS)];
-    }
-
     /** @param  array<string, mixed>  $catalogo */
     private function criarLoja(array $catalogo, string $senha): void
     {
         $posicionamento = $catalogo['posicionamento'];
         $precos = array_map(fn (array $peca) => (float) $peca['preco'], $catalogo['pecas']);
         $precoMedio = array_sum($precos) / count($precos);
-        $faixa = self::faixaPeloPrecoMedio($precoMedio, $posicionamento);
+        $faixa = self::FAIXA;
 
         $user = User::create([
             'name' => 'Lojista '.$catalogo['nome_ficticio'],
@@ -288,7 +269,8 @@ class CatalogoMapeadoSeeder extends Seeder
         }
 
         $this->estimativas[] = [
-            $catalogo['loja'], $catalogo['nome_ficticio'], $posicionamento,
+            $catalogo['loja'], $catalogo['nome_ficticio'],
+            $posicionamento.(($catalogo['posicionamento_estimado'] ?? true) ? '' : ' (indeterminado)'),
             number_format($precoMedio, 2, ',', '.'), $faixa,
             number_format((float) $loja->faturamento_medio_mensal, 0, ',', '.'),
             number_format((float) $loja->custo_fixo_mensal, 0, ',', '.'),
@@ -464,22 +446,14 @@ class CatalogoMapeadoSeeder extends Seeder
             $this->estimativas,
         );
 
-        $consulente = Loja::query()
-            ->where('is_demo', true)
-            ->where('posicionamento', 'medio')
-            ->whereIn('user_id', User::where('email', 'like', '%@'.self::DOMINIO)->select('id'))
-            ->orderBy('nome')
-            ->first();
-
-        if ($consulente === null) {
-            $this->command->warn('Nenhuma loja do catálogo mapeado é "medio": não há de onde mostrar a camada 3.');
-
-            return;
+        $outrasDemo = Loja::where('is_demo', true)
+            ->whereNotIn('user_id', User::where('email', 'like', '%@'.self::DOMINIO)->select('id'))
+            ->count();
+        if ($outrasDemo > 0) {
+            $this->command->warn("Há {$outrasDemo} lojas demo de outro seeder no banco: a camada 3 só separa demo de real, "
+                .'então elas entram na amostra das lojas fictícias.');
         }
 
-        $this->command->info("Camada 3 vista da {$consulente->nome} (medio; a própria loja não entra na amostra):");
-
-        $mercado = app(Camada3MercadoService::class);
         $chaves = [];
         foreach ($catalogos as $catalogo) {
             foreach ($catalogo['pecas'] as $peca) {
@@ -488,8 +462,53 @@ class CatalogoMapeadoSeeder extends Seeder
         }
         ksort($chaves);
 
+        // A vista pedida é a de uma loja "medio"; a "premium" vai junto porque é
+        // onde está a maior parte do catálogo mapeado.
+        foreach (['medio', 'premium'] as $posicionamento) {
+            $consulente = $this->consulente($catalogos, $posicionamento);
+
+            if ($consulente === null) {
+                $this->command->warn("Nenhuma loja do catálogo mapeado é \"{$posicionamento}\".");
+
+                continue;
+            }
+
+            $this->command->info("Camada 3 vista da {$consulente->nome} ({$posicionamento}; a própria loja não entra na amostra):");
+            $this->tabelaDaCamada3($consulente, array_keys($chaves));
+        }
+    }
+
+    /**
+     * Primeira loja do posicionamento, em ordem de arquivo, preferindo uma cujo
+     * posicionamento a regra estimou (e não uma indeterminada gravada como medio).
+     *
+     * @param  array<int, array<string, mixed>>  $catalogos
+     */
+    private function consulente(array $catalogos, string $posicionamento): ?Loja
+    {
+        $candidatos = array_filter($catalogos, fn (array $c) => $c['posicionamento'] === $posicionamento);
+        usort($candidatos, fn (array $a, array $b) => [! ($a['posicionamento_estimado'] ?? true), $a['loja']]
+            <=> [! ($b['posicionamento_estimado'] ?? true), $b['loja']]);
+
+        foreach ($candidatos as $catalogo) {
+            $loja = Loja::where('is_demo', true)
+                ->whereRelation('user', 'email', self::emailDaLoja($catalogo['loja']))
+                ->first();
+
+            if ($loja !== null) {
+                return $loja;
+            }
+        }
+
+        return null;
+    }
+
+    /** @param  string[]  $chaves */
+    private function tabelaDaCamada3(Loja $consulente, array $chaves): void
+    {
+        $mercado = app(Camada3MercadoService::class);
         $linhas = [];
-        foreach (array_keys($chaves) as $chave) {
+        foreach ($chaves as $chave) {
             $sub = $this->subCategorias[$chave];
             $categoria = $consulente->categorias()->where('sub_categoria_id', $sub->id)->first()
                 // A consulente não vende a sub-categoria: consulta com uma categoria
