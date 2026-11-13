@@ -1,0 +1,440 @@
+{
+  "loja": "loja-07",
+  "nome_ficticio": "Moda Infantil Mapeada 07",
+  "segmento": "moda infantil",
+  "posicionamento": "medio",
+  "posicionamento_estimado": false,
+  "criterio_posicionamento": {
+    "regra": "cada peça com linha de rede vai para o nível de rede (popular, medio, premium) da mesma sub-categoria mais próximo do preço praticado, em escala logarítmica (database/data/demo/premissas.php); a loja fica com o nível da maioria (empate: o mais alto); com menos de 15 peças com referência, indeterminado, gravado como medio",
+    "resultado": "indeterminado",
+    "pecas_com_referencia": 0,
+    "pecas_por_nivel": {
+      "popular": 0,
+      "medio": 0,
+      "premium": 0
+    }
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Body bebê menina manga curta princesinhas estampa notas musicais",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 72.0
+    },
+    {
+      "descricao": "Vestido bebê menina, mamãe noel",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Vestidos infantis",
+      "genero": "infantil",
+      "preco": 77.9
+    },
+    {
+      "descricao": "Conjunto infantil feminino regata floral e shorts fofo",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 124.9
+    },
+    {
+      "descricao": "Blusa térmica infantil manga longa",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Blusas infantis",
+      "genero": "infantil",
+      "preco": 69.0
+    },
+    {
+      "descricao": "Conjunto de verão infantil: t-shirt com manga babado e short com estampa pássaros",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 107.9
+    },
+    {
+      "descricao": "Conjunto bebê menino jardineira com body manga curta e estampa baleia",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 187.5
+    },
+    {
+      "descricao": "Bermuda infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 61.5
+    },
+    {
+      "descricao": "Conjunto meninas, saia e blusa regata borboletas",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 159.9
+    },
+    {
+      "descricao": "Conjunto listras, blusa e shorts saia infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 159.9
+    },
+    {
+      "descricao": "Macaquinho bebê menina estampado com babados",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Macacões para bebês",
+      "genero": "infantil",
+      "preco": 128.9
+    },
+    {
+      "descricao": "Body bebê menino manga curta em malha com estampa leão",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 78.9
+    },
+    {
+      "descricao": "Macaquinho unissex bebê natal",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Macacões para bebês",
+      "genero": "infantil",
+      "preco": 88.9
+    },
+    {
+      "descricao": "Vestido rodado infantil com estampa divertida",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Vestidos infantis",
+      "genero": "infantil",
+      "preco": 98.9
+    },
+    {
+      "descricao": "Jaqueta juvenil puffer feminina com capuz",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas de frio infantis",
+      "genero": "infantil",
+      "preco": 215.0
+    },
+    {
+      "descricao": "Conjunto short saia infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 128.9
+    },
+    {
+      "descricao": "Conjunto infantil menino camiseta estampa ursinho e bermuda listrada",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 159.0
+    },
+    {
+      "descricao": "Conjunto infantil camisa xadrez e calça",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 178.9
+    },
+    {
+      "descricao": "Conjunto, regata e saia infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 69.9
+    },
+    {
+      "descricao": "Camiseta infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Blusas infantis",
+      "genero": "infantil",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Macaquinho bebê menino manga curta com estampa",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Macacões para bebês",
+      "genero": "infantil",
+      "preco": 67.0
+    },
+    {
+      "descricao": "Macaquinho bebê menino regata com botões frontais e estampa",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Macacões para bebês",
+      "genero": "infantil",
+      "preco": 84.9
+    },
+    {
+      "descricao": "Body vestido bebê menina natal mamãe noel com saia de tule e gola boneca",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Vestidos infantis",
+      "genero": "infantil",
+      "preco": 69.9
+    },
+    {
+      "descricao": "Conjunto blusa de alcinha com laço e shorts estampado infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 89.9
+    },
+    {
+      "descricao": "Legging cotton, tamanhos 12 ao 18 infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Calças infantis",
+      "genero": "infantil",
+      "preco": 58.9
+    },
+    {
+      "descricao": "Conjunto de verão menina: t-shirt com detalhe floral e shorts saia",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 89.9
+    },
+    {
+      "descricao": "Conjunto camiseta divertida de ursinho e bermuda casual infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 70.9
+    },
+    {
+      "descricao": "Conjunto infantil masculino com jaqueta de zíper e capuz",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 199.8
+    },
+    {
+      "descricao": "Macacão inverno bebê menina soft fleece inverno com gola redonda",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Macacões para bebês",
+      "genero": "infantil",
+      "preco": 142.9
+    },
+    {
+      "descricao": "Conjunto menino, blusa e bermuda",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 94.9
+    },
+    {
+      "descricao": "Body vestido bebê menina manga curta com saia franzida e estampa floral tulipas",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Vestidos infantis",
+      "genero": "infantil",
+      "preco": 138.9
+    },
+    {
+      "descricao": "Macacão curto bebê estampado",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Macacões para bebês",
+      "genero": "infantil",
+      "preco": 89.9
+    },
+    {
+      "descricao": "Calça bebê unissex, tema de natal",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Calças infantis",
+      "genero": "infantil",
+      "preco": 39.9
+    },
+    {
+      "descricao": "Conjunto menina, blusa e shorts",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 142.0
+    },
+    {
+      "descricao": "Legging cotton, tamanhos 4 ao 10 infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Calças infantis",
+      "genero": "infantil",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Conjunto infantil menina: blusa de um ombro só com bordado floral e short com laço",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 125.0
+    },
+    {
+      "descricao": "Camiseta básica infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Blusas infantis",
+      "genero": "infantil",
+      "preco": 48.5
+    },
+    {
+      "descricao": "Conjunto infantil masculino moletom com capuz + calça",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 114.9
+    },
+    {
+      "descricao": "Conjunto bebê menina blusa manga curta com renda e shorts tapa fralda",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 126.0
+    },
+    {
+      "descricao": "Conjunto dino, meninos",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 137.0
+    },
+    {
+      "descricao": "Body vestido bebê menina regata com saia franzida e estampa floral tulipas",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Vestidos infantis",
+      "genero": "infantil",
+      "preco": 94.5
+    },
+    {
+      "descricao": "Macacão curto bebê regata estampado dinossauros",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Macacões para bebês",
+      "genero": "infantil",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Body bebê unissex manga curta de natal, tema rena e biscoitos",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 39.9
+    },
+    {
+      "descricao": "Vestido estampa coqueiro rosa infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Vestidos infantis",
+      "genero": "infantil",
+      "preco": 106.9
+    },
+    {
+      "descricao": "Legging cotton, tamanhos 1 ao 3 infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Calças infantis",
+      "genero": "infantil",
+      "preco": 47.0
+    },
+    {
+      "descricao": "Conjunto infantil menina com estampa floral e fofas margaridas coloridas",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 118.5
+    },
+    {
+      "descricao": "Conjunto bebê menino camiseta em meia malha e jardineira em moletinho jeans verde",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Conjunto de moletom, masculino com blusa e calça infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 145.9
+    },
+    {
+      "descricao": "Macaquinho infantil manga princesinha estampado corações",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 92.5
+    },
+    {
+      "descricao": "Conjunto bebê menino camiseta estampa ursinho e bermuda listrada",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 149.9
+    },
+    {
+      "descricao": "Body vestido bebê menina regata com babado, faixa de cabelo e estampa corações",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Vestidos infantis",
+      "genero": "infantil",
+      "preco": 94.5
+    },
+    {
+      "descricao": "Body bebê menina regata com babado nas alças e estampa passarinhos",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Macacão bebê inverno com capuz orelhinhas e pé fechado",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Macacões para bebês",
+      "genero": "infantil",
+      "preco": 138.9
+    },
+    {
+      "descricao": "Blusa estrela menina preta",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Blusas infantis",
+      "genero": "infantil",
+      "preco": 87.5
+    },
+    {
+      "descricao": "Conjunto de verão menina: regata com babados e shorts estampados",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 129.5
+    },
+    {
+      "descricao": "Conjunto infantil feminino com blusa de babados e shorts estampado",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 89.9
+    },
+    {
+      "descricao": "Camisa polo lisa manga curta, tamanho 1 ao 3 infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Blusas infantis",
+      "genero": "infantil",
+      "preco": 64.9
+    },
+    {
+      "descricao": "Conjunto infantil, blusa manga longa e calça",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 114.5
+    },
+    {
+      "descricao": "Conjunto bebê menina blusa manga curta com estampa de laço e shorts tapa fralda",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 110.0
+    },
+    {
+      "descricao": "Macacão curto bebê masculino estampa ursinho",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Macacões para bebês",
+      "genero": "infantil",
+      "preco": 84.9
+    },
+    {
+      "descricao": "Body bebê menina manga curta com estampa delicada",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas para bebês e crianças",
+      "genero": "infantil",
+      "preco": 69.9
+    }
+  ]
+}

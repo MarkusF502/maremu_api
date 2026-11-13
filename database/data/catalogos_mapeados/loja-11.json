@@ -2,11 +2,17 @@
   "loja": "loja-11",
   "nome_ficticio": "Moda Feminina Mapeada 11",
   "segmento": "moda feminina",
-  "posicionamento": "medio",
+  "posicionamento": "premium",
+  "posicionamento_estimado": true,
   "criterio_posicionamento": {
-    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
-    "fator_mediano": 1.8136,
-    "pecas_com_fator": 41
+    "regra": "cada peça com linha de rede vai para o nível de rede (popular, medio, premium) da mesma sub-categoria mais próximo do preço praticado, em escala logarítmica (database/data/demo/premissas.php); a loja fica com o nível da maioria (empate: o mais alto); com menos de 15 peças com referência, indeterminado, gravado como medio",
+    "resultado": "premium",
+    "pecas_com_referencia": 41,
+    "pecas_por_nivel": {
+      "popular": 4,
+      "medio": 5,
+      "premium": 32
+    }
   },
   "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
   "pecas": [
