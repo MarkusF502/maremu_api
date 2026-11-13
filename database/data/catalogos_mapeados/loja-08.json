@@ -1,0 +1,434 @@
+{
+  "loja": "loja-08",
+  "nome_ficticio": "Moda Feminina Mapeada 08",
+  "segmento": "moda feminina",
+  "posicionamento": "popular",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 0.9995,
+    "pecas_com_fator": 34
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Conjunto camisa e calça",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 329.9
+    },
+    {
+      "descricao": "Macacão em viscolinho com elastano",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Vestido listrado em viscose",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.9
+    },
+    {
+      "descricao": "Calça jeans",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Saia transpassada com fivela",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Saia shorts jeans",
+      "categoria_pai": "Short-saia",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 169.9
+    },
+    {
+      "descricao": "Shorts em viscolinho com elastano",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149.9
+    },
+    {
+      "descricao": "Blazer",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 60
+    },
+    {
+      "descricao": "Blusa colete",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Coletes",
+      "genero": "feminino",
+      "preco": 50
+    },
+    {
+      "descricao": "Jaqueta jeans",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Camisa + cropped",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 209.9
+    },
+    {
+      "descricao": "Macacão pantacourt com elastano",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 269.9
+    },
+    {
+      "descricao": "Vestido longo floral",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 249.9
+    },
+    {
+      "descricao": "Calça jeans flare",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.9
+    },
+    {
+      "descricao": "Saia black jeans",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 239.9
+    },
+    {
+      "descricao": "Shorts saia bolsos utilitários",
+      "categoria_pai": "Short-saia",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Shorts jeans com bolsos utilitários",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 169.9
+    },
+    {
+      "descricao": "Cropped com amarração",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 50
+    },
+    {
+      "descricao": "Conjunto em linho com elastano",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.9
+    },
+    {
+      "descricao": "Vestido listrado em viscose lenço)",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 259.9
+    },
+    {
+      "descricao": "Calça flare",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 169.9
+    },
+    {
+      "descricao": "Saia jeans midi evasê",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 179.9
+    },
+    {
+      "descricao": "Shorts saia",
+      "categoria_pai": "Short-saia",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 239.9
+    },
+    {
+      "descricao": "Shorts jeans mom",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149.9
+    },
+    {
+      "descricao": "Camisa em viscose",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Conjunto cropped com saia midi",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 239.9
+    },
+    {
+      "descricao": "Vestido midi listrado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 229.9
+    },
+    {
+      "descricao": "Calça jeans reta tornozelo",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 269.9
+    },
+    {
+      "descricao": "Shorts saia em alfaiataria",
+      "categoria_pai": "Short-saia",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149.9
+    },
+    {
+      "descricao": "Shorts linho com elastano",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Blusa em poliamida",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 109.9
+    },
+    {
+      "descricao": "Conjunto com pesponto",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 269.9
+    },
+    {
+      "descricao": "Vestido em renda",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.9
+    },
+    {
+      "descricao": "Calça animal print",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 209.9
+    },
+    {
+      "descricao": "Shorts slub em alfaiataria",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149.9
+    },
+    {
+      "descricao": "Regata pespontada com elastano",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 99.9
+    },
+    {
+      "descricao": "Conjunto de calça pantalona",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 289.9
+    },
+    {
+      "descricao": "Vestido curto",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 229.9
+    },
+    {
+      "descricao": "Calça capri jeans",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 269.9
+    },
+    {
+      "descricao": "Shorts jeans claro",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 159.9
+    },
+    {
+      "descricao": "Blusa em malha",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 40
+    },
+    {
+      "descricao": "Conjunto pespontado",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 229.9
+    },
+    {
+      "descricao": "",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 229.9
+    },
+    {
+      "descricao": "Pantalona em alfaiataria",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Shorts jeans",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Blusa regata",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 114.9
+    },
+    {
+      "descricao": "Conjunto",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 229.9
+    },
+    {
+      "descricao": "Vestido meia manga listrado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 169.9
+    },
+    {
+      "descricao": "Calça alfaiataria",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Shorts jeans",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Camisa regata",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 119.9
+    },
+    {
+      "descricao": "Vestido midi com fenda",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 209.9
+    },
+    {
+      "descricao": "Calça slub",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.9
+    },
+    {
+      "descricao": "Regata em malha canelada",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 99.9
+    },
+    {
+      "descricao": "Vestido camadas",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Cropped",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 50
+    },
+    {
+      "descricao": "Vestido listras",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Regata em alfaiataria alça regulável",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.9
+    },
+    {
+      "descricao": "Vestido longo estampado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 239.9
+    },
+    {
+      "descricao": "Regata canelada listrada",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 109.9
+    }
+  ]
+}

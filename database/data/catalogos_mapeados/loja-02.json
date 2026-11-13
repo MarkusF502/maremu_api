@@ -1,0 +1,399 @@
+{
+  "loja": "loja-02",
+  "nome_ficticio": "Moda Feminina Mapeada 02",
+  "segmento": "moda feminina",
+  "posicionamento": "popular",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 0.4588,
+    "pecas_com_fator": 55
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Blusa feminina malha manga curta lisa detalhes na gola",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.0
+    },
+    {
+      "descricao": "Calça pantacourt lisa estilo jeans com elástico e bolsos",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Vestido longo manga curta malha premium decote v bicolor",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 137.5
+    },
+    {
+      "descricao": "Blusa feminina regata malha lisa com strass",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.0
+    },
+    {
+      "descricao": "Calça pantalona estampada com elástico",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Vestido trapézio regata batik e bordado plus size",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 78.9
+    },
+    {
+      "descricao": "Blusa feminina malha manga japonesa halftone mandala",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.0
+    },
+    {
+      "descricao": "Calça wide leg algodão cru com botões",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 140.0
+    },
+    {
+      "descricao": "Vestido curto indiano liso alça estonado com bordado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 78.9
+    },
+    {
+      "descricao": "Blusa feminina manga curta lisa com aplicação em bordado",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 45.0
+    },
+    {
+      "descricao": "Calça indiana pantalona viscose lisa com bolso e forro",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 65.0
+    },
+    {
+      "descricao": "Vestido trapézio indiano manga curta liso plus size",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Blusa feminina manga curta com botões e detalhes na manga",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.0
+    },
+    {
+      "descricao": "Calça indiana pantalona estampada com elástico na cintura",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Vestido indiano longo boho toque de seda alça soltinho",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 99.0
+    },
+    {
+      "descricao": "Blusa feminina manga curta lisa detalhes trançados na manga",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.0
+    },
+    {
+      "descricao": "Calça indiana de malha pantalona bolsos estampada plus size",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 85.0
+    },
+    {
+      "descricao": "Vestido longo indiano manga morcego toque de seda gold",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 112.5
+    },
+    {
+      "descricao": "Blusa feminina manga curta estampada tie dye malha premium",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 110.0
+    },
+    {
+      "descricao": "Calça saruel indiana com bordados boho chic",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 99.0
+    },
+    {
+      "descricao": "Vestido longo regata fina malha tie dye",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 195.0
+    },
+    {
+      "descricao": "Camisa feminina regata viscolinho listras cropped alongado",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 75.0
+    },
+    {
+      "descricao": "Calça indiana pantalona com zíper e ajuste",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 99.0
+    },
+    {
+      "descricao": "Vestido curto malha fresquinha manga curta estampa e botões",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 85.0
+    },
+    {
+      "descricao": "Blusa feminina manga japonesa gola redonda estampada",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 62.5
+    },
+    {
+      "descricao": "Calça indiana de malha pantalona estampada com bolsos",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 85.0
+    },
+    {
+      "descricao": "Vestido curto regata com gola botão falso malha premium liso",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 78.9
+    },
+    {
+      "descricao": "Bata indiana manga 7/8 estilo jeans lesi e botões",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Vestido curto manga curta decote transpassado estampado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 65.0
+    },
+    {
+      "descricao": "Camisa feminina manga curta viscolinho cropped alongado",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 75.0
+    },
+    {
+      "descricao": "Vestido longo transpassado decote v manga curta estampado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Blusa feminina ciganinha malha manga curta decote gota",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.0
+    },
+    {
+      "descricao": "Vestido indiano longo toque de seda manga morcego estampado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 99.0
+    },
+    {
+      "descricao": "Blusa feminina canelada manga curta lisa com linha lateral",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.9
+    },
+    {
+      "descricao": "Vestido trapézio indiano manga curta estampado plus size",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Blusa feminina manga curta malha premium detalhe botões",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.9
+    },
+    {
+      "descricao": "Vestido curto regata em malha estampado amarração no busto",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Blusa feminina ampla manga japonesa lisa fendas nas laterais",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Vestido curto em malha estampado ilhós cintura e drapeado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Blusa feminina manga curta lisa com detalhe botões",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Vestido indiano curto ciganinha com elástico estampado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 78.9
+    },
+    {
+      "descricao": "Blusa feminina manga curta detalhe pesponto plus size",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Vestido curto indiano alça estampado botões e bordados",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 125.0
+    },
+    {
+      "descricao": "Blusa feminina manga curta estampada com detalhes",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.9
+    },
+    {
+      "descricao": "Vestido trapézio indiano com bordados e estampa",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 78.9
+    },
+    {
+      "descricao": "Blusa feminina malha manga japonesa estampa minimalista",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.0
+    },
+    {
+      "descricao": "Vestido midi malha regata estampa assimétrica com bolso",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 99.0
+    },
+    {
+      "descricao": "Blusa feminina regata básica lisa malha premium decote u",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 45.0
+    },
+    {
+      "descricao": "Vestido curto manga curta em malha estampado decote princesa",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Bata indiana manga 7/8 em lesi lisa",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 89.0
+    },
+    {
+      "descricao": "Vestido indiano trapézio regata com bordados e estampa",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 78.9
+    },
+    {
+      "descricao": "Blusa feminina malha manga japonesa lisa",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.0
+    },
+    {
+      "descricao": "Vestido trapézio indiano alças estampa dourada mandala",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 78.9
+    },
+    {
+      "descricao": "Blusa feminina manga curta básica lisa em malha",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 50.0
+    },
+    {
+      "descricao": "Blusa feminina manga curta abertura na manga e argola plus",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 62.5
+    }
+  ]
+}

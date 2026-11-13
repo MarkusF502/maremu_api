@@ -1,0 +1,434 @@
+{
+  "loja": "loja-11",
+  "nome_ficticio": "Moda Feminina Mapeada 11",
+  "segmento": "moda feminina",
+  "posicionamento": "medio",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 1.8136,
+    "pecas_com_fator": 41
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Blazer acinturado com pregas verde",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 479
+    },
+    {
+      "descricao": "Blusa sem manga decote degagê vinho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199
+    },
+    {
+      "descricao": "Calça pantalona cós transpassado preto",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 359
+    },
+    {
+      "descricao": "Camisa estampada com faixa de amarração bege",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Jaqueta transparente com capuz bege",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Colete acinturado bege",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Coletes",
+      "genero": "feminino",
+      "preco": 379
+    },
+    {
+      "descricao": "Macacão decote degagê com broche preto",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 559
+    },
+    {
+      "descricao": "Saia godê estampada caramelo",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 399
+    },
+    {
+      "descricao": "Vestido franzido decote ombro a ombro vinho",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 479
+    },
+    {
+      "descricao": "Spencer ajustado alfaiataria encorpada azul",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 559
+    },
+    {
+      "descricao": "Blusa reta decote assimétrico",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Calça flare azul",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 319
+    },
+    {
+      "descricao": "Camisa reta acetinada rosa envelhecido",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Jaqueta mangas 3/4 com botão no punho preto",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Colete alfaiataria com botões azul marinho",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Coletes",
+      "genero": "feminino",
+      "preco": 439
+    },
+    {
+      "descricao": "Macacão decote transpassado com amarração caramelo",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 479
+    },
+    {
+      "descricao": "Saia midi evasê bege",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 319
+    },
+    {
+      "descricao": "Vestido longo decote assimétrico vermelho",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 559
+    },
+    {
+      "descricao": "Blazer reto com bolsos frontais natural",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 999
+    },
+    {
+      "descricao": "Blusa decote franzido preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219
+    },
+    {
+      "descricao": "Calça pantalona com elástico nas costas azul marinho",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 359
+    },
+    {
+      "descricao": "Camisa reta acetinada",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Jaqueta mangas 3/4 com botão no punho",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Colete transpassado com vivo azul marinho",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Coletes",
+      "genero": "feminino",
+      "preco": 479
+    },
+    {
+      "descricao": "Macacão sem manga com ajuste lateral",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 409
+    },
+    {
+      "descricao": "Saia plissada estampada bege",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 439
+    },
+    {
+      "descricao": "Vestido midi decote v transpassado preto",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 459
+    },
+    {
+      "descricao": "Blazer acinturado com botões forrados preto",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 679
+    },
+    {
+      "descricao": "Blusa estampada com manga 3/4 caramelo",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 319
+    },
+    {
+      "descricao": "Calça pantalona bege",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 379
+    },
+    {
+      "descricao": "Camisa acinturada acetinada bege",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 339
+    },
+    {
+      "descricao": "Jaqueta bomber curta bege",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 459
+    },
+    {
+      "descricao": "Colete alfaiataria com mangas amarelo",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Coletes",
+      "genero": "feminino",
+      "preco": 459
+    },
+    {
+      "descricao": "Macacão com lenço sobreposto e faixa de amarração azul marinho",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 379
+    },
+    {
+      "descricao": "Saia evasê em camadas azul marinho",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 359
+    },
+    {
+      "descricao": "Vestido curto estampado caramelo",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 379
+    },
+    {
+      "descricao": "Spencer de linho com faixa de amarração off white",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 859
+    },
+    {
+      "descricao": "Blusa estampada decote halter caramelo",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 259
+    },
+    {
+      "descricao": "Calça flare verde",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 319
+    },
+    {
+      "descricao": "Camisa acetinada reta militar",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Jaqueta transparente com capuz verde claro",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Colete acinturado com faixa de amarração preto",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Coletes",
+      "genero": "feminino",
+      "preco": 339
+    },
+    {
+      "descricao": "Macacão acinturado com faixa de amarração marrom",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 579
+    },
+    {
+      "descricao": "Saia estampada com pala na cintura verde",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 359
+    },
+    {
+      "descricao": "Vestido godê com gola alta azul marinho",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 399
+    },
+    {
+      "descricao": "Blazer reto em risca de giz azul claro",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 599
+    },
+    {
+      "descricao": "Blusa reta com nervuras verde claro",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199
+    },
+    {
+      "descricao": "Calça reta com martingale no cós framboesa",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 359
+    },
+    {
+      "descricao": "Camisa acinturada sem manga natural",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 319
+    },
+    {
+      "descricao": "Macacão decote assimétrico com sobreposição no ombro marrom",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 519
+    },
+    {
+      "descricao": "Saia evasê estampada verde",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 279
+    },
+    {
+      "descricao": "Vestido godê com gola alta terracota",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 399
+    },
+    {
+      "descricao": "Blazer acinturado com lapela off white",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 699
+    },
+    {
+      "descricao": "Blusa reta com barra assimétrica preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219
+    },
+    {
+      "descricao": "Calça reta com martingale no cós preto",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 359
+    },
+    {
+      "descricao": "Camisa reta com fecho mandarim off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 359
+    },
+    {
+      "descricao": "Macacão acinturado com faixa de amarração",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 579
+    },
+    {
+      "descricao": "Saia midi godê bege",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 479
+    },
+    {
+      "descricao": "Vestido acinturado com decote transpassado amarelo",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 519
+    },
+    {
+      "descricao": "Blazer curto reto",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 439
+    }
+  ]
+}

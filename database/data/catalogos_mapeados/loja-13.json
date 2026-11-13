@@ -1,0 +1,434 @@
+{
+  "loja": "loja-13",
+  "nome_ficticio": "Jeanswear Mapeada 13",
+  "segmento": "jeanswear",
+  "posicionamento": "premium",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 3.4824,
+    "pecas_com_fator": 44
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Calça wide leg",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 940
+    },
+    {
+      "descricao": "Bermuda",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 620
+    },
+    {
+      "descricao": "Blusa de renda feminina marrom premium",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 440
+    },
+    {
+      "descricao": "Camisa feminina mostarda manga longa",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 750
+    },
+    {
+      "descricao": "Cropped feminino branco",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 432
+    },
+    {
+      "descricao": "Jaqueta jeans peplum azul marinho feminina",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 1480
+    },
+    {
+      "descricao": "Blusa regata canelada azul marinho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 195
+    },
+    {
+      "descricao": "Saia midi seda jeans azul escuro feminina premium",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 790
+    },
+    {
+      "descricao": "Short feminino esmeralda mostarda cintura alta",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 590
+    },
+    {
+      "descricao": "T-shirt feminina azul marinho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 155
+    },
+    {
+      "descricao": "Vestido seda jeans azul escuro feminino premium",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 790
+    },
+    {
+      "descricao": "Calça reta",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 780
+    },
+    {
+      "descricao": "Bermuda jeans feminina azul claro cintura alta",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 660
+    },
+    {
+      "descricao": "Blusa de renda feminina marrom manga longa premium",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 440
+    },
+    {
+      "descricao": "Camisa preta com punhos plissados",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 780
+    },
+    {
+      "descricao": "Cropped jeans claro com botões cristal",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 390
+    },
+    {
+      "descricao": "Jaqueta feminina caqui",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 640
+    },
+    {
+      "descricao": "Regata básica canelada nadador azul marinho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 98
+    },
+    {
+      "descricao": "Saia cargo feminina caqui",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 330
+    },
+    {
+      "descricao": "Short jeans cintura alta azul médio",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 560
+    },
+    {
+      "descricao": "T-shirt feminina rosa",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149
+    },
+    {
+      "descricao": "Vestido cargo vinho",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 493
+    },
+    {
+      "descricao": "Calça jeans barrel azul escuro cintura alta",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 890
+    },
+    {
+      "descricao": "Jorts seda jeans azul escuro feminino premium",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 660
+    },
+    {
+      "descricao": "Blusa de tule feminina preta manga curta premium",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 460
+    },
+    {
+      "descricao": "Camisa branca com punhos plissados",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 780
+    },
+    {
+      "descricao": "Cropped cristal laranja",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 306
+    },
+    {
+      "descricao": "Jaqueta jeans feminina azul marinho",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 430
+    },
+    {
+      "descricao": "Regata canelada branca",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 195
+    },
+    {
+      "descricao": "Saia cargo azul marinho",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 390
+    },
+    {
+      "descricao": "Short jeans feminino azul claro cintura alta",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 575
+    },
+    {
+      "descricao": "T-shirt feminina azul",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 298
+    },
+    {
+      "descricao": "Chemise feminina",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 695
+    },
+    {
+      "descricao": "Calça reta cargo mostarda cintura alta",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 780
+    },
+    {
+      "descricao": "Bermuda jeans azul claro feminina premium",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 660
+    },
+    {
+      "descricao": "Blusa de tule feminina preta manga longa premium",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 460
+    },
+    {
+      "descricao": "Camisa linho premium nude feminina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 780
+    },
+    {
+      "descricao": "Cropped verde oliva",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 294
+    },
+    {
+      "descricao": "Jaqueta vinho com barra em tricot",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 525
+    },
+    {
+      "descricao": "Regata feminina nadador branca e preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 195
+    },
+    {
+      "descricao": "Saia jeans curta cintura alta",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Minissaias",
+      "genero": "feminino",
+      "preco": 495
+    },
+    {
+      "descricao": "Short jeans azul claro feminino premium",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 595
+    },
+    {
+      "descricao": "Vestido jeans",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 455
+    },
+    {
+      "descricao": "Calça barrel mostarda cintura alta",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 840
+    },
+    {
+      "descricao": "Jorts feminina cinza chumbo",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 330
+    },
+    {
+      "descricao": "Blusa seda jeans azul claro feminina premium",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 750
+    },
+    {
+      "descricao": "Camisa linho premium off-white feminina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 780
+    },
+    {
+      "descricao": "Cropped rosa claro com recortes estruturados",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 294
+    },
+    {
+      "descricao": "Parka jeans feminina alongada",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 470
+    },
+    {
+      "descricao": "Regata nadador preto e branco",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 195
+    },
+    {
+      "descricao": "Saia jeans cargo branca",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 379
+    },
+    {
+      "descricao": "Short feminino vinho cintura alta",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 325
+    },
+    {
+      "descricao": "Vestido jeans claro",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 605
+    },
+    {
+      "descricao": "Calça wide leg cargo mostarda",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 890
+    },
+    {
+      "descricao": "Jorts feminino preto",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 330
+    },
+    {
+      "descricao": "Blusa seda jeans azul escuro feminina premium",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 720
+    },
+    {
+      "descricao": "Camisa branca feminina com gravata",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 780
+    },
+    {
+      "descricao": "Cropped caramelo",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 471
+    },
+    {
+      "descricao": "Cardigã feminino tricot premium azul estruturado",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 420
+    },
+    {
+      "descricao": "Blusa regata listrada",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149
+    }
+  ]
+}

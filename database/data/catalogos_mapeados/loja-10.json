@@ -1,0 +1,434 @@
+{
+  "loja": "loja-10",
+  "nome_ficticio": "Moda Feminina Mapeada 10",
+  "segmento": "moda feminina",
+  "posicionamento": "medio",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 1.6723,
+    "pecas_com_fator": 42
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Regata laise preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 194.0
+    },
+    {
+      "descricao": "Calça floral verde",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 410.0
+    },
+    {
+      "descricao": "Camisa decote v off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 200.0
+    },
+    {
+      "descricao": "Jaqueta textura vinho",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 396.0
+    },
+    {
+      "descricao": "Kimono localizado plus size uva",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 207.0
+    },
+    {
+      "descricao": "Macacão decote reto linho marrom café",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 482.0
+    },
+    {
+      "descricao": "Regata tule azul",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 131.0
+    },
+    {
+      "descricao": "Saia linho assimétrica preto",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 220.0
+    },
+    {
+      "descricao": "Shorts vivo linho vermelho",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 187.0
+    },
+    {
+      "descricao": "Vestido morangos e lírios verde",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 537.0
+    },
+    {
+      "descricao": "Regata morangos e lírios verde",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 206.0
+    },
+    {
+      "descricao": "Calça linho vermelho",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 351.0
+    },
+    {
+      "descricao": "Camisa balonê linho branco",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 269.0
+    },
+    {
+      "descricao": "Jaqueta corta-vento 1/2 terracota",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 199.0
+    },
+    {
+      "descricao": "Kimono localizado plus size off white",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 207.0
+    },
+    {
+      "descricao": "Macacão decote reto linho azul marinho",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 482.0
+    },
+    {
+      "descricao": "Regata de arabescos off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 157.0
+    },
+    {
+      "descricao": "Saia linho assimétrica militar",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 220.0
+    },
+    {
+      "descricao": "Shorts nervuras alfaiataria verde",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 176.0
+    },
+    {
+      "descricao": "Vestido verde",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 331.0
+    },
+    {
+      "descricao": "Blusa verde",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 293.0
+    },
+    {
+      "descricao": "Calça capri vermelho",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 218.0
+    },
+    {
+      "descricao": "Camisa balonê linho terracota",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 269.0
+    },
+    {
+      "descricao": "Jaqueta corta-vento 1/2 azul marinho",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 199.0
+    },
+    {
+      "descricao": "Kimono localizado uva",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 207.0
+    },
+    {
+      "descricao": "Macacão malha azul marinho",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 294.0
+    },
+    {
+      "descricao": "Regata de arabescos coral",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 157.0
+    },
+    {
+      "descricao": "Saia longa linho caqui",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias longas",
+      "genero": "feminino",
+      "preco": 99.0
+    },
+    {
+      "descricao": "Shorts nervuras alfaiataria cereja",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 176.0
+    },
+    {
+      "descricao": "Vestido chemise verde",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 454.0
+    },
+    {
+      "descricao": "Blusa morango plus size vermelho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 273.0
+    },
+    {
+      "descricao": "Calça capri militar",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 218.0
+    },
+    {
+      "descricao": "Jaqueta corta-vento 1/2 militar",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 199.0
+    },
+    {
+      "descricao": "Kimono localizado off white",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 207.0
+    },
+    {
+      "descricao": "Macacão nó localizado preto",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 412.0
+    },
+    {
+      "descricao": "Regata de arabescos plus size off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 192.0
+    },
+    {
+      "descricao": "Saia longa linho rosa claro",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias longas",
+      "genero": "feminino",
+      "preco": 99.0
+    },
+    {
+      "descricao": "Shorts sarja de açaí off white",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 192.0
+    },
+    {
+      "descricao": "Vestido morango vermelho",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 375.0
+    },
+    {
+      "descricao": "Regata renda morango vermelho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 226.0
+    },
+    {
+      "descricao": "Calça capri marrom café",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 218.0
+    },
+    {
+      "descricao": "Jaqueta corta-vento preto",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 199.0
+    },
+    {
+      "descricao": "Macacão alfaiataria amarração militar",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 199.0
+    },
+    {
+      "descricao": "Regata de arabescos plus size coral",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 192.0
+    },
+    {
+      "descricao": "Bermuda alfaiataria acetinada militar",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 99.0
+    },
+    {
+      "descricao": "Vestido morango plus size vermelho",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 385.0
+    },
+    {
+      "descricao": "Regata floral verde",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 274.0
+    },
+    {
+      "descricao": "Calça franzida twill vermelho",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 226.0
+    },
+    {
+      "descricao": "Jaqueta corta-vento militar",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 199.0
+    },
+    {
+      "descricao": "Macacão alfaiataria amarração mostarda",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 199.0
+    },
+    {
+      "descricao": "Regata floral folk plus size preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 174.0
+    },
+    {
+      "descricao": "Bermuda alfaiataria acetinada verde",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 99.0
+    },
+    {
+      "descricao": "Vestido floral verde",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 447.0
+    },
+    {
+      "descricao": "Regata preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 252.0
+    },
+    {
+      "descricao": "Calça canaleta alfaiataria verde",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 246.0
+    },
+    {
+      "descricao": "Jaqueta corta-vento amarelo",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 176.0
+    },
+    {
+      "descricao": "Macacão alfaiataria amarração vermelho cereja",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 199.0
+    },
+    {
+      "descricao": "Regata frente linho vermelho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 132.0
+    },
+    {
+      "descricao": "Shorts listrado azul",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 103.0
+    },
+    {
+      "descricao": "Vestido preto",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 466.0
+    }
+  ]
+}

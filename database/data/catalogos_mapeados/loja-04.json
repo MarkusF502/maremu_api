@@ -1,0 +1,336 @@
+{
+  "loja": "loja-04",
+  "nome_ficticio": "Moda Feminina Mapeada 04",
+  "segmento": "moda feminina",
+  "posicionamento": "premium",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 2.516,
+    "pecas_com_fator": 37
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Camisa básica de manga longa de linho areia",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 319.0
+    },
+    {
+      "descricao": "Calça barrel acetinada ocre",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 289.0
+    },
+    {
+      "descricao": "Quimono linho puro bordado branco",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 589.0
+    },
+    {
+      "descricao": "Macacão manteiga",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 334.4
+    },
+    {
+      "descricao": "Bermuda areia",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 329.0
+    },
+    {
+      "descricao": "Vestido linho puro avelã",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 575.2
+    },
+    {
+      "descricao": "Camisa cominho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 439.0
+    },
+    {
+      "descricao": "Calça linho puro avelã",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 551.2
+    },
+    {
+      "descricao": "Quimono marrom",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 299.0
+    },
+    {
+      "descricao": "Saia midi preta com elástico",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 359.0
+    },
+    {
+      "descricao": "Vestido listrado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 391.2
+    },
+    {
+      "descricao": "Camisa marrom",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 339.0
+    },
+    {
+      "descricao": "Calça pantacourt em linho puro avelã",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 551.2
+    },
+    {
+      "descricao": "Short de linho areia",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 329.0
+    },
+    {
+      "descricao": "Vestido tricolor",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 311.2
+    },
+    {
+      "descricao": "Camisa azul marinho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 689.0
+    },
+    {
+      "descricao": "Calça pantacourt linho puro azul marinho",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 689.0
+    },
+    {
+      "descricao": "Short em linho puro branco",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 439.0
+    },
+    {
+      "descricao": "Vestido marrom",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 339.0
+    },
+    {
+      "descricao": "Blusa assimétrica em viscose preta",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 339.0
+    },
+    {
+      "descricao": "Calça alfaiataria reta de linho puro areia",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 498.0
+    },
+    {
+      "descricao": "Short sarja listrado",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 238.4
+    },
+    {
+      "descricao": "Vestido lima",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 419.0
+    },
+    {
+      "descricao": "Camisa linho puro poá",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 789.0
+    },
+    {
+      "descricao": "Calça de linho puro com bolsos off white",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 498.0
+    },
+    {
+      "descricao": "Short listrado colorido",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 231.2
+    },
+    {
+      "descricao": "Vestido marinho",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 719.0
+    },
+    {
+      "descricao": "Camisa linho puro avelã",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 551.2
+    },
+    {
+      "descricao": "Calça areia",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 419.0
+    },
+    {
+      "descricao": "Short listrado azul",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.0
+    },
+    {
+      "descricao": "Vestido amarelo",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 349.0
+    },
+    {
+      "descricao": "Bata off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 339.0
+    },
+    {
+      "descricao": "Calça wide leg areia",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 349.0
+    },
+    {
+      "descricao": "Saia lápis tweed roxo",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 199.0
+    },
+    {
+      "descricao": "Vestido branco",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 529.0
+    },
+    {
+      "descricao": "Camisa branca",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 339.0
+    },
+    {
+      "descricao": "Calça sarja listrada",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 351.2
+    },
+    {
+      "descricao": "Bata laise branca",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 259.0
+    },
+    {
+      "descricao": "Calça balloon recortes areia",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 629.0
+    },
+    {
+      "descricao": "Camisa oversized de linho preta",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 369.0
+    },
+    {
+      "descricao": "Calça balloon jeans off white",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 619.0
+    },
+    {
+      "descricao": "Camisa bordada listrado azul",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 529.0
+    },
+    {
+      "descricao": "Calça em linho puro branca",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 689.0
+    },
+    {
+      "descricao": "Camisa básica de linho puro off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 498.0
+    },
+    {
+      "descricao": "Cropped sarja listrada",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 158.4
+    },
+    {
+      "descricao": "Camisa marinho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 359.0
+    }
+  ]
+}

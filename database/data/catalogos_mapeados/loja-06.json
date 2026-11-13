@@ -1,0 +1,434 @@
+{
+  "loja": "loja-06",
+  "nome_ficticio": "Moda Íntima Mapeada 06",
+  "segmento": "moda íntima",
+  "posicionamento": "popular",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 0.5492,
+    "pecas_com_fator": 30
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Calcinha laser pala alta",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 20.9
+    },
+    {
+      "descricao": "Sutiã",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Sutiã para amamentação plus size",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Conjunto pijama americano longo e curto coração vermelho",
+      "categoria_pai": "Pijamas e roupas casuais",
+      "sub_categoria": "Pijamas",
+      "genero": "feminino",
+      "preco": 166.9
+    },
+    {
+      "descricao": "Sutiã reforço em microfibra",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 88.9
+    },
+    {
+      "descricao": "Sutiã",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 99.9
+    },
+    {
+      "descricao": "Calcinha laser tipo biquíni cintura alta",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 29.9
+    },
+    {
+      "descricao": "Camisola fenda dupla",
+      "categoria_pai": "Pijamas e roupas casuais",
+      "sub_categoria": "Camisolas",
+      "genero": "feminino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Sutiã para amamentação cotton fio 40 sem arco",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Pijama americano",
+      "categoria_pai": "Pijamas e roupas casuais",
+      "sub_categoria": "Pijamas",
+      "genero": "feminino",
+      "preco": 124.9
+    },
+    {
+      "descricao": "Sutiã tomara que caia grande",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 99.9
+    },
+    {
+      "descricao": "Sutiã basic up",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 46.9
+    },
+    {
+      "descricao": "Calcinha laser básica",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 17.9
+    },
+    {
+      "descricao": "Conjunto",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Lingerie",
+      "genero": "feminino",
+      "preco": 93.9
+    },
+    {
+      "descricao": "Sutiã para amamentação estruturado",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 69.9
+    },
+    {
+      "descricao": "Sutiã cobertura",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 98.9
+    },
+    {
+      "descricao": "Sutiã posições",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Calcinha laser pala alta fio dental",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 17.9
+    },
+    {
+      "descricao": "Baby doll",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Babydolls",
+      "genero": "feminino",
+      "preco": 124.9
+    },
+    {
+      "descricao": "Sutiã para amamentação em renda",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Sutiã plus size em microfibra alças em espuma",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 89.9
+    },
+    {
+      "descricao": "Sutiã, reforçado de algodão",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Calcinha com forro 100% algodão",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 29.9
+    },
+    {
+      "descricao": "Camisola fenda",
+      "categoria_pai": "Pijamas e roupas casuais",
+      "sub_categoria": "Camisolas",
+      "genero": "feminino",
+      "preco": 124.9
+    },
+    {
+      "descricao": "Pijama curto urso",
+      "categoria_pai": "Pijamas e roupas casuais",
+      "sub_categoria": "Pijamas",
+      "genero": "feminino",
+      "preco": 124.9
+    },
+    {
+      "descricao": "Sutiã plus size fecho frontal alças em espuma",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 89.9
+    },
+    {
+      "descricao": "Sutiã com alças finas",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Calcinha laser básica fio dental",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 17.9
+    },
+    {
+      "descricao": "Conjunto",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Lingerie",
+      "genero": "feminino",
+      "preco": 98.9
+    },
+    {
+      "descricao": "Sutiã amamentação com bojo",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Sutiã drapeado em microfibra, plus size",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 89.9
+    },
+    {
+      "descricao": "Sutiã com pala em microfibra de alta compressão sem arco",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 59.9
+    },
+    {
+      "descricao": "Calcinha fio",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 39.9
+    },
+    {
+      "descricao": "Sutiã todo em renda",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 59.9
+    },
+    {
+      "descricao": "Sutiã sem arco rendado em microfibra",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 59.9
+    },
+    {
+      "descricao": "Calcinha cueca feminina",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 23.9
+    },
+    {
+      "descricao": "Sutiã top reforçado",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 72.9
+    },
+    {
+      "descricao": "Sutiã top canelado",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Fio duplo básico em microfibra",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 18.9
+    },
+    {
+      "descricao": "Cinta plus size corpo inteiro",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Cinta modeladora",
+      "genero": "feminino",
+      "preco": 209.9
+    },
+    {
+      "descricao": "Sutiã decote profundo",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 69.9
+    },
+    {
+      "descricao": "Calcinha larguinha",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 20.9
+    },
+    {
+      "descricao": "Top",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Calcinha",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 41.9
+    },
+    {
+      "descricao": "Sutiã 3d",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 109.9
+    },
+    {
+      "descricao": "Calcinha confort modal regular",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 22.9
+    },
+    {
+      "descricao": "Sutiã silicone costa nua",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Calcinha cós tradicional",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 39.9
+    },
+    {
+      "descricao": "Sutiã de arco rendado em microfibra",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 59.9
+    },
+    {
+      "descricao": "Calcinha confort modal fio duplo",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 22.9
+    },
+    {
+      "descricao": "Sutiã teen em microfibra",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 29.9
+    },
+    {
+      "descricao": "Calcinha",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 33.9
+    },
+    {
+      "descricao": "Sutiã",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Calcinha",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 29.9
+    },
+    {
+      "descricao": "Top faixa sem costura",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Sutiãs",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Calçola microfibra",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 49.9
+    },
+    {
+      "descricao": "Calcinha triângulo regulável, fio dental alto em renda",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 29.9
+    },
+    {
+      "descricao": "Calcinha tanga em cotton",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Roupas íntimas",
+      "genero": "feminino",
+      "preco": 29.9
+    },
+    {
+      "descricao": "Calcinha tanga em cotton infantil",
+      "categoria_pai": "Roupas infantis",
+      "sub_categoria": "Roupas íntimas de crianças",
+      "genero": "infantil",
+      "preco": 19.9
+    },
+    {
+      "descricao": "Bermuda modeladora de alta compressão",
+      "categoria_pai": "Roupas íntimas e meias",
+      "sub_categoria": "Cinta modeladora",
+      "genero": "feminino",
+      "preco": 93.9
+    }
+  ]
+}

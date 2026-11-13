@@ -1,0 +1,203 @@
+{
+  "loja": "loja-09",
+  "nome_ficticio": "Surfwear Mapeada 09",
+  "segmento": "surfwear",
+  "posicionamento": "medio",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 1.5871,
+    "pecas_com_fator": 18
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Bermuda passeio híbrida preto masculina",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Bermuda moletom stripe masculina",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 59.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta black masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 99.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta verde escuro masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 109.9
+    },
+    {
+      "descricao": "Jaqueta preta masculina",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "masculino",
+      "preco": 779.9
+    },
+    {
+      "descricao": "Bermuda boardshort animal masculina",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 94.91
+    },
+    {
+      "descricao": "Camiseta manga curta preto masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 129.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta marinho masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 129.9
+    },
+    {
+      "descricao": "Bermuda água neon cinza masculina",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 219.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta black masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 129.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta marinho masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 129.9
+    },
+    {
+      "descricao": "Bermuda água black masculina",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 229.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 129.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta azul masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Bermuda água black masculina",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 299.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 129.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta white masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 149.9
+    },
+    {
+      "descricao": "Bermuda água masculina",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 299.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 129.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta preto masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 149.9
+    },
+    {
+      "descricao": "Bermuda água preto masculina",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 299.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta areia masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta black masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 159.9
+    },
+    {
+      "descricao": "Bermuda água azul masculina",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 329.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta preto masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 159.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta arabesco preto masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 179.9
+    },
+    {
+      "descricao": "Camiseta básica manga curta marrom masculina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 199.9
+    }
+  ]
+}

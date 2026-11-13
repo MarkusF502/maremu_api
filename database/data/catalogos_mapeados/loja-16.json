@@ -1,0 +1,434 @@
+{
+  "loja": "loja-16",
+  "nome_ficticio": "Streetwear Mapeada 16",
+  "segmento": "streetwear",
+  "posicionamento": "medio",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 1.7948,
+    "pecas_com_fator": 51
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Calça feminina",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 369.99
+    },
+    {
+      "descricao": "Jersey",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 199.99
+    },
+    {
+      "descricao": "Blusa moletom preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 229.99
+    },
+    {
+      "descricao": "Jersey branca e laranja",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 209.99
+    },
+    {
+      "descricao": "Moletom laranja",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 119.99
+    },
+    {
+      "descricao": "Regata preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 169.99
+    },
+    {
+      "descricao": "Shorts masculino",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 189.99
+    },
+    {
+      "descricao": "Calça feminina",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 499.99
+    },
+    {
+      "descricao": "Jersey",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 199.99
+    },
+    {
+      "descricao": "Jaqueta",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "unissex",
+      "preco": 449.99
+    },
+    {
+      "descricao": "Jersey preta e branca",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 209.99
+    },
+    {
+      "descricao": "Moletom",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 119.99
+    },
+    {
+      "descricao": "Regata branca, unissex",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 39.99
+    },
+    {
+      "descricao": "Shorts off white",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 89.99
+    },
+    {
+      "descricao": "Calça",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 449.99
+    },
+    {
+      "descricao": "Jersey",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 189.99
+    },
+    {
+      "descricao": "Jaqueta masculina",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "masculino",
+      "preco": 699.99
+    },
+    {
+      "descricao": "Jersey cinza",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 359.99
+    },
+    {
+      "descricao": "Moletom",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 119.99
+    },
+    {
+      "descricao": "Regata cropped preta",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 49.99
+    },
+    {
+      "descricao": "Shorts premium cinza",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 89.99
+    },
+    {
+      "descricao": "Calça esportiva folgada",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 499.99
+    },
+    {
+      "descricao": "Camiseta oversized preta",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 89.99
+    },
+    {
+      "descricao": "Jaqueta black",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "unissex",
+      "preco": 649.99
+    },
+    {
+      "descricao": "Jersey",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 199.99
+    },
+    {
+      "descricao": "Moletom",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 119.99
+    },
+    {
+      "descricao": "Cropped feminina",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149.99
+    },
+    {
+      "descricao": "Shorts premium off white, unissex",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 189.99
+    },
+    {
+      "descricao": "Calça wide leg feminina",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 499.99
+    },
+    {
+      "descricao": "Camiseta oversized cinza",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 89.99
+    },
+    {
+      "descricao": "Moletom preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 119.99
+    },
+    {
+      "descricao": "Jersey retrô",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 209.99
+    },
+    {
+      "descricao": "Moletom marrom",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 119.99
+    },
+    {
+      "descricao": "Regata cropped bege",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 99.99
+    },
+    {
+      "descricao": "Shorts premium preto",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 89.99
+    },
+    {
+      "descricao": "Calça legging cintura alta, juvenil",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 149.99
+    },
+    {
+      "descricao": "Camiseta preta",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 99.99
+    },
+    {
+      "descricao": "Blusa moletom premium",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 499.99
+    },
+    {
+      "descricao": "Jersey meninas",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "infantil",
+      "preco": 279.99
+    },
+    {
+      "descricao": "Moletom basic rosa unissex",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 169.99
+    },
+    {
+      "descricao": "Top cropped 3 branca",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 79.99
+    },
+    {
+      "descricao": "Shorts cargo cinza",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 349.99
+    },
+    {
+      "descricao": "Calça loose",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 599.99
+    },
+    {
+      "descricao": "Camiseta oversized preta",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 89.99
+    },
+    {
+      "descricao": "Jaqueta",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "unissex",
+      "preco": 699.99
+    },
+    {
+      "descricao": "Jersey meninas",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "infantil",
+      "preco": 279.99
+    },
+    {
+      "descricao": "Blusa moletom verde",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 99.99
+    },
+    {
+      "descricao": "Shorts black premium",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 239.99
+    },
+    {
+      "descricao": "Calça track pantalona",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 499.99
+    },
+    {
+      "descricao": "Camiseta oversized",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 79.9
+    },
+    {
+      "descricao": "Jaqueta oversized feminina",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 499.99
+    },
+    {
+      "descricao": "Jersey meninas",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "infantil",
+      "preco": 349.99
+    },
+    {
+      "descricao": "Top tricot off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 83.99
+    },
+    {
+      "descricao": "Shorts moletom branco, unissex",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 139.99
+    },
+    {
+      "descricao": "Calça alfaiataria preta feminina",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 599.99
+    },
+    {
+      "descricao": "Jersey",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 209.99
+    },
+    {
+      "descricao": "Suéter tricot preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 97.9
+    },
+    {
+      "descricao": "Shorts marrom",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 99.9
+    },
+    {
+      "descricao": "Calça taper masculina",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "masculino",
+      "preco": 499.99
+    },
+    {
+      "descricao": "Camiseta branca, unissex",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "unissex",
+      "preco": 125.99
+    }
+  ]
+}

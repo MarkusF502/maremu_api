@@ -1,0 +1,434 @@
+{
+  "loja": "loja-15",
+  "nome_ficticio": "Moda Feminina Mapeada 15",
+  "segmento": "moda feminina",
+  "posicionamento": "premium",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 3.0453,
+    "pecas_com_fator": 42
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Macacão marrom",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 314.93
+    },
+    {
+      "descricao": "Calça renda off white",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 809.9
+    },
+    {
+      "descricao": "Saia renda off white",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 1009.9
+    },
+    {
+      "descricao": "Bermuda alfaiataria off white",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 499.9
+    },
+    {
+      "descricao": "Blazer areia",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 779.9
+    },
+    {
+      "descricao": "Bata renda verde",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 999.9
+    },
+    {
+      "descricao": "Camisa 100% linho azul",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 859.9
+    },
+    {
+      "descricao": "Trench coat rosa",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 949.9
+    },
+    {
+      "descricao": "Top 100% linho estampado",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 339.9
+    },
+    {
+      "descricao": "Vestido clara",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 1039.9
+    },
+    {
+      "descricao": "Macacão chumbo",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 314.93
+    },
+    {
+      "descricao": "Calça 100% linho verde",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 749.9
+    },
+    {
+      "descricao": "Saia mullet alfaiataria off white",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 649.9
+    },
+    {
+      "descricao": "Shorts renda rosa",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 599.9
+    },
+    {
+      "descricao": "Blazer 100% linho off white",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 1099.9
+    },
+    {
+      "descricao": "Regata renda off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 519.9
+    },
+    {
+      "descricao": "Camisa off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 719.9
+    },
+    {
+      "descricao": "Jaqueta corta-vento azul",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 749.9
+    },
+    {
+      "descricao": "Top chumbo",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 223.93
+    },
+    {
+      "descricao": "Vestido 100% linho rosa",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 999.9
+    },
+    {
+      "descricao": "Macacão burgundy",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 384.93
+    },
+    {
+      "descricao": "Calça barrel clara",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 649.9
+    },
+    {
+      "descricao": "Saia paetê marrom",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 679.9
+    },
+    {
+      "descricao": "Shorts guipir verde",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 499.9
+    },
+    {
+      "descricao": "Blazer 100% linho terra",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 1099.9
+    },
+    {
+      "descricao": "Regata rosa",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 539.9
+    },
+    {
+      "descricao": "Camisa cotton laranja",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 529.9
+    },
+    {
+      "descricao": "Jaqueta corta-vento castanho",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 749.9
+    },
+    {
+      "descricao": "Top burgundy",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 202.93
+    },
+    {
+      "descricao": "Vestido paetê preto",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 1199.9
+    },
+    {
+      "descricao": "Macacão preto",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 384.93
+    },
+    {
+      "descricao": "Calça cargo branco",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 759.9
+    },
+    {
+      "descricao": "Saia guipir off white",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 689.9
+    },
+    {
+      "descricao": "Bermuda balloon terracota",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 619.9
+    },
+    {
+      "descricao": "Blazer alfaiataria",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 649.9
+    },
+    {
+      "descricao": "Regata guipir off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 459.9
+    },
+    {
+      "descricao": "Camisa renda",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 679.9
+    },
+    {
+      "descricao": "Jaqueta assimétrica rosa",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 735.92
+    },
+    {
+      "descricao": "Top preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 202.93
+    },
+    {
+      "descricao": "Vestido guipir areia",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 789.9
+    },
+    {
+      "descricao": "Macacão alfaiataria bege",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 384.95
+    },
+    {
+      "descricao": "Calça sarja",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 729.9
+    },
+    {
+      "descricao": "Saia godê off white",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 679.9
+    },
+    {
+      "descricao": "Bermuda balloon off white",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 619.9
+    },
+    {
+      "descricao": "Blazer alfaiataria cinza",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 559.95
+    },
+    {
+      "descricao": "Blusa 100% linho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 699.9
+    },
+    {
+      "descricao": "Camisa jeans",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 699.9
+    },
+    {
+      "descricao": "Casaco cargo verde",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 799.9
+    },
+    {
+      "descricao": "Top supplex castanho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 216.93
+    },
+    {
+      "descricao": "Vestido assimétrico verde",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 829.9
+    },
+    {
+      "descricao": "Macacão supplex castanho",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 391.93
+    },
+    {
+      "descricao": "Calça aladim rosa",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 489.9
+    },
+    {
+      "descricao": "Saia longa off white",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias longas",
+      "genero": "feminino",
+      "preco": 659.9
+    },
+    {
+      "descricao": "Shorts renda",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 649.9
+    },
+    {
+      "descricao": "Blazer xadrez",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 1189.9
+    },
+    {
+      "descricao": "Regata rosa",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 529.9
+    },
+    {
+      "descricao": "Camisa tricoline branca",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 559.9
+    },
+    {
+      "descricao": "Jaqueta rosa",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 243.96
+    },
+    {
+      "descricao": "Top supplex off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 216.93
+    },
+    {
+      "descricao": "Vestido crochê preto",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 689.9
+    }
+  ]
+}

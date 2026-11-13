@@ -1,0 +1,434 @@
+{
+  "loja": "loja-14",
+  "nome_ficticio": "Moda Feminina Mapeada 14",
+  "segmento": "moda feminina",
+  "posicionamento": "popular",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 1.3609,
+    "pecas_com_fator": 41
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Saia mini evasê com bolsos",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Minissaias",
+      "genero": "feminino",
+      "preco": 249.59
+    },
+    {
+      "descricao": "Camisa clássica feminina puro linho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 399.0
+    },
+    {
+      "descricao": "Short feminino alfaiataria em puro linho",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 299.39
+    },
+    {
+      "descricao": "Calça pantacourt feminina listrada",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.19
+    },
+    {
+      "descricao": "Macacão assimétrico com amarração",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 259.19
+    },
+    {
+      "descricao": "Vestido curto alças e detalhe babados",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.19
+    },
+    {
+      "descricao": "Calça reta feminina jeans",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 362.5
+    },
+    {
+      "descricao": "Blazer feminino xadrez alfaiataria",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 500.0
+    },
+    {
+      "descricao": "Blusa feminina listrada com alamares",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 239.39
+    },
+    {
+      "descricao": "Short saia balonê com bolsos",
+      "categoria_pai": "Short-saia",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.59
+    },
+    {
+      "descricao": "Camisa feminina linho com renda",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 399.0
+    },
+    {
+      "descricao": "Bermuda feminina linho puro",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 299.39
+    },
+    {
+      "descricao": "Calça feminina com pregas e bolsos",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 229.19
+    },
+    {
+      "descricao": "Macaquinho feminino com amarração",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 279.0
+    },
+    {
+      "descricao": "Vestido midi clássico com babado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 299.39
+    },
+    {
+      "descricao": "Calça jeans black",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 295.0
+    },
+    {
+      "descricao": "Casaco suede com bolsos",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 312.5
+    },
+    {
+      "descricao": "Blusa regata feminina balonê",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 169.19
+    },
+    {
+      "descricao": "Short saia feminino camadas",
+      "categoria_pai": "Short-saia",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149.39
+    },
+    {
+      "descricao": "Camisa feminina clássica puro linho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 500.0
+    },
+    {
+      "descricao": "Short feminino linho com renda",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 294.0
+    },
+    {
+      "descricao": "Calça pantacourt feminina puro linho",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 379.19
+    },
+    {
+      "descricao": "Macacão feminino em alfaiataria",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 249.0
+    },
+    {
+      "descricao": "Vestido longo com alças listrado preto e branco",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 249.59
+    },
+    {
+      "descricao": "Calça jeans",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 240.0
+    },
+    {
+      "descricao": "Blazer alfaiataria pespontado detalhe bolsos",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 375.0
+    },
+    {
+      "descricao": "Camisa feminina detalhes assimétrica",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.19
+    },
+    {
+      "descricao": "Saia midi com pregas puro linho",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 479.39
+    },
+    {
+      "descricao": "Camisa gola puro linho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 389.39
+    },
+    {
+      "descricao": "Bermuda",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 150.0
+    },
+    {
+      "descricao": "Calça reta feminina em alfaiataria",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 249.59
+    },
+    {
+      "descricao": "Macaquinho feminino listrado com faixa",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 299.39
+    },
+    {
+      "descricao": "Vestido floral chiffon com bolsos",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 349.19
+    },
+    {
+      "descricao": "Calça reta",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 295.0
+    },
+    {
+      "descricao": "Blazer alfaiataria feminino em tweed",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 312.5
+    },
+    {
+      "descricao": "Blusa assimétrica feminina alças",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.59
+    },
+    {
+      "descricao": "Saia midi com babados assimétricos",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 249.0
+    },
+    {
+      "descricao": "Camisa feminina linho puro com bolso",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 399.0
+    },
+    {
+      "descricao": "Calça barrel feminina em puro linho",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 399.59
+    },
+    {
+      "descricao": "Macacão feminino alças e amarração linho puro",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 881.99
+    },
+    {
+      "descricao": "Vestido midi babados com faixa em poá",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 379.19
+    },
+    {
+      "descricao": "Jaqueta jeans oversize",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 250.0
+    },
+    {
+      "descricao": "Blazer alfaiataria feminino listrado chevron",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 312.5
+    },
+    {
+      "descricao": "Blusa colete com alamares puro linho",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Coletes",
+      "genero": "feminino",
+      "preco": 329.39
+    },
+    {
+      "descricao": "Saia midi evasê texturizada",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 219.0
+    },
+    {
+      "descricao": "Camisa feminina linho puro branca detalhe costas",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 379.19
+    },
+    {
+      "descricao": "Calça feminina pantalona listrada preto e branco",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.19
+    },
+    {
+      "descricao": "Macacão linho",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 449.0
+    },
+    {
+      "descricao": "Vestido midi em camadas e alças",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 289.19
+    },
+    {
+      "descricao": "Calça jeans wide leg",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 478.0
+    },
+    {
+      "descricao": "Blazer pespontado",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 400.0
+    },
+    {
+      "descricao": "Blusa regata feminina alças em laço",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 139.19
+    },
+    {
+      "descricao": "Saia midi evasê com botões",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Saias até o joelho",
+      "genero": "feminino",
+      "preco": 249.0
+    },
+    {
+      "descricao": "Camisa linho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 400.0
+    },
+    {
+      "descricao": "Calça pantalona feminina cós",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.19
+    },
+    {
+      "descricao": "Macacão",
+      "categoria_pai": "Peças únicas",
+      "sub_categoria": "Macacões e macaquinhos",
+      "genero": "feminino",
+      "preco": 300.0
+    },
+    {
+      "descricao": "Vestido midi plissado em poá",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 389.0
+    },
+    {
+      "descricao": "Calça jeans wide leg",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 300.0
+    },
+    {
+      "descricao": "Blazer floral paisley",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 400.0
+    },
+    {
+      "descricao": "Blusa peplum feminina em puro linho",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 249.59
+    }
+  ]
+}

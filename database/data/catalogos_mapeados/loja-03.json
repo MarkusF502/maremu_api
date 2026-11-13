@@ -1,0 +1,364 @@
+{
+  "loja": "loja-03",
+  "nome_ficticio": "Moda Praia Mapeada 03",
+  "segmento": "moda praia",
+  "posicionamento": "popular",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 0.4106,
+    "pecas_com_fator": 4
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Biquíni estampa pink",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    },
+    {
+      "descricao": "Maiô estampa rosa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.6
+    },
+    {
+      "descricao": "Saída de praia estampa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 166.8
+    },
+    {
+      "descricao": "Vestido",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 169.9
+    },
+    {
+      "descricao": "Biquíni florido pink",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    },
+    {
+      "descricao": "Maiô rosa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 221.5
+    },
+    {
+      "descricao": "Saída longa estampa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 225.5
+    },
+    {
+      "descricao": "Regata preta",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 39.9
+    },
+    {
+      "descricao": "Biquíni fivela flores pink",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    },
+    {
+      "descricao": "Maiô verde",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 245.8
+    },
+    {
+      "descricao": "Saída de praia rosa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 197.9
+    },
+    {
+      "descricao": "Cropped regata preta",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 29.9
+    },
+    {
+      "descricao": "Biquíni lacinho dupla face floral",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    },
+    {
+      "descricao": "Maiô mágico preto",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 238.2
+    },
+    {
+      "descricao": "Saída de praia rosa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 166.8
+    },
+    {
+      "descricao": "Cropped regata vermelha",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 14.9
+    },
+    {
+      "descricao": "Biquíni flor",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 239.8
+    },
+    {
+      "descricao": "Maiô preto",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.6
+    },
+    {
+      "descricao": "Pareô floral",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.9
+    },
+    {
+      "descricao": "Biquíni rosa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 218.7
+    },
+    {
+      "descricao": "Maiô",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 231.8
+    },
+    {
+      "descricao": "Saída de praia kaftan",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149.8
+    },
+    {
+      "descricao": "Biquíni rosa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 209.8
+    },
+    {
+      "descricao": "Maiô preto",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 241.8
+    },
+    {
+      "descricao": "Saída de praia transpassada laranja",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 149.8
+    },
+    {
+      "descricao": "Biquíni lacinho pink",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.8
+    },
+    {
+      "descricao": "Maiô",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 229.6
+    },
+    {
+      "descricao": "Saída longa marrom",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 159.8
+    },
+    {
+      "descricao": "Biquíni rosa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 239.8
+    },
+    {
+      "descricao": "Maiô grafismo",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 221.5
+    },
+    {
+      "descricao": "Saída de praia marrom",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 129.9
+    },
+    {
+      "descricao": "Biquíni fivela rosa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    },
+    {
+      "descricao": "Maiô trançado preto",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 237.8
+    },
+    {
+      "descricao": "Saída de praia transpassada preta",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Biquíni cortininha rose",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    },
+    {
+      "descricao": "Saia de praia preta",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.9
+    },
+    {
+      "descricao": "Biquíni rosa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.8
+    },
+    {
+      "descricao": "Camisão saída de praia",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.9
+    },
+    {
+      "descricao": "Biquíni vinho",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 245.8
+    },
+    {
+      "descricao": "Saia de praia bege",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.9
+    },
+    {
+      "descricao": "Biquíni tomara que caia vinho",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 229.8
+    },
+    {
+      "descricao": "Saída de praia caramelo",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Biquíni vinho",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 257.8
+    },
+    {
+      "descricao": "Camisão saída de praia",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.9
+    },
+    {
+      "descricao": "Biquíni cortininha vinho",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    },
+    {
+      "descricao": "Biquíni cortininha vinho",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 221.8
+    },
+    {
+      "descricao": "Biquíni lacinho dupla face",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    },
+    {
+      "descricao": "Biquíni cortininha estampa",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 221.8
+    },
+    {
+      "descricao": "Biquíni laranja",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    },
+    {
+      "descricao": "Biquíni lacinho verde",
+      "categoria_pai": "Roupas de banho",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.8
+    }
+  ]
+}

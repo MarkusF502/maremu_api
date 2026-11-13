@@ -1,0 +1,434 @@
+{
+  "loja": "loja-01",
+  "nome_ficticio": "Moda Feminina Mapeada 01",
+  "segmento": "moda feminina",
+  "posicionamento": "premium",
+  "criterio_posicionamento": {
+    "regra": "terços da mediana, por loja, de preço praticado ÷ preço de rede \"medio\" da sub-categoria (database/data/demo/premissas.php)",
+    "fator_mediano": 2.7933,
+    "pecas_com_fator": 40
+  },
+  "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
+  "pecas": [
+    {
+      "descricao": "Jaqueta sarja areia",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 599.9
+    },
+    {
+      "descricao": "Bata peplum com decote v e mangas 3/4",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 169.9
+    },
+    {
+      "descricao": "Calça",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 279.9
+    },
+    {
+      "descricao": "Colete",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Coletes",
+      "genero": "feminino",
+      "preco": 459.9
+    },
+    {
+      "descricao": "Tricô transpassado decote v",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 209.9
+    },
+    {
+      "descricao": "Colete",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Coletes",
+      "genero": "feminino",
+      "preco": 459.9
+    },
+    {
+      "descricao": "Conjunto shorts saia",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 339.9
+    },
+    {
+      "descricao": "Regata paetê",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 199.9
+    },
+    {
+      "descricao": "Saia peplum jeans",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 549.9
+    },
+    {
+      "descricao": "Bermuda crepe",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 349.9
+    },
+    {
+      "descricao": "Vestido",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 789.9
+    },
+    {
+      "descricao": "Vestido longo um ombro só em renda verde-oliva",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 799.9
+    },
+    {
+      "descricao": "Vestido midi transpassado, decote v com drapeado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 529.9
+    },
+    {
+      "descricao": "Blazer alfaiataria bege",
+      "categoria_pai": "Casacos",
+      "sub_categoria": "Casacos e jaquetas",
+      "genero": "feminino",
+      "preco": 499.9
+    },
+    {
+      "descricao": "Regata tapestry estampada floral de alças finas",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 289.9
+    },
+    {
+      "descricao": "Calça",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 479.9
+    },
+    {
+      "descricao": "Camisa",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 329.9
+    },
+    {
+      "descricao": "Conjunto com blusa de alças finas e calça pantalona",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 429.9
+    },
+    {
+      "descricao": "Regata listrada azul",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 279.9
+    },
+    {
+      "descricao": "Saia",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 599.9
+    },
+    {
+      "descricao": "Shorts",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 419.9
+    },
+    {
+      "descricao": "Vestido",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 499.9
+    },
+    {
+      "descricao": "Vestido longo tomara que caia com peplum verde menta",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 829.9
+    },
+    {
+      "descricao": "Vestido festa longo marrom com flor",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 799.9
+    },
+    {
+      "descricao": "Blusa com decote drapeado",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Calça reta nervura denim claro",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 529.9
+    },
+    {
+      "descricao": "Camisa",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 299.9
+    },
+    {
+      "descricao": "Conjunto com blusa frente única",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 419.9
+    },
+    {
+      "descricao": "Saia",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 479.9
+    },
+    {
+      "descricao": "Shorts linho areia",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 499.9
+    },
+    {
+      "descricao": "Vestido conchas com lenço",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 659.9
+    },
+    {
+      "descricao": "Vestido longo plissado com faixa de pedrarias verde",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 3499.9
+    },
+    {
+      "descricao": "Vestido longo multiuso marrom com drapeado e saia fluida",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 999.9
+    },
+    {
+      "descricao": "Regata flor",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Calça jeans balloon",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 549.9
+    },
+    {
+      "descricao": "Camisa linho natural",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 599.9
+    },
+    {
+      "descricao": "Conjunto feminino de blusa e calça em alfaiataria",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 399.9
+    },
+    {
+      "descricao": "Saia",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 619.9
+    },
+    {
+      "descricao": "Shorts tricoline off white",
+      "categoria_pai": "Shorts",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 329.9
+    },
+    {
+      "descricao": "Vestido",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 529.9
+    },
+    {
+      "descricao": "Vestido longo festa rosa",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 3199.9
+    },
+    {
+      "descricao": "Blusa",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 139.9
+    },
+    {
+      "descricao": "Calça jeans claro",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 499.9
+    },
+    {
+      "descricao": "Camisa laise off white",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 369.9
+    },
+    {
+      "descricao": "Conjunto corset e calça em sarja estampada",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 729.9
+    },
+    {
+      "descricao": "Saia crochê",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 439.9
+    },
+    {
+      "descricao": "Vestido longo fúcsia ombro a ombro com fenda e laço estruturado",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 3799.9
+    },
+    {
+      "descricao": "Vestido longo laranja",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 3499.9
+    },
+    {
+      "descricao": "Regata de tricô com peplum",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 189.9
+    },
+    {
+      "descricao": "Calça marrom",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 259.9
+    },
+    {
+      "descricao": "Camisa feminina listrada",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 349.9
+    },
+    {
+      "descricao": "Conjunto",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 499.9
+    },
+    {
+      "descricao": "Saia alfaiataria bege",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 349.9
+    },
+    {
+      "descricao": "Vestido longo magenta",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 1899.9
+    },
+    {
+      "descricao": "Vestido longo festa",
+      "categoria_pai": "Vestidos",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 1699.9
+    },
+    {
+      "descricao": "Blusa paetê",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 219.9
+    },
+    {
+      "descricao": "Calça sarja",
+      "categoria_pai": "Calças",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 589.9
+    },
+    {
+      "descricao": "Camisa listra preto",
+      "categoria_pai": "Camisetas e tops",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 369.9
+    },
+    {
+      "descricao": "Conjunto de tricô com peplum e saia longa",
+      "categoria_pai": "Conjuntos de roupas",
+      "sub_categoria": "Geral",
+      "genero": "feminino",
+      "preco": 439.9
+    },
+    {
+      "descricao": "Saia tweed bege",
+      "categoria_pai": "Saias",
+      "sub_categoria": "Outros",
+      "genero": "feminino",
+      "preco": 479.9
+    }
+  ]
+}
