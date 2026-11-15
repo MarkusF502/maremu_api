@@ -49,16 +49,19 @@ class RelatorioControllerTest extends TestCase
             'password' => bcrypt('password'),
         ]);
 
-        $response = $this->actingAs($user)->getJson('/api/relatorios');
+        $response = $this->actingAs($user)->getJson('/api/relatorio');
 
-        $response->assertStatus(404);
+        // O middleware EnsureLojaExists barra o acesso antes do controller,
+        // com 403 e um código que o frontend usa para mandar ao onboarding.
+        $response->assertStatus(403)
+            ->assertJsonPath('code', 'loja_nao_cadastrada');
     }
 
     public function test_retorna_resumo_zerado_quando_loja_nao_possui_produtos(): void
     {
         [$user, $loja] = $this->autenticarComLoja();
 
-        $response = $this->actingAs($user)->getJson('/api/relatorios');
+        $response = $this->actingAs($user)->getJson('/api/relatorio');
 
         $response->assertOk()
             ->assertJsonPath('resumo.total_unidades_estoque', 0)
@@ -91,7 +94,7 @@ class RelatorioControllerTest extends TestCase
             'estoque_minimo_alerta' => 3,
         ]);
 
-        $response = $this->actingAs($user)->getJson('/api/relatorios');
+        $response = $this->actingAs($user)->getJson('/api/relatorio');
 
         $response->assertOk();
 
@@ -102,9 +105,12 @@ class RelatorioControllerTest extends TestCase
             'lucro_unitario' => 22.0,
             'margem_percentual' => 100.0,
             'estoque' => 10,
-            'valor_estoque' => 440.0,
-            'lucro_potencial' => 220.0,
         ]);
+
+        // Valor e lucro potencial do estoque não são mais expostos por produto;
+        // aparecem agregados no resumo e no lucro por categoria.
+        $response->assertJsonPath('resumo.liquidez_estoque', 440)
+            ->assertJsonFragment(['categoria' => 'Camisetas', 'lucro' => 220]);
     }
 
     public function test_gera_alerta_quando_estoque_igual_ou_abaixo_do_minimo(): void
@@ -128,7 +134,7 @@ class RelatorioControllerTest extends TestCase
             'estoque_minimo_alerta' => 5,
         ]);
 
-        $response = $this->actingAs($user)->getJson('/api/relatorios');
+        $response = $this->actingAs($user)->getJson('/api/relatorio');
 
         $response->assertOk()
             ->assertJsonCount(1, 'alertas_criticos')
@@ -162,7 +168,7 @@ class RelatorioControllerTest extends TestCase
             'estoque_minimo_alerta' => 5,
         ]);
 
-        $response = $this->actingAs($user)->getJson('/api/relatorios');
+        $response = $this->actingAs($user)->getJson('/api/relatorio');
 
         $response->assertOk()->assertJsonCount(0, 'alertas_criticos');
     }
@@ -191,7 +197,7 @@ class RelatorioControllerTest extends TestCase
             ]);
         }
 
-        $response = $this->actingAs($user)->getJson('/api/relatorios');
+        $response = $this->actingAs($user)->getJson('/api/relatorio');
 
         $response->assertOk();
 
@@ -225,7 +231,7 @@ class RelatorioControllerTest extends TestCase
             'estoque_minimo_alerta' => 0,
         ]);
 
-        $response = $this->actingAs($user)->getJson('/api/relatorios');
+        $response = $this->actingAs($user)->getJson('/api/relatorio');
 
         $response->assertOk()
             ->assertJsonPath('resumo.fonte_lucro_categoria', 'estoque_potencial')

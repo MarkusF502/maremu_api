@@ -618,4 +618,39 @@ class OnboardingTermosServiceTest extends TestCase
         $this->assertSame(30.0, $estado['margem_lucro_desejada']['margem_direta']['valor']);
         $this->assertEquals(0.30, $this->service->calcularMargemLucro($estado['margem_lucro_desejada']));
     }
+
+    // ── filtro de canais sugeridos pela IA ─────────────────────────────────
+
+    public function test_filtra_canal_sem_mencao_no_texto(): void
+    {
+        $service = new \App\Services\OnboardingTermosService();
+        $texto = 'Vendo na loja física e pelo Instagram, com entregas na cidade.';
+
+        $this->assertSame(
+            ['instagram_whatsapp'],
+            $service->filtrarCanaisMencionados(['marketplace', 'instagram_whatsapp'], $texto)
+        );
+    }
+
+    public function test_reconhece_marketplace_pelo_nome_da_plataforma(): void
+    {
+        $service = new \App\Services\OnboardingTermosService();
+
+        $this->assertSame(['marketplace'], $service->filtrarCanaisMencionados(['marketplace'], 'Também vendo no Mercado Livre.'));
+        $this->assertSame(['marketplace'], $service->filtrarCanaisMencionados(['marketplace'], 'Uso a SHOPEE há dois anos.'));
+    }
+
+    public function test_nao_confunde_palavra_parcial(): void
+    {
+        $service = new \App\Services\OnboardingTermosService();
+
+        // "instalação" contém "insta", mas não é menção ao Instagram.
+        $this->assertSame([], $service->filtrarCanaisMencionados(['instagram_whatsapp'], 'Fiz a instalação da vitrine nova.'));
+    }
+
+    public function test_lista_vazia_continua_vazia(): void
+    {
+        $service = new \App\Services\OnboardingTermosService();
+        $this->assertSame([], $service->filtrarCanaisMencionados([], 'Qualquer texto sobre a loja.'));
+    }
 }

@@ -42,9 +42,10 @@ class PricingEngineTest extends TestCase
 
     public function test_markup_divisor_retorna_valor_correto(): void
     {
-        // custoFixoProporcional = (3000/150) / 43 = 20/43 ≈ 0.4651
-        // somaDespesas = 0.06 + 0.03 + 0.4651 + 0.30 = 0.8551
-        // divisor = 1 - 0.8551 = 0.1449
+        // O custo fixo unitário (3000/150 = R$ 20,00) entra no NUMERADOR do
+        // preço (custo base + custo fixo unitário), e não mais no divisor.
+        // divisor = 1 - (alíquota + taxa do canal + margem)
+        //         = 1 - (0.06 + 0.03 + 0.30) = 0.61
         $divisor = $this->engine->markupDivisor(
             $this->aliquota,
             $this->taxaCanal,
@@ -54,7 +55,7 @@ class PricingEngineTest extends TestCase
             $this->margemDesejada
         );
 
-        $this->assertEqualsWithDelta(0.1449, $divisor, 0.001);
+        $this->assertEqualsWithDelta(0.61, $divisor, 0.0001);
         $this->assertGreaterThan(0, $divisor);
     }
 
@@ -177,7 +178,10 @@ class PricingEngineTest extends TestCase
             $this->custoFixo, $this->volume, $custoBase, $this->margemDesejada
         );
 
-        $precoViaMult = round($custoBase * $multiplicador, 2);
+        // O multiplicador (1 / divisor) incide sobre o custo base somado ao
+        // custo fixo unitário, igual ao numerador usado em calcularPreco().
+        $custoFixoUnitario = $this->custoFixo / $this->volume;
+        $precoViaMult = round(($custoBase + $custoFixoUnitario) * $multiplicador, 2);
         $this->assertEqualsWithDelta($resultadoDivisor['preco_venda'], $precoViaMult, 0.01);
     }
 

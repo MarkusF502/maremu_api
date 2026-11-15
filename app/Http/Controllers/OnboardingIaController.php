@@ -162,7 +162,12 @@ class OnboardingIaController extends Controller
             'estimativas_resolvidas'=> $estimativasResolvidas,
             'estimativas'           => $estimativasResolvidas,
             'pendencias'            => $pendencias,
-            'canais_sugeridos'      => $resultado['canais_sugeridos'],
+            // A IA pode sugerir canais que o texto não cita (alucinação);
+            // só seguem para a tela os que têm menção no texto do lojista.
+            'canais_sugeridos'      => $this->termosService->filtrarCanaisMencionados(
+                $resultado['canais_sugeridos'] ?? [],
+                (string) $request->texto_descritivo
+            ),
         ]);
     }
 

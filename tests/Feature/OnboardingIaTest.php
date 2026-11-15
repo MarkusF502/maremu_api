@@ -135,11 +135,36 @@ class OnboardingIaTest extends TestCase
             $mock->shouldReceive('estimarDadosLoja')->once()->andReturn($estimativas);
         });
 
+        // O texto precisa citar o canal para a sugestão ser mantida.
         $response = $this->actingAs($this->user)->postJson('/api/loja/onboarding/analisar-texto', $this->payloadBase([
-            'canais_marcados' => ['loja_fisica'],
+            'canais_marcados'  => ['loja_fisica'],
+            'texto_descritivo' => 'Tenho uma loja de roupas femininas em Campinas, focada em moda '
+                . 'casual com preço acessível, e também vendo pela Shopee. Vendo cerca de 80 peças '
+                . 'por mês, faturando em torno de R$ 12 mil. Pago R$ 2.500 de aluguel. Quero ter pelo menos 25% de lucro.',
         ]));
 
         $response->assertOk()->assertJsonPath('canais_sugeridos', ['marketplace']);
+    }
+
+    public function test_canal_sugerido_sem_mencao_no_texto_e_descartado(): void
+    {
+        // Reproduz o defeito TM03: a IA sugeriu "marketplace" para um texto
+        // que só cita loja física e Instagram.
+        $estimativas = $this->estimativasFake();
+        $estimativas['canais_sugeridos'] = ['marketplace', 'instagram_whatsapp'];
+
+        $this->mock(OnboardingIaInterface::class, function ($mock) use ($estimativas) {
+            $mock->shouldReceive('estimarDadosLoja')->once()->andReturn($estimativas);
+        });
+
+        $response = $this->actingAs($this->user)->postJson('/api/loja/onboarding/analisar-texto', $this->payloadBase([
+            'canais_marcados'  => ['loja_fisica'],
+            'texto_descritivo' => 'Tenho uma loja de moda feminina casual no centro de Santos. Vendo na loja '
+                . 'física e pelo Instagram. Pago R$ 2.800 de aluguel e vendo cerca de 320 peças por mês, '
+                . 'faturando uns R$ 30 mil. Quero uma margem de lucro de 25%.',
+        ]));
+
+        $response->assertOk()->assertJsonPath('canais_sugeridos', ['instagram_whatsapp']);
     }
 
     public function test_confirmar_persiste_loja_e_marca_origem_por_campo(): void

@@ -7,6 +7,7 @@ use App\Models\LogsSugestaoIa;
 use App\Models\Loja;
 use App\Models\Produto;
 use App\Models\User;
+use App\Services\PrecificacaoIaInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -17,6 +18,13 @@ use Tests\TestCase;
 class PrecificacaoControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->mock(PrecificacaoIaInterface::class);
+    }
 
     private function autenticarComLojaEProduto(array $atributosProduto = []): array
     {
@@ -111,37 +119,71 @@ class PrecificacaoControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    /**
+     * Substitui o provedor de IA por um dublê, para que o teste não dependa
+     * de chave de API nem de rede (o provedor real é exercitado nos testes
+     * manuais e nos testes de variância).
+     */
+    private function fingirIa(): void
+    {
+        $this->mock(PrecificacaoIaInterface::class, function ($mock) {
+            $mock->shouldReceive('identificador')->andReturn('fake');
+            $mock->shouldReceive('sugerirCenarios')->once()->andReturn([
+                'cenarios' => [
+                    ['id' => 'cenario_1', 'tipo' => 'conservador', 'margem_lucro_percentual' => 0.15, 'explicacao' => 'a'],
+                    ['id' => 'cenario_2', 'tipo' => 'equilibrado', 'margem_lucro_percentual' => 0.35, 'explicacao' => 'b'],
+                    ['id' => 'cenario_3', 'tipo' => 'agressivo', 'margem_lucro_percentual' => 0.50, 'explicacao' => 'c'],
+                ],
+            ]);
+        });
+    }
+
     public function test_monta_payload_e_cria_log_quando_preco_piso_existe(): void
     {
+        $this->fingirIa();
         [$user, $loja, $produto] = $this->autenticarComLojaEProduto();
+
+        // O cálculo dos preços usa a taxa do canal ativo da loja.
+        $loja->canais()->create([
+            'canal' => 'loja_fisica',
+            'taxa_percentual' => 0.030,
+            'taxa_origem' => 'estimado_pelo_sistema',
+            'ativo' => true,
+        ]);
 
         $response = $this->actingAs($user)
             ->postJson("/api/precificacao/sugerir/{$produto->id}");
 
         $response->assertOk()
             ->assertJsonStructure([
-                'payload' => [
-                    'camada_1' => ['preco_piso', 'custo_base', 'custo_origem'],
-                    'camada_2' => ['loja', 'canais', 'produto'],
-                    'meta' => ['produto_id', 'loja_id', 'categoria_id', 'gerado_em'],
-                ],
                 'log_id',
-                'camada_4_ativa',
-                'canais_disponiveis',
+                'cenarios' => [['id', 'preco_sugerido']],
+                'composicao' => ['preco_piso', 'custo_base', 'custo_fixo_unitario', 'percentual_variavel'],
             ]);
 
-        $this->assertDatabaseHas('logs_sugestao_ia', [
-            'produto_id' => $produto->id,
-        ]);
+        // O log guarda o payload das camadas antes da chamada à IA e os
+        // cenários com o preço calculado pelo PricingEngine depois dela.
+        $log = LogsSugestaoIa::find($response->json('log_id'));
+        $this->assertNotNull($log);
+        $this->assertSame($produto->id, $log->produto_id);
+        $this->assertSame('fake', $log->provedor_ia);
+        $this->assertArrayHasKey('camada_1', $log->payload_enviado);
+        $this->assertArrayHasKey('camada_2', $log->payload_enviado);
+        $this->assertCount(3, $log->cenarios_retornados);
     }
 
     public function test_confirmar_atualiza_preco_e_origem_do_produto(): void
     {
         [$user, $loja, $produto] = $this->autenticarComLojaEProduto();
 
+        // O controller só aceita o preço que corresponde a um cenário
+        // efetivamente devolvido na sugestão, então o log traz os cenários.
         $log = LogsSugestaoIa::create([
             'produto_id' => $produto->id,
             'payload_enviado' => ['fake' => true],
+            'cenarios_retornados' => [
+                ['id' => 'cenario_2', 'preco_sugerido' => 79.90],
+            ],
         ]);
 
         $response = $this->actingAs($user)->postJson('/api/precificacao/confirmar', [
@@ -165,8 +207,33 @@ class PrecificacaoControllerTest extends TestCase
 
         $this->assertDatabaseHas('logs_sugestao_ia', [
             'id' => $log->id,
-            'cenario_escolhido' => 'ia',
+            'cenario_escolhido' => 'cenario_2',
             'preco_final_escolhido' => 79.90,
+        ]);
+    }
+
+    public function test_confirmar_rejeita_preco_diferente_do_cenario_sugerido(): void
+    {
+        [$user, $loja, $produto] = $this->autenticarComLojaEProduto();
+
+        $log = LogsSugestaoIa::create([
+            'produto_id' => $produto->id,
+            'payload_enviado' => ['fake' => true],
+            'cenarios_retornados' => [
+                ['id' => 'cenario_2', 'preco_sugerido' => 79.90],
+            ],
+        ]);
+
+        $response = $this->actingAs($user)->postJson('/api/precificacao/confirmar', [
+            'log_id' => $log->id,
+            'cenario_escolhido' => 'cenario_2',
+            'preco_final' => 50.00,
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertDatabaseMissing('produtos', [
+            'id' => $produto->id,
+            'preco_venda_atual' => 50.00,
         ]);
     }
 

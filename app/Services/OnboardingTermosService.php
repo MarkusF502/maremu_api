@@ -62,6 +62,46 @@ class OnboardingTermosService
     }
 
     /**
+     * Palavras-chave (já normalizadas: minúsculas, sem acento) que comprovam
+     * que o texto do lojista menciona cada canal de venda.
+     */
+    private const PALAVRAS_CANAL = [
+        'loja_fisica' => [
+            'loja fisica', 'ponto fisico', 'ponto comercial', 'espaco fisico', 'galeria', 'shopping', 'balcao',
+        ],
+        'instagram_whatsapp' => [
+            'instagram', 'insta', 'whatsapp', 'whats', 'zap', 'wpp', 'redes sociais', 'rede social', 'direct',
+        ],
+        'marketplace' => [
+            'marketplace', 'shopee', 'mercado livre', 'mercadolivre', 'amazon', 'magalu', 'magazine luiza',
+            'americanas', 'shein', 'enjoei', 'olx', 'aliexpress', 'tiktok shop',
+        ],
+    ];
+
+    /**
+     * Mantém apenas os canais sugeridos pela IA que o texto do lojista
+     * realmente menciona. Mesma lógica da citação literal dos termos: a IA
+     * pode sugerir, mas só fica o que tem respaldo no texto. Comparação por
+     * palavra inteira, depois da normalização.
+     *
+     * @param  string[]  $canaisSugeridos
+     * @return string[]
+     */
+    public function filtrarCanaisMencionados(array $canaisSugeridos, string $textoOriginal): array
+    {
+        $texto = ' ' . $this->normalizar($textoOriginal) . ' ';
+
+        return array_values(array_filter($canaisSugeridos, function ($canal) use ($texto) {
+            foreach (self::PALAVRAS_CANAL[$canal] ?? [] as $palavra) {
+                if (str_contains($texto, ' ' . $palavra . ' ')) {
+                    return true;
+                }
+            }
+            return false;
+        }));
+    }
+
+    /**
      * Verifica se a citação é um recorte literal (após normalização) do
      * texto original. Sem fuzzy matching — decisão explícita da SPEC §5.
      */
