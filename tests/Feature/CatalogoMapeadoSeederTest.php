@@ -94,6 +94,98 @@ class CatalogoMapeadoSeederTest extends TestCase
         }
     }
 
+    /**
+     * As descrições limpas, peça a peça, contra os arquivos privados da pesquisa
+     * (~/maremu-pesquisa, fora do repositório). Nenhum termo proibido fica no
+     * repositório: todos vêm desses arquivos em tempo de teste.
+     *
+     *   - nome real e domínios (links consultados e url de cada peça) de cada
+     *     catálogo privado não aparecem em nenhuma descrição;
+     *   - toda palavra de toda descrição está no vocabulário permitido usado na
+     *     limpeza (scripts/vocabulario.txt). Marca de terceiro, nome de modelo ou
+     *     nome de loja que escapasse da limpeza ficaria fora dele;
+     *   - nenhuma palavra que a limpeza tirou de uma descrição original (e que
+     *     não é do vocabulário) volta em outra descrição.
+     */
+    public function test_descricoes_limpas_nao_tem_marca_nem_nome_de_loja_dos_arquivos_privados(): void
+    {
+        $home = getenv('HOME') ?: getenv('USERPROFILE');
+        $base = $home ? $home.DIRECTORY_SEPARATOR.'maremu-pesquisa' : null;
+        $privados = $base ? glob($base.DIRECTORY_SEPARATOR.'catalogos'.DIRECTORY_SEPARATOR.'loja-*.json') : [];
+        $vocabulario = $base ? $base.DIRECTORY_SEPARATOR.'scripts'.DIRECTORY_SEPARATOR.'vocabulario.txt' : null;
+
+        if ($privados === [] || $vocabulario === null || ! is_file($vocabulario)) {
+            $this->markTestSkipped('Catálogos privados da pesquisa não estão nesta máquina.');
+        }
+
+        $palavras = function (string $texto): array {
+            preg_match_all('/[\p{L}\p{N}]+/u', mb_strtolower($texto), $m);
+
+            return array_values(array_filter($m[0], fn ($w) => ! ctype_digit($w)));
+        };
+
+        $permitidas = array_fill_keys($palavras((string) file_get_contents($vocabulario)), true);
+
+        $nomes = [];
+        $removidas = [];
+        foreach ($privados as $arquivo) {
+            $catalogo = json_decode((string) file_get_contents($arquivo), true, flags: JSON_THROW_ON_ERROR);
+
+            foreach (preg_split('/\s*[()]\s*/u', (string) $catalogo['nome_real']) as $parte) {
+                if (mb_strlen(trim($parte)) >= 3) {
+                    $nomes[] = mb_strtolower(trim($parte));
+                }
+            }
+
+            $urls = array_merge($catalogo['links_consultados'] ?? [], array_column($catalogo['pecas'], 'url'));
+            foreach ($urls as $url) {
+                $host = parse_url(str_contains((string) $url, '//') ? (string) $url : '//'.$url, PHP_URL_HOST);
+                if (is_string($host) && $host !== '') {
+                    $host = preg_replace('/^www\./', '', mb_strtolower($host));
+                    $nomes[] = $host;
+                    $nomes[] = explode('.', $host)[0];
+                }
+            }
+
+            foreach ($catalogo['pecas'] as $peca) {
+                $limpa = array_fill_keys($palavras($peca['descricao_limpa']), true);
+                foreach ($palavras($peca['descricao_original']) as $palavra) {
+                    if (mb_strlen($palavra) >= 3 && ! isset($limpa[$palavra]) && ! isset($permitidas[$palavra])) {
+                        $removidas[$palavra] = true;
+                    }
+                }
+            }
+        }
+
+        $nomes = array_unique($nomes);
+        $this->assertCount(16, $privados, 'Os catálogos privados não são os esperados.');
+        $this->assertNotEmpty($removidas, 'A limpeza não tirou nada das descrições originais?');
+
+        $pecas = 0;
+        foreach (CatalogoMapeadoSeeder::lerCatalogos() as $catalogo) {
+            foreach ($catalogo['pecas'] as $indice => $peca) {
+                $pecas++;
+                $onde = $catalogo['loja'].' peça '.$indice;
+                $descricao = mb_strtolower($peca['descricao']);
+
+                foreach ($nomes as $nome) {
+                    $this->assertDoesNotMatchRegularExpression(
+                        '/(?<![\p{L}\p{N}])'.preg_quote($nome, '/').'(?![\p{L}\p{N}])/u',
+                        $descricao,
+                        $onde.': a descrição cita nome ou domínio de loja dos arquivos privados.'
+                    );
+                }
+
+                foreach ($palavras($descricao) as $palavra) {
+                    $this->assertArrayNotHasKey($palavra, $removidas, $onde.': a descrição tem palavra que a limpeza tirou de outra peça.');
+                    $this->assertArrayHasKey($palavra, $permitidas, $onde.': a descrição tem palavra fora do vocabulário permitido.');
+                }
+            }
+        }
+
+        $this->assertSame(778, $pecas);
+    }
+
     public function test_json_tem_so_os_campos_previstos(): void
     {
         foreach (CatalogoMapeadoSeeder::lerCatalogos() as $catalogo) {
