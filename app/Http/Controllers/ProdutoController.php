@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProdutoRequest;
 use App\Http\Requests\UpdateProdutoRequest;
+use App\Models\Loja;
 use App\Models\Produto;
 use App\Models\VarianteProduto;
 use App\Services\PricingEngine;
+use App\Services\RecomendacaoCenarioDados;
+use Illuminate\Database\Eloquent\Collection;
+use Throwable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,6 +33,8 @@ class ProdutoController extends Controller
             ->when($request->filled('preco_max'), fn ($query) => $query->where('preco_venda_atual', '<=', $request->input('preco_max')))
             ->orderBy('nome')
             ->get();
+
+        $this->anexarRecomendacoes($loja, $produtos);
 
         return response()->json([
             'produtos' => $produtos,
@@ -145,6 +151,26 @@ class ProdutoController extends Controller
         return response()->json([
             'message' => 'Produto excluído com sucesso.',
         ]);
+    }
+
+    /**
+     * Recomendação de cenário resumida por produto (cenario_recomendado e
+     * difere_do_atual, ou null). Consultas agrupadas por loja e categoria,
+     * nunca uma por produto; não grava log. Falha aqui não derruba a
+     * listagem: o produto só fica sem recomendação.
+     */
+    private function anexarRecomendacoes(Loja $loja, Collection $produtos): void
+    {
+        try {
+            $resumo = app(RecomendacaoCenarioDados::class)->resumoParaListagem($loja, $produtos);
+        } catch (Throwable $e) {
+            report($e);
+            $resumo = [];
+        }
+
+        foreach ($produtos as $produto) {
+            $produto->setAttribute('recomendacao', $resumo[$produto->id] ?? null);
+        }
     }
 
     private function assertProdutoDaLoja(Produto $produto): void

@@ -34,6 +34,7 @@ Route::middleware(['auth:sanctum', EnsureLojaExists::class])->group(function () 
     Route::get('/produtos', [ProdutoController::class, 'index']);
     Route::post('/produtos', [ProdutoController::class, 'store']);
     Route::get('/produtos/{produto}', [ProdutoController::class, 'show']);
+    Route::get('/produtos/{produto}/recomendacao-cenario', [\App\Http\Controllers\RecomendacaoCenarioController::class, 'show']);
     Route::put('/produtos/{produto}', [ProdutoController::class, 'update']);
     Route::delete('/produtos/{produto}', [ProdutoController::class, 'destroy']);
     Route::post('/precificacao/sugerir/{produto}', [PrecificacaoController::class, 'sugerir']);

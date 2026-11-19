@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogRecomendacaoCenario;
 use App\Models\LogsSugestaoIa;
 use App\Models\Produto;
 use App\Services\PrecificacaoIaInterface;
 use App\Services\PrecificacaoPayloadService;
+use App\Services\RecomendacaoCenarioDados;
+use App\Services\RecomendacaoCenarioService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -82,7 +85,46 @@ class PrecificacaoController extends Controller
             // entre o preço que os custos pedem e a faixa de mercado da camada 3.
             // Nem a faixa nem esta composição entram no prompt da IA.
             'composicao' => $this->composicaoDoPreco($produto),
+            // Recomendação de cenário (regra determinística, sem IA): mesmo
+            // formato de GET /produtos/{produto}/recomendacao-cenario. Não
+            // entra no prompt e não escolhe nada: o lojista escolhe.
+            'recomendacao' => $this->registrarRecomendacao($produto, $log),
         ]);
+    }
+
+    /**
+     * Avalia a recomendação de cenário desta rodada e grava o que foi
+     * exibido em logs_recomendacao_cenario. Só roda no caminho de sucesso
+     * (resposta 200). Uma falha aqui não derruba a sugestão de preço: a
+     * resposta sai com recomendacao nula e o frontend segue como antes.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function registrarRecomendacao(Produto $produto, LogsSugestaoIa $log): ?array
+    {
+        try {
+            $avaliacao = app(RecomendacaoCenarioDados::class)->avaliarProduto($produto);
+
+            LogRecomendacaoCenario::create([
+                'produto_id' => $produto->id,
+                'loja_id' => $produto->loja_id,
+                'log_sugestao_ia_id' => $log->id,
+                'cenario_recomendado' => $avaliacao['cenario_recomendado'],
+                'origem_recomendacao' => $avaliacao['origem_recomendacao'],
+                'motivo_indisponivel' => $avaliacao['motivo_indisponivel'],
+                'sinais' => $avaliacao['sinais'],
+                'versao_regras' => $avaliacao['versao_regras'],
+            ]);
+
+            return app(RecomendacaoCenarioService::class)->paraResposta($avaliacao);
+        } catch (\Throwable $e) {
+            Log::error('Falha ao calcular a recomendação de cenário', [
+                'log_id' => $log->id,
+                'erro'   => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     /**
