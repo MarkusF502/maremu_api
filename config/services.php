@@ -52,7 +52,9 @@ return [
 
     // Seleciona qual provedor de IA gera as sugestões de margem de
     // precificação (ver App\Services\PrecificacaoIaInterface). 'gemini' é o
-    // default para não quebrar o comportamento já existente.
+    // default para não quebrar o comportamento já existente. 'simulado'
+    // devolve margens fixas sem chamar IA nenhuma (testes e verificação
+    // local) e recusa rodar em production.
     'ia_provider' => env('IA_PROVIDER', 'gemini'),
 
 ];

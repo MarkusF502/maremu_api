@@ -9,6 +9,7 @@ use App\Services\OnboardingIaGeminiService;
 use App\Services\OnboardingIaInterface;
 use App\Services\OpenAiService;
 use App\Services\PrecificacaoIaInterface;
+use App\Services\PrecificacaoIaSimuladaService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
             return match (config('services.ia_provider')) {
                 'anthropic' => $this->app->make(AnthropicService::class),
                 'openai'    => $this->app->make(OpenAiService::class),
+                // Sem IA: margens fixas para testes e verificação local.
+                // Recusa rodar em production (ver o próprio serviço).
+                'simulado'  => $this->app->make(PrecificacaoIaSimuladaService::class),
                 default     => $this->app->make(GeminiService::class),
             };
         });
