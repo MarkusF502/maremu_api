@@ -115,24 +115,39 @@ class PrecificacaoControllerTest extends TestCase
     {
         [$user, $loja, $produto] = $this->autenticarComLojaEProduto();
 
+        // Sem canal ativo não há taxa para calcular o preço dos cenários.
+        $loja->canais()->create([
+            'canal' => 'loja_fisica',
+            'taxa_percentual' => 0.03,
+            'taxa_origem' => 'estimado_pelo_sistema',
+            'ativo' => true,
+        ]);
+
         $response = $this->actingAs($user)
             ->postJson("/api/precificacao/sugerir/{$produto->id}");
 
+        // Formato atual (desde ad8d2c2): o payload vai para a IA e para o
+        // log; a resposta traz os cenários já com preço.
         $response->assertOk()
             ->assertJsonStructure([
-                'payload' => [
-                    'camada_1' => ['preco_piso', 'custo_base', 'custo_origem'],
-                    'camada_2' => ['loja', 'canais', 'produto'],
-                    'meta' => ['produto_id', 'loja_id', 'categoria_id', 'gerado_em'],
-                ],
                 'log_id',
-                'camada_4_ativa',
-                'canais_disponiveis',
-            ]);
+                'cenarios' => [['id', 'tipo', 'margem_lucro_percentual', 'explicacao', 'preco_sugerido', 'preco_piso_referencia']],
+                'composicao' => ['preco_piso', 'custo_base', 'custo_fixo_unitario', 'percentual_variavel'],
+            ])
+            ->assertJsonCount(3, 'cenarios');
+        $this->assertArrayHasKey('recomendacao', $response->json());
 
-        $this->assertDatabaseHas('logs_sugestao_ia', [
-            'produto_id' => $produto->id,
-        ]);
+        $log = LogsSugestaoIa::findOrFail($response->json('log_id'));
+        $this->assertSame($produto->id, $log->produto_id);
+        foreach (['camada_1' => ['preco_piso', 'custo_base', 'custo_origem'], 'camada_2' => ['loja', 'canais', 'produto']] as $camada => $chaves) {
+            foreach ($chaves as $chave) {
+                $this->assertArrayHasKey($chave, $log->payload_enviado[$camada], "{$camada}.{$chave}");
+            }
+        }
+        $this->assertSame($produto->id, $log->payload_enviado['meta']['produto_id']);
+        $this->assertSame($loja->id, $log->payload_enviado['meta']['loja_id']);
+        $this->assertArrayHasKey('categoria_id', $log->payload_enviado['meta']);
+        $this->assertArrayHasKey('gerado_em', $log->payload_enviado['meta']);
     }
 
     public function test_confirmar_atualiza_preco_e_origem_do_produto(): void
@@ -142,6 +157,7 @@ class PrecificacaoControllerTest extends TestCase
         $log = LogsSugestaoIa::create([
             'produto_id' => $produto->id,
             'payload_enviado' => ['fake' => true],
+            'cenarios_retornados' => $this->cenariosDaRodada(),
         ]);
 
         $response = $this->actingAs($user)->postJson('/api/precificacao/confirmar', [
@@ -165,9 +181,40 @@ class PrecificacaoControllerTest extends TestCase
 
         $this->assertDatabaseHas('logs_sugestao_ia', [
             'id' => $log->id,
-            'cenario_escolhido' => 'ia',
+            'cenario_escolhido' => 'cenario_2',
             'preco_final_escolhido' => 79.90,
         ]);
+    }
+
+    public function test_confirmar_recusa_preco_que_nao_confere_com_o_cenario_do_log(): void
+    {
+        [$user, $loja, $produto] = $this->autenticarComLojaEProduto(['preco_venda_atual' => 70.00]);
+
+        $log = LogsSugestaoIa::create([
+            'produto_id' => $produto->id,
+            'payload_enviado' => ['fake' => true],
+            'cenarios_retornados' => $this->cenariosDaRodada(),
+        ]);
+
+        $this->actingAs($user)->postJson('/api/precificacao/confirmar', [
+            'log_id' => $log->id,
+            'cenario_escolhido' => 'cenario_2',
+            'preco_final' => 85.00,
+        ])->assertStatus(422);
+
+        // Nada é gravado: nem a escolha no log, nem o preço no produto.
+        $this->assertDatabaseHas('logs_sugestao_ia', ['id' => $log->id, 'cenario_escolhido' => null]);
+        $this->assertDatabaseHas('produtos', ['id' => $produto->id, 'preco_venda_atual' => 70.00, 'preco_origem' => null]);
+    }
+
+    /** Cenários de uma rodada da IA já com preço, como o sugerir grava. */
+    private function cenariosDaRodada(): array
+    {
+        return [
+            ['id' => 'cenario_1', 'tipo' => 'liquidacao', 'margem_lucro_percentual' => 0.10, 'explicacao' => 'a', 'preco_sugerido' => 64.90],
+            ['id' => 'cenario_2', 'tipo' => 'ideal', 'margem_lucro_percentual' => 0.20, 'explicacao' => 'b', 'preco_sugerido' => 79.90],
+            ['id' => 'cenario_3', 'tipo' => 'alta_demanda', 'margem_lucro_percentual' => 0.30, 'explicacao' => 'c', 'preco_sugerido' => 99.90],
+        ];
     }
 
 
