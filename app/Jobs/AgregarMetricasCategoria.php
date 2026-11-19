@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Support\GiroProduto;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,8 +38,8 @@ class AgregarMetricasCategoria implements ShouldQueue
     public function handle(): void
     {
         $hoje = CarbonImmutable::now()->startOfDay();
-        $horizonteDias = (int) config('metricas.horizonte_dias', 90);
-        $inicioHorizonte = $hoje->subDays($horizonteDias - 1);
+        $horizonteDias = GiroProduto::horizonteDias();
+        $inicioHorizonte = GiroProduto::inicioDoHorizonte($hoje, $horizonteDias);
 
         $produtos = $this->carregarProdutos();
         if ($produtos->isEmpty()) {
@@ -183,11 +184,8 @@ class AgregarMetricasCategoria implements ShouldQueue
                 $custoTabela += (float) $venda->custo;
             }
 
-            $cadastro = $produto->data_cadastro
-                ? CarbonImmutable::parse($produto->data_cadastro)->startOfDay()
-                : $hoje;
-            $diasObservados = max(1, min($horizonteDias, (int) $cadastro->diffInDays($hoje) + 1));
-            $giros[] = $diasObservados / $qtd;
+            // Mesma conta da recomendação de cenário (App\Support\GiroProduto).
+            $giros[] = GiroProduto::dias($produto->data_cadastro, $qtd, $hoje, $horizonteDias);
         }
 
         return [
