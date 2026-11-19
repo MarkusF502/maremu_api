@@ -78,6 +78,56 @@ class DemoSeederRecomendacaoTest extends TestCase
         $this->assertStringContainsString('lojas parecidas com a sua', $avaliacoes[$produtos['Calça de linho']->id]['motivo']);
     }
 
+    public function test_na_listagem_so_os_casos_de_demonstracao_mostram_selo(): void
+    {
+        $produtos = Produto::with(['categoria', 'variantes'])->where('loja_id', $this->consulente->id)->get();
+        $resumo = app(RecomendacaoCenarioDados::class)->resumoParaListagem($this->consulente, $produtos);
+
+        $comSelo = $produtos
+            ->filter(fn (Produto $p) => $resumo[$p->id]['difere_do_atual'] ?? false)
+            ->pluck('nome')->sort()->values()->all();
+
+        $this->assertSame([
+            'Calcinha básica',
+            'Calcinha básica lisa',
+            'Calcinha de renda',
+            'Calcinha estampada',
+            'Calça de linho',
+            'Kit de calcinhas',
+        ], $comSelo);
+    }
+
+    public function test_resto_do_catalogo_esta_no_cenario_recomendado_pelo_log(): void
+    {
+        $casos = array_keys(self::ESPERADO);
+        $alinhados = Produto::where('loja_id', $this->consulente->id)
+            ->whereNotIn('nome', $casos)
+            ->where('preco_origem', 'like', 'ia_cenario_%')
+            ->get();
+
+        $this->assertNotEmpty($alinhados);
+
+        foreach ($alinhados as $produto) {
+            $log = \App\Models\LogsSugestaoIa::where('produto_id', $produto->id)->sole();
+            $escolhido = collect($log->cenarios_retornados)->firstWhere('id', $log->cenario_escolhido);
+
+            $this->assertSame('ia_'.$log->cenario_escolhido, $produto->preco_origem, $produto->nome);
+            $this->assertEqualsWithDelta((float) $escolhido['preco_sugerido'], (float) $produto->preco_venda_atual, 0.001);
+            $this->assertSame('simulado', $log->provedor_ia);
+        }
+
+        // As sondas de piso são produtos novos: sem preço e sem recomendação.
+        $sondas = Produto::with(['categoria', 'variantes'])
+            ->where('loja_id', $this->consulente->id)->whereNull('preco_venda_atual')->get();
+        $this->assertCount(3, $sondas);
+        foreach (app(RecomendacaoCenarioDados::class)->avaliar($this->consulente, $sondas) as $avaliacao) {
+            $this->assertFalse($avaliacao['disponivel']);
+        }
+
+        // A demonstração não inventa histórico de aceitação.
+        $this->assertDatabaseCount('logs_recomendacao_cenario', 0);
+    }
+
     public function test_resumo_do_seeder_imprime_os_casos_sem_divergencia(): void
     {
         $this->artisan('db:seed', ['--class' => DemoSeeder::class])

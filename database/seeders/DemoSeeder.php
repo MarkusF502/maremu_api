@@ -10,6 +10,8 @@ use App\Models\SubCategoria;
 use App\Models\User;
 use App\Services\Camada3MercadoService;
 use App\Services\OnboardingService;
+use App\Services\PrecificacaoIaSimuladaService;
+use App\Services\PrecificacaoPayloadService;
 use App\Services\PricingEngine;
 use App\Services\RecomendacaoCenarioDados;
 use App\Services\TaxonomiaService;
@@ -79,6 +81,12 @@ use RuntimeException;
  * semelhantes. Eles existem para DEMONSTRAR as regras na apresentação, NÃO são
  * evidência de com que frequência cada caso acontece numa loja real. O resumo
  * do seeder imprime a recomendação esperada e a obtida de cada um.
+ *
+ * O resto do catálogo da consulente fica coerente com a própria recomendação,
+ * para a listagem só mostrar selo nos casos: quem tem recomendação já está no
+ * cenário recomendado (rodada simulada em logs_sugestao_ia, ver
+ * alinharCenarioEmUso), e quem não tem fica sem por motivo legítimo. As sondas
+ * de piso são produtos novos, cadastrados no dia.
  *
  * Todo produto demo sem preço piso informado recebe o piso do PricingEngine,
  * para poder passar por POST /precificacao/sugerir. O piso não entra nas
@@ -288,6 +296,11 @@ class DemoSeeder extends Seeder
         $this->criarCasosDeRecomendacao($consulente);
         $this->descarregarFilas();
 
+        AgregarMetricasCategoria::dispatchSync();
+
+        // O resto do catálogo da consulente já está no cenário que a
+        // recomendação indica; o preço muda, então as métricas são refeitas.
+        $this->alinharCenarioEmUso($consulente);
         AgregarMetricasCategoria::dispatchSync();
 
         $this->resumir($consulente);
@@ -656,6 +669,10 @@ class DemoSeeder extends Seeder
                 preco: null,
                 custo: $custoBase,
                 precoPiso: $calculo['preco_piso'],
+                // Produto novo de fato: cadastrado hoje, sem venda. Assim a
+                // recomendação de cenário fica sem dados (motivo legítimo), em
+                // vez de ler um cadastro antigo como estoque parado.
+                cadastroDiasAtras: 0,
             );
 
             $this->sondas[] = $sonda + [
@@ -739,6 +756,84 @@ class DemoSeeder extends Seeder
             'origem' => 'lojas_similares',
             'regra' => sprintf('nunca vendeu, %d dias ≥ 2 × %s (mediana da camada 3)', $dias, $this->moeda((float) $giroMercado)),
         ];
+    }
+
+    /**
+     * Os produtos da consulente que NÃO são casos de demonstração ficam
+     * coerentes com a própria recomendação, para a listagem só mostrar selo
+     * nos casos: quem tem recomendação já está no cenário recomendado, como
+     * se o lojista tivesse precificado pelo modal. Cada um ganha uma rodada em
+     * logs_sugestao_ia do provedor simulado (payload real do
+     * PrecificacaoPayloadService, cenários com o preço do PricingEngine) com o
+     * cenário do tipo recomendado escolhido, e o preço e a origem do produto
+     * passam a ser os desse cenário. Não grava logs_recomendacao_cenario: a
+     * taxa de aceitação da demonstração começa vazia.
+     *
+     * Quem não tem recomendação (sem referência, sem dados, sem estoque) fica
+     * como está: o motivo já é legítimo e a listagem não mostra selo.
+     */
+    private function alinharCenarioEmUso(Loja $consulente): void
+    {
+        $casos = array_filter(array_column($this->casosRecomendacao, 'produto_id'));
+        $produtos = Produto::with(['loja.canaisAtivos', 'categoria', 'variantes'])
+            ->where('loja_id', $consulente->id)
+            ->whereNotIn('id', $casos)
+            ->orderBy('nome')
+            ->get();
+
+        $avaliacoes = app(RecomendacaoCenarioDados::class)->avaliar($consulente, $produtos);
+        $engine = app(PricingEngine::class);
+        $payloads = app(PrecificacaoPayloadService::class);
+        $this->pisoDoProduto($consulente, 1.0); // garante os parâmetros da loja no cache
+        [$aliquota, $taxaCanal, $custoFixo, $volume] = $this->parametrosPiso[$consulente->id];
+
+        foreach ($produtos as $produto) {
+            $recomendado = $avaliacoes[$produto->id]['cenario_recomendado'];
+            if ($recomendado === null) {
+                continue;
+            }
+
+            $cenarios = [];
+            foreach (PrecificacaoIaSimuladaService::MARGENS as $id => ['tipo' => $tipo, 'margem' => $margem]) {
+                $calculo = $engine->calcularPreco(
+                    custoAquisicao: (float) $produto->custo_aquisicao,
+                    freteEntradaUnitario: (float) $produto->frete_entrada_unitario,
+                    aliquotaEfetiva: $aliquota,
+                    taxaCanal: $taxaCanal,
+                    custoFixoMensal: $custoFixo,
+                    volumeVendasEsperado: $volume,
+                    margemLucroDesejada: $margem,
+                );
+                $cenarios[] = [
+                    'id' => $id,
+                    'tipo' => $tipo,
+                    'margem_lucro_percentual' => $margem,
+                    'explicacao' => '[simulado] Rodada gerada pelo DemoSeeder.',
+                    'margem_aplicada' => $margem,
+                    'preco_sugerido' => $calculo['preco_venda'],
+                    'preco_piso_referencia' => $calculo['preco_piso'],
+                ];
+            }
+
+            $escolhido = collect($cenarios)->firstWhere('tipo', $recomendado);
+
+            DB::table('logs_sugestao_ia')->insert([
+                'id' => (string) Str::uuid(),
+                'produto_id' => $produto->id,
+                'payload_enviado' => json_encode($payloads->montar($produto), JSON_UNESCAPED_UNICODE),
+                'provedor_ia' => 'simulado',
+                'cenarios_retornados' => json_encode($cenarios, JSON_UNESCAPED_UNICODE),
+                'cenario_escolhido' => $escolhido['id'],
+                'preco_final_escolhido' => $escolhido['preco_sugerido'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::table('produtos')->where('id', $produto->id)->update([
+                'preco_venda_atual' => $escolhido['preco_sugerido'],
+                'preco_origem' => 'ia_'.$escolhido['id'],
+            ]);
+        }
     }
 
     /** Categoria da consulente sem o catálogo sorteado de criarCategoria(). */
@@ -1047,5 +1142,26 @@ class DemoSeeder extends Seeder
 
         $this->command->info('Recomendação de cenário (casos de demonstração das regras, não de frequência):');
         $this->command->table(['produto', 'categoria', 'sinal', 'esperado', 'obtido', ''], $linhas);
+
+        // Resto do catálogo: nenhum deve mostrar selo na listagem.
+        $demais = Produto::with(['categoria', 'variantes'])
+            ->where('loja_id', $consulente->id)->whereNotIn('id', $ids)->get();
+        $resumo = app(RecomendacaoCenarioDados::class)->resumoParaListagem($consulente, $demais);
+        $avaliacoesDemais = app(RecomendacaoCenarioDados::class)->avaliar($consulente, $demais);
+
+        $contagem = [];
+        foreach ($demais as $produto) {
+            $item = $resumo[$produto->id];
+            $chave = match (true) {
+                $item === null => 'sem recomendação · '.$avaliacoesDemais[$produto->id]['motivo_indisponivel'],
+                $item['difere_do_atual'] => 'DIVERGE · mostraria selo',
+                default => 'no cenário recomendado',
+            };
+            $contagem[$chave] = ($contagem[$chave] ?? 0) + 1;
+        }
+        ksort($contagem);
+
+        $this->command->line('Demais produtos da '.self::NOME_CONSULENTE.' (sem selo na listagem):');
+        $this->command->table(['situação', 'produtos'], array_map(null, array_keys($contagem), array_values($contagem)));
     }
 }
