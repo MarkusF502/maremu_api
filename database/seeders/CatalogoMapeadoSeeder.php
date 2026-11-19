@@ -43,7 +43,7 @@ use RuntimeException;
  * Rodar:  php artisan db:seed --class=CatalogoMapeadoSeeder
  *
  * ─── SEGURANÇA ────────────────────────────────────────────────────────────
- * As lojas ficam com `is_demo = true` e usuário no domínio CATALOGO. O seeder
+ * As lojas ficam com `is_demo = true` e usuário no domínio DOMINIO. O seeder
  * só apaga e recria lojas demo desse domínio: loja real e loja de outro seeder
  * nunca são tocadas. Em `production` ele se recusa a rodar sem
  * `DEMO_SEED_ALLOW=true`, e a senha tem de vir de `DEMO_PASSWORD`.
@@ -51,8 +51,11 @@ use RuntimeException;
  * Como o DemoSeeder, a única coisa que faz fora das próprias lojas é rodar o job
  * AgregarMetricasCategoria, que só grava métricas derivadas.
  *
- * Atenção: o DemoSeeder apaga TODA loja com is_demo = true, inclusive estas.
- * Rodar o DemoSeeder depois deste desfaz o cadastro do catálogo mapeado.
+ * O DemoSeeder também só apaga as lojas do próprio domínio (`@maremu.demo`):
+ * os dois podem rodar em qualquer ordem sem desfazer o cadastro um do outro
+ * (DemoSeederTest cobre os dois sentidos). Mas a camada 3 só separa demo de
+ * real, então as lojas dos dois seeders entram na amostra umas das outras; o
+ * resumo deste seeder avisa quando há lojas demo de outro seeder no banco.
  */
 class CatalogoMapeadoSeeder extends Seeder
 {

@@ -266,7 +266,7 @@ class DemoSeeder extends Seeder
         if ($producao && ! $autorizado) {
             throw new RuntimeException(
                 'DemoSeeder recusou rodar: o ambiente é "production". Este seeder apaga e '
-                .'recria todas as lojas com is_demo = true. Se é mesmo isso que você quer, '
+                .'recria as lojas de demonstração (is_demo = true, domínio @'.self::DOMINIO.'). Se é mesmo isso que você quer, '
                 .'defina DEMO_SEED_ALLOW=true no ambiente antes de rodar.'
             );
         }

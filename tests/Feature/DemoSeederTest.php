@@ -436,6 +436,60 @@ class DemoSeederTest extends TestCase
         );
     }
 
+    /**
+     * O sentido inverso: com o cenário do DemoSeeder já no banco, rodar o
+     * CatalogoMapeadoSeeder (duas vezes) não muda nenhuma linha de cadastro,
+     * estoque ou venda das lojas do DemoSeeder. Métricas ficam de fora: o job
+     * AgregarMetricasCategoria as recalcula para todas as lojas.
+     */
+    public function test_catalogo_mapeado_depois_dele_mantem_as_lojas_do_demo_seeder(): void
+    {
+        $this->semear();
+
+        $lojasDoDemo = fn () => DB::table('lojas')
+            ->join('users', 'users.id', '=', 'lojas.user_id')
+            ->where('lojas.is_demo', true)
+            ->where('users.email', 'like', '%@maremu.demo')
+            ->pluck('lojas.id')
+            ->sort()
+            ->values()
+            ->all();
+        $retrato = function (array $ids): array {
+            $linhas = fn ($consulta) => $consulta->orderBy('id')->get()->map(fn ($l) => (array) $l)->all();
+            $produtos = DB::table('produtos')->whereIn('loja_id', $ids)->select('id');
+            $pedidos = DB::table('pedidos')->whereIn('loja_id', $ids)->select('id');
+
+            return [
+                'users' => $linhas(DB::table('users')->whereIn('id', DB::table('lojas')->whereIn('id', $ids)->select('user_id'))),
+                'lojas' => $linhas(DB::table('lojas')->whereIn('id', $ids)),
+                'canais_venda_loja' => $linhas(DB::table('canais_venda_loja')->whereIn('loja_id', $ids)),
+                'categorias' => $linhas(DB::table('categorias')->whereIn('loja_id', $ids)),
+                'produtos' => $linhas(DB::table('produtos')->whereIn('loja_id', $ids)),
+                'variantes_produto' => $linhas(DB::table('variantes_produto')->whereIn('produto_id', $produtos)),
+                'pedidos' => $linhas(DB::table('pedidos')->whereIn('loja_id', $ids)),
+                'itens_pedido' => $linhas(DB::table('itens_pedido')->whereIn('pedido_id', $pedidos)),
+            ];
+        };
+
+        $idsAntes = $lojasDoDemo();
+        $antes = $retrato($idsAntes);
+
+        $this->seed(\Database\Seeders\CatalogoMapeadoSeeder::class);
+        $this->seed(\Database\Seeders\CatalogoMapeadoSeeder::class);
+
+        $this->assertNotEmpty($idsAntes);
+        $this->assertNotEmpty($antes['produtos']);
+        $this->assertNotEmpty($antes['itens_pedido']);
+        $this->assertSame($idsAntes, $lojasDoDemo());
+        $this->assertSame($antes, $retrato($idsAntes));
+        // As lojas do catálogo mapeado foram criadas normalmente ao lado delas.
+        $this->assertSame(
+            count(\Database\Seeders\CatalogoMapeadoSeeder::lerCatalogos()),
+            DB::table('lojas')->join('users', 'users.id', '=', 'lojas.user_id')
+                ->where('users.email', 'like', '%@'.\Database\Seeders\CatalogoMapeadoSeeder::DOMINIO)->count(),
+        );
+    }
+
     // ─── trava de ambiente ───────────────────────────────────────────────
 
     public function test_recusa_rodar_em_producao_sem_autorizacao_explicita(): void
