@@ -189,6 +189,14 @@ class CatalogoMapeadoSeederTest extends TestCase
     public function test_json_tem_so_os_campos_previstos(): void
     {
         foreach (CatalogoMapeadoSeeder::lerCatalogos() as $catalogo) {
+            $this->assertSame([
+                'loja', 'nome_ficticio', 'segmento',
+                'posicionamento', 'posicionamento_estimado', 'criterio_posicionamento',
+                'faixa_faturamento', 'faixa_faturamento_origem',
+                'preco', 'pecas',
+            ], array_keys($catalogo), $catalogo['loja'].' tem campos fora do previsto.');
+            $this->assertContains($catalogo['faixa_faturamento'], app(OnboardingService::class)->faixasDeFaturamento());
+            $this->assertContains($catalogo['faixa_faturamento_origem'], CatalogoMapeadoSeeder::ORIGENS_DA_FAIXA);
             $this->assertContains($catalogo['posicionamento'], ['popular', 'medio', 'premium']);
             $this->assertIsBool($catalogo['posicionamento_estimado']);
             if (! $catalogo['posicionamento_estimado']) {
@@ -244,20 +252,96 @@ class CatalogoMapeadoSeederTest extends TestCase
         }
     }
 
-    public function test_todas_as_lojas_ficam_na_faixa_declarada_com_os_valores_do_onboarding(): void
+    /** As 14 lojas, inclusive as indeterminadas, declaram a mesma faixa, e como premissa. */
+    public function test_toda_loja_declara_de_10k_a_30k_como_premissa(): void
+    {
+        $catalogos = CatalogoMapeadoSeeder::lerCatalogos();
+
+        $this->assertCount(14, $catalogos);
+        foreach ($catalogos as $catalogo) {
+            $this->assertSame('de_10k_a_30k', $catalogo['faixa_faturamento'], $catalogo['loja']);
+            $this->assertSame('premissa', $catalogo['faixa_faturamento_origem'], $catalogo['loja']);
+        }
+    }
+
+    /**
+     * O seeder grava a faixa do JSON de cada loja: não há coluna de faixa, então
+     * ela vale pelo faturamento (que cai na faixa) e pelos valores do onboarding.
+     */
+    public function test_seeder_grava_a_faixa_declarada_no_json_com_os_valores_do_onboarding(): void
     {
         $this->seed(CatalogoMapeadoSeeder::class);
 
         $onboarding = app(OnboardingService::class);
 
-        foreach ($this->lojasDoCatalogo()->get() as $loja) {
-            $esperado = $onboarding->inferirDadosDaLoja(CatalogoMapeadoSeeder::FAIXA, $loja->posicionamento, 'simples_nacional', ['loja_fisica'])['loja'];
+        foreach (CatalogoMapeadoSeeder::lerCatalogos() as $catalogo) {
+            $loja = $this->lojasDoCatalogo()->where('nome', $catalogo['nome_ficticio'])->sole();
+            $esperado = $onboarding->inferirDadosDaLoja($catalogo['faixa_faturamento'], $loja->posicionamento, 'simples_nacional', ['loja_fisica'])['loja'];
 
-            $this->assertSame(CatalogoMapeadoSeeder::FAIXA, $onboarding->faixaDoFaturamento((float) $loja->faturamento_medio_mensal));
+            $this->assertSame($catalogo['faixa_faturamento'], $onboarding->faixaDoFaturamento((float) $loja->faturamento_medio_mensal), $catalogo['loja']);
+            $this->assertEquals($esperado['faturamento_medio_mensal'], (float) $loja->faturamento_medio_mensal);
             $this->assertEquals($esperado['custo_fixo_mensal'], (float) $loja->custo_fixo_mensal);
             $this->assertSame($esperado['volume_vendas_esperado'], $loja->volume_vendas_esperado);
             $this->assertEquals($esperado['margem_lucro_desejada'], (float) $loja->margem_lucro_desejada);
         }
+    }
+
+    /**
+     * Sem a faixa, com faixa fora do onboarding ou com origem que não seja
+     * premissa, o seeder para com mensagem clara e não apaga nem grava nada.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('jsonSemFaixaValida')]
+    public function test_json_sem_faixa_valida_para_o_seeder_antes_de_gravar(callable $estragar, string $mensagem): void
+    {
+        $this->seed(CatalogoMapeadoSeeder::class);
+        $antes = $this->contagens();
+
+        $pasta = sys_get_temp_dir().DIRECTORY_SEPARATOR.'catalogo-mapeado-'.Str::uuid();
+        mkdir($pasta);
+        try {
+            foreach (glob(database_path(CatalogoMapeadoSeeder::PASTA.'/loja-*.json')) as $arquivo) {
+                copy($arquivo, $pasta.DIRECTORY_SEPARATOR.basename($arquivo));
+            }
+            $alvo = $pasta.DIRECTORY_SEPARATOR.'loja-07.json';
+            $dados = json_decode((string) file_get_contents($alvo), true);
+            file_put_contents($alvo, json_encode($estragar($dados)));
+
+            try {
+                app(CatalogoMapeadoSeeder::class)->usandoPasta($pasta)->run();
+                $this->fail('O seeder aceitou um JSON sem faixa válida.');
+            } catch (RuntimeException $erro) {
+                $this->assertStringContainsString('loja-07.json', $erro->getMessage());
+                $this->assertMatchesRegularExpression($mensagem, $erro->getMessage());
+            }
+        } finally {
+            array_map('unlink', glob($pasta.DIRECTORY_SEPARATOR.'*'));
+            rmdir($pasta);
+        }
+
+        $this->assertSame($antes, $this->contagens());
+    }
+
+    /** @return array<string, array{callable, string}> */
+    public static function jsonSemFaixaValida(): array
+    {
+        return [
+            'sem o campo de faixa' => [
+                function (array $d) { unset($d['faixa_faturamento']); return $d; },
+                '/sem o campo "faixa_faturamento"/',
+            ],
+            'sem a origem da faixa' => [
+                function (array $d) { unset($d['faixa_faturamento_origem']); return $d; },
+                '/sem o campo "faixa_faturamento_origem"/',
+            ],
+            'faixa fora do onboarding' => [
+                fn (array $d) => ['faixa_faturamento' => 'de_30k_a_50k'] + $d,
+                '/faixa_faturamento "de_30k_a_50k" não é uma faixa do onboarding \(ate_10k, de_10k_a_30k, de_30k_a_80k, acima_80k\)/',
+            ],
+            'origem que não é premissa' => [
+                fn (array $d) => ['faixa_faturamento_origem' => 'coletada'] + $d,
+                '/faixa_faturamento_origem "coletada" não é aceita/',
+            ],
+        ];
     }
 
     // ─── idempotência ────────────────────────────────────────────────────

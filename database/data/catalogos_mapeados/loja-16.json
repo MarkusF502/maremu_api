@@ -14,6 +14,8 @@
       "premium": 29
     }
   },
+  "faixa_faturamento": "de_10k_a_30k",
+  "faixa_faturamento_origem": "premissa",
   "preco": "praticado na loja virtual da loja real em 2026-11-13 (único dado real; vendas e estoque são sintéticos)",
   "pecas": [
     {

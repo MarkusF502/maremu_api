@@ -28,9 +28,12 @@ use RuntimeException;
  * preço praticado. O preço é o único dado real; o resto é estimado ou sintético:
  *
  *   - faturamento, custo fixo, volume e margem desejada: OnboardingService, a
- *     partir do posicionamento do JSON e da faixa FAIXA, a mesma para todas as
- *     lojas (premissa declarada: as tabelas do onboarding aplicadas ao preço
- *     médio do catálogo punham lojas pequenas acima de R$ 80 mil por mês);
+ *     partir do posicionamento e da faixa de faturamento do JSON. A faixa vem
+ *     em `faixa_faturamento`, com `faixa_faturamento_origem: "premissa"`: não
+ *     foi coletada nem derivada do preço médio (as tabelas do onboarding
+ *     aplicadas ao preço médio punham lojas pequenas acima de R$ 80 mil por
+ *     mês). Hoje é `de_10k_a_30k` em todas. Sem o campo, ou com faixa fora das
+ *     do onboarding, o seeder para antes de apagar qualquer coisa;
  *   - posicionamento: o do JSON. Loja que a regra deixou indeterminada vem
  *     como "medio" com `posicionamento_estimado: false`, porque a loja exige um;
  *   - regime `simples_nacional` e canal `loja_fisica`: o catálogo não diz o
@@ -76,8 +79,11 @@ class CatalogoMapeadoSeeder extends Seeder
 
     private const CANAIS = ['loja_fisica'];
 
-    /** Faixa de faturamento de todas as lojas fictícias (premissa, ver o cabeçalho). */
-    public const FAIXA = 'de_10k_a_30k';
+    /**
+     * Origens aceitas para `faixa_faturamento` no JSON. Só "premissa": nenhuma
+     * faixa foi coletada das lojas reais (ver o cabeçalho).
+     */
+    public const ORIGENS_DA_FAIXA = ['premissa'];
 
     /** Estoque por peça: uma variante de tamanho único. */
     private const ESTOQUE_POR_PECA = [1, 10];
@@ -105,6 +111,9 @@ class CatalogoMapeadoSeeder extends Seeder
     /** @var array<int, array<string, mixed>> estimativas por loja, para o resumo */
     private array $estimativas = [];
 
+    /** Pasta dos JSON; null = database/PASTA. */
+    private ?string $pasta = null;
+
     public function run(): void
     {
         $senha = $this->ambienteSeguro();
@@ -114,7 +123,7 @@ class CatalogoMapeadoSeeder extends Seeder
         $this->itensVendidos = 0;
         $this->estimativas = [];
 
-        $catalogos = self::lerCatalogos();
+        $catalogos = self::lerCatalogos($this->pasta);
 
         $this->limpar();
 
@@ -133,27 +142,56 @@ class CatalogoMapeadoSeeder extends Seeder
         $this->resumir($catalogos);
     }
 
+    /** Lê os JSON de outra pasta (testes). Sem isso, database/PASTA. */
+    public function usandoPasta(string $pasta): static
+    {
+        $this->pasta = $pasta;
+
+        return $this;
+    }
+
     /**
-     * Os JSON do catálogo mapeado, em ordem de arquivo.
+     * Os JSON do catálogo mapeado, em ordem de arquivo. Valida os campos de que
+     * o seeder precisa; um JSON inválido para tudo antes de qualquer gravação.
      *
+     * @param  string|null  $pasta  pasta absoluta; sem ela, database/PASTA
      * @return array<int, array<string, mixed>>
      */
-    public static function lerCatalogos(): array
+    public static function lerCatalogos(?string $pasta = null): array
     {
-        $arquivos = glob(database_path(self::PASTA.'/loja-*.json')) ?: [];
+        $pasta ??= database_path(self::PASTA);
+        $arquivos = glob($pasta.'/loja-*.json') ?: [];
         sort($arquivos);
 
         if ($arquivos === []) {
-            throw new RuntimeException('Nenhum catálogo em database/'.self::PASTA.'.');
+            throw new RuntimeException('Nenhum catálogo em '.$pasta.'.');
         }
 
-        return array_map(function (string $arquivo): array {
-            $dados = json_decode((string) file_get_contents($arquivo), true, flags: JSON_THROW_ON_ERROR);
+        $faixas = app(OnboardingService::class)->faixasDeFaturamento();
 
-            foreach (['loja', 'nome_ficticio', 'posicionamento', 'pecas'] as $campo) {
+        return array_map(function (string $arquivo) use ($faixas): array {
+            $dados = json_decode((string) file_get_contents($arquivo), true, flags: JSON_THROW_ON_ERROR);
+            $nome = basename($arquivo);
+
+            foreach (['loja', 'nome_ficticio', 'posicionamento', 'faixa_faturamento', 'faixa_faturamento_origem', 'pecas'] as $campo) {
                 if (! isset($dados[$campo])) {
-                    throw new RuntimeException(basename($arquivo)." sem o campo \"{$campo}\".");
+                    throw new RuntimeException($nome." sem o campo \"{$campo}\".");
                 }
+            }
+
+            // Sem padrão silencioso: a faixa é premissa declarada loja a loja.
+            if (! in_array($dados['faixa_faturamento'], $faixas, true)) {
+                throw new RuntimeException(sprintf(
+                    '%s: faixa_faturamento "%s" não é uma faixa do onboarding (%s).',
+                    $nome, (string) $dados['faixa_faturamento'], implode(', ', $faixas)
+                ));
+            }
+
+            if (! in_array($dados['faixa_faturamento_origem'], self::ORIGENS_DA_FAIXA, true)) {
+                throw new RuntimeException(sprintf(
+                    '%s: faixa_faturamento_origem "%s" não é aceita (%s).',
+                    $nome, (string) $dados['faixa_faturamento_origem'], implode(', ', self::ORIGENS_DA_FAIXA)
+                ));
             }
 
             return $dados;
@@ -247,7 +285,7 @@ class CatalogoMapeadoSeeder extends Seeder
         $posicionamento = $catalogo['posicionamento'];
         $precos = array_map(fn (array $peca) => (float) $peca['preco'], $catalogo['pecas']);
         $precoMedio = array_sum($precos) / count($precos);
-        $faixa = self::FAIXA;
+        $faixa = $catalogo['faixa_faturamento'];
 
         $user = User::create([
             'name' => 'Lojista '.$catalogo['nome_ficticio'],

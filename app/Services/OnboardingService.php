@@ -245,7 +245,7 @@ class OnboardingService
 
     private function validar(string $faixa, string $posicionamento, string $regime, array $canais): void
     {
-        $faixasValidas         = array_keys(self::FATURAMENTO_PONTO_MEDIO);
+        $faixasValidas         = $this->faixasDeFaturamento();
         $posicionamentosValidos = array_keys(self::MARGEM_POR_POSICIONAMENTO);
         $regimesValidos        = array_keys(self::ALIQUOTA_POR_REGIME);
         $canaisValidos         = array_keys(self::TAXA_POR_CANAL);
@@ -297,6 +297,16 @@ class OnboardingService
     // ─────────────────────────────────────────────────────────────────────
     // UTILITÁRIO: faixa de faturamento de uma loja já cadastrada
     // ─────────────────────────────────────────────────────────────────────
+
+    /**
+     * Faixas de faturamento aceitas pelo onboarding, da menor para a maior.
+     *
+     * @return string[]
+     */
+    public function faixasDeFaturamento(): array
+    {
+        return array_keys(self::FATURAMENTO_PONTO_MEDIO);
+    }
 
     /**
      * Faixa de faturamento derivada do faturamento médio mensal da loja.
