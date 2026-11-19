@@ -207,6 +207,45 @@ class RecomendacaoCenarioTest extends TestCase
         $this->assertTrue($produtos['Base 4']['recomendacao']['difere_do_atual']); // manual
     }
 
+    public function test_put_com_o_mesmo_preco_mantem_a_origem_e_a_listagem_nao_muda(): void
+    {
+        // base1 no cenário ideal, que é o recomendado: sem diferença.
+        $this->confirmado('base1', 'cenario_2', $this->cenarios('liquidacao', 'ideal', 'alta_demanda'));
+        $this->assertFalse($this->listagem()['Base 1']['recomendacao']['difere_do_atual']);
+
+        // O formulário reenvia o preço sem mudança, em outro formato numérico.
+        $this->atualizar('base1', '60')->assertOk();
+
+        $this->assertSame('ia_cenario_2', $this->p['base1']->fresh()->preco_origem);
+        $this->assertFalse($this->listagem()['Base 1']['recomendacao']['difere_do_atual']);
+    }
+
+    public function test_put_com_preco_novo_vira_manual_e_passa_a_diferir(): void
+    {
+        $this->confirmado('base1', 'cenario_2', $this->cenarios('liquidacao', 'ideal', 'alta_demanda'));
+
+        $this->atualizar('base1', 64.90)->assertOk();
+
+        $produto = $this->p['base1']->fresh();
+        $this->assertSame('manual', $produto->preco_origem);
+        $this->assertEquals(64.90, (float) $produto->preco_venda_atual);
+        $this->assertSame(
+            ['cenario_recomendado' => 'ideal', 'difere_do_atual' => true],
+            $this->listagem()['Base 1']['recomendacao'],
+        );
+    }
+
+    public function test_put_que_apaga_o_preco_tira_a_origem(): void
+    {
+        $this->confirmado('base1', 'cenario_2', $this->cenarios('liquidacao', 'ideal', 'alta_demanda'));
+
+        $this->atualizar('base1', null)->assertOk();
+
+        $produto = $this->p['base1']->fresh();
+        $this->assertNull($produto->preco_venda_atual);
+        $this->assertNull($produto->preco_origem);
+    }
+
     public function test_listagem_nao_faz_uma_consulta_por_produto(): void
     {
         // Uma categoria sem histórico próprio força o caminho da camada 3.
@@ -383,6 +422,21 @@ class RecomendacaoCenarioTest extends TestCase
         }
 
         return $produto;
+    }
+
+    /** PUT /produtos/{id} como o formulário de edição envia. */
+    private function atualizar(string $chave, string|float|null $preco)
+    {
+        $produto = $this->p[$chave];
+
+        return $this->putJson("/api/produtos/{$produto->id}", array_filter([
+            'nome' => $produto->nome,
+            'categoria_id' => $produto->categoria_id,
+            'custo_aquisicao' => 25.00,
+            'frete_entrada_unitario' => 0,
+            'preco_venda_atual' => $preco,
+            'variantes' => [['tamanho' => 'M', 'quantidade_estoque' => 5]],
+        ], fn ($valor) => $valor !== null));
     }
 
     private function recomendacao(string $chave)

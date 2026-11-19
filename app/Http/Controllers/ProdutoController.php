@@ -115,14 +115,22 @@ class ProdutoController extends Controller
                 margemLucroDesejada: $loja->margem_lucro_desejada,
             );
 
+            $precoNovo = $data['preco_venda_atual'] ?? null;
+
             $produto->update([
                 'categoria_id' => $data['categoria_id'],
                 'nome' => $data['nome'],
                 'custo_aquisicao' => $data['custo_aquisicao'],
                 'frete_entrada_unitario' => $data['frete_entrada_unitario'] ?? 0.0,
                 'preco_piso' => $dadosPreco['preco_piso'],
-                'preco_venda_atual' => $data['preco_venda_atual'] ?? null,
+                'preco_venda_atual' => $precoNovo,
                 'status' => $data['status'] ?? $produto->status,
+                // O formulário reenvia o preço mesmo sem mudança: o que conta é
+                // o valor. Preço novo digitado pelo lojista deixa de ser o do
+                // cenário da IA; preço igual mantém a origem.
+                ...($this->mesmoPreco($produto->preco_venda_atual, $precoNovo)
+                    ? []
+                    : ['preco_origem' => $precoNovo === null ? null : 'manual']),
             ]);
 
             $produto->variantes()->delete();
@@ -171,6 +179,16 @@ class ProdutoController extends Controller
         foreach ($produtos as $produto) {
             $produto->setAttribute('recomendacao', $resumo[$produto->id] ?? null);
         }
+    }
+
+    /** Mesmo preço em centavos ("87.50" e 87.5 são iguais); nulo só é igual a nulo. */
+    private function mesmoPreco(mixed $atual, mixed $novo): bool
+    {
+        if ($atual === null || $novo === null) {
+            return $atual === null && $novo === null;
+        }
+
+        return (int) round((float) $atual * 100) === (int) round((float) $novo * 100);
     }
 
     private function assertProdutoDaLoja(Produto $produto): void
