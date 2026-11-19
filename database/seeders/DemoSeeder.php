@@ -5,11 +5,13 @@ namespace Database\Seeders;
 use App\Jobs\AgregarMetricasCategoria;
 use App\Models\Categoria;
 use App\Models\Loja;
+use App\Models\Produto;
 use App\Models\SubCategoria;
 use App\Models\User;
 use App\Services\Camada3MercadoService;
 use App\Services\OnboardingService;
 use App\Services\PricingEngine;
+use App\Services\RecomendacaoCenarioDados;
 use App\Services\TaxonomiaService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -68,6 +70,19 @@ use RuntimeException;
  * Uma das lojas `medio` da faixa (M04) é especializada em roupa íntima: 4 das
  * 6 categorias dela são de lingerie ou complementares, o que deixa mais da
  * metade do catálogo nesse grupo sem tirá-la da amostra de Sutiãs.
+ *
+ * ─── RECOMENDAÇÃO DE CENÁRIO ──────────────────────────────────────────────
+ * A consulente ganha produtos montados à mão, sem sorteio, um para cada
+ * resultado da recomendação de cenário (RecomendacaoCenarioService): liquidação
+ * por dias sem venda, liquidação por razão de giro, venda ideal, alta demanda,
+ * sem estoque, dados insuficientes e um caso com referência de lojas
+ * semelhantes. Eles existem para DEMONSTRAR as regras na apresentação, NÃO são
+ * evidência de com que frequência cada caso acontece numa loja real. O resumo
+ * do seeder imprime a recomendação esperada e a obtida de cada um.
+ *
+ * Todo produto demo sem preço piso informado recebe o piso do PricingEngine,
+ * para poder passar por POST /precificacao/sugerir. O piso não entra nas
+ * métricas nem na camada 3.
  */
 class DemoSeeder extends Seeder
 {
@@ -211,6 +226,39 @@ class DemoSeeder extends Seeder
     /** @var array<int, array<string, mixed>> resultado das sondas de piso, para o resumo */
     private array $sondas = [];
 
+    /** @var array<int, array<string, mixed>> casos da recomendação de cenário, para o resumo */
+    private array $casosRecomendacao = [];
+
+    /** @var array<string, array{0: float, 1: float, 2: float, 3: int}> parâmetros do piso por loja */
+    private array $parametrosPiso = [];
+
+    /**
+     * Casos da recomendação de cenário, na categoria "Roupas íntimas" da
+     * consulente. Cadastro há 120 dias (90 dias observados), sem sorteio.
+     * [dias atrás, unidades] de cada venda; giro = 90 ÷ unidades.
+     *
+     * Os sete vendem nos 90 dias, então a categoria tem referência própria
+     * (≥ 5 produtos com venda). Giros: 10, 10, 5, 18, 10, 10 e 45; a mediana,
+     * que o job grava como giro da categoria, é 10 dias por peça.
+     */
+    private const CASOS_HISTORICO_PROPRIO = [
+        ['nome' => 'Calcinha básica', 'estoque' => 3, 'vendas' => [[1, 3], [20, 3], [50, 3]],
+            'esperado' => 'ideal', 'regra' => 'razão 1,0 (giro 10 ÷ 10)'],
+        ['nome' => 'Calcinha básica lisa', 'estoque' => 3, 'vendas' => [[2, 3], [25, 3], [55, 3]],
+            'esperado' => 'ideal', 'regra' => 'razão 1,0 (giro 10 ÷ 10)'],
+        ['nome' => 'Kit de calcinhas', 'estoque' => 4, 'vendas' => [[1, 6], [10, 6], [30, 6]],
+            'esperado' => 'alta_demanda', 'regra' => 'razão 0,5 (giro 5 ÷ 10)'],
+        ['nome' => 'Calcinha de renda', 'estoque' => 4, 'vendas' => [[3, 2], [30, 3]],
+            'esperado' => 'liquidacao', 'regra' => 'razão 1,8 (giro 18 ÷ 10)'],
+        // Pela razão (giro 10) seria venda ideal; parou de vender há 40 dias.
+        ['nome' => 'Calcinha estampada', 'estoque' => 4, 'vendas' => [[40, 3], [60, 3], [80, 3]],
+            'esperado' => 'liquidacao', 'regra' => '40 dias sem venda ≥ 2 × 10'],
+        ['nome' => 'Calcinha fio', 'estoque' => 0, 'vendas' => [[1, 3], [15, 3], [45, 3]],
+            'esperado' => 'sem_estoque', 'regra' => 'estoque zero'],
+        ['nome' => 'Calcinha cós alto', 'estoque' => 4, 'vendas' => [[2, 1], [8, 1]],
+            'esperado' => 'dados_insuficientes', 'regra' => '2 peças em 90 dias (< 3)'],
+    ];
+
     public function run(): void
     {
         $senha = $this->ambienteSeguro();
@@ -236,11 +284,14 @@ class DemoSeeder extends Seeder
         // A consulente não entra na própria amostra, então criar produtos nela
         // não move a faixa — a segunda passada só atualiza as métricas dela.
         $this->criarSondasDePiso($consulente);
+        // Também depende da camada 3 já calculada (caso de lojas semelhantes).
+        $this->criarCasosDeRecomendacao($consulente);
         $this->descarregarFilas();
 
         AgregarMetricasCategoria::dispatchSync();
 
         $this->resumir($consulente);
+        $this->resumirRecomendacoes($consulente);
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -627,6 +678,111 @@ class DemoSeeder extends Seeder
         };
     }
 
+    /**
+     * Casos da recomendação de cenário na consulente (ver comentário da classe
+     * e CASOS_HISTORICO_PROPRIO). Sem sorteio: só usam números fixos e o
+     * patamar de preço da consulente, já sorteado antes.
+     *
+     * O caso de lojas semelhantes fica em Calças, onde a consulente tem 4
+     * produtos vendendo (< 5): sem referência própria, vale a mediana de giro
+     * da camada 3. A peça nunca vendeu e está cadastrada há mais que o dobro
+     * dessa mediana. Ela não vende, então não muda a contagem de produtos com
+     * venda de Calças.
+     */
+    private function criarCasosDeRecomendacao(Loja $consulente): void
+    {
+        $this->casosRecomendacao = [];
+        $margem = $this->premissas['margem_bruta'][$consulente->posicionamento];
+
+        $categoria = $this->criarCategoriaSemProdutos($consulente, self::ROUPAS_INTIMAS);
+        $preco = round($this->precoBase[self::ROUPAS_INTIMAS][$consulente->posicionamento]
+            * $this->premissas['fator_loja_pequena'] * $this->fatorPreco[$consulente->id], 2);
+        $custo = round($preco * (1 - $margem), 2);
+
+        foreach (self::CASOS_HISTORICO_PROPRIO as $caso) {
+            $produtoId = $this->registrarProduto($consulente, $categoria, $caso['nome'], $preco, $custo,
+                estoquePorTamanho: $caso['estoque'], cadastroDiasAtras: 120);
+
+            foreach ($caso['vendas'] as [$diasAtras, $unidades]) {
+                $this->registrarPedido($consulente, $produtoId, $preco, $custo, $unidades, $diasAtras);
+            }
+
+            $this->casosRecomendacao[] = $caso + [
+                'produto_id' => $produtoId,
+                'categoria' => $categoria->nome,
+                'origem' => 'historico_proprio',
+            ];
+        }
+
+        $calcas = $consulente->categorias()->where('sub_categoria_id', $this->subCategorias[self::CALCAS]->id)->sole();
+        $giroMercado = app(Camada3MercadoService::class)->faixaDeMercado($consulente, $calcas)['giro']['mediana'] ?? null;
+
+        if ($giroMercado === null) {
+            $this->casosRecomendacao[] = ['nome' => 'Calça de linho', 'categoria' => $calcas->nome, 'produto_id' => null,
+                'esperado' => '—', 'origem' => 'lojas_similares', 'regra' => 'camada 3 sem giro: caso não criado'];
+
+            return;
+        }
+
+        $dias = (int) ceil(2 * $giroMercado) + 5;
+        $precoCalca = round($this->precoBase[self::CALCAS][$consulente->posicionamento]
+            * $this->premissas['fator_loja_pequena'] * $this->fatorPreco[$consulente->id], 2);
+
+        $produtoId = $this->registrarProduto($consulente, $calcas, 'Calça de linho', $precoCalca,
+            round($precoCalca * (1 - $margem), 2), estoquePorTamanho: 2, cadastroDiasAtras: $dias);
+
+        $this->casosRecomendacao[] = [
+            'nome' => 'Calça de linho',
+            'categoria' => $calcas->nome,
+            'produto_id' => $produtoId,
+            'esperado' => 'liquidacao',
+            'origem' => 'lojas_similares',
+            'regra' => sprintf('nunca vendeu, %d dias ≥ 2 × %s (mediana da camada 3)', $dias, $this->moeda((float) $giroMercado)),
+        ];
+    }
+
+    /** Categoria da consulente sem o catálogo sorteado de criarCategoria(). */
+    private function criarCategoriaSemProdutos(Loja $loja, string $chave): Categoria
+    {
+        return Categoria::create([
+            'loja_id' => $loja->id,
+            'nome' => $this->rotuloDaSubCategoria($chave),
+            'sub_categoria_id' => $this->subCategorias[$chave]->id,
+        ]);
+    }
+
+    /**
+     * Preço piso do produto pelo PricingEngine, com os dados da loja e a maior
+     * taxa entre os canais ativos — a mesma conta de PrecificacaoController.
+     */
+    private function pisoDoProduto(Loja $loja, float $custo): ?float
+    {
+        if ($custo <= 0) {
+            return null;
+        }
+
+        $this->parametrosPiso[$loja->id] ??= [
+            (float) $loja->aliquota_efetiva,
+            (float) $loja->canaisAtivos()->max('taxa_percentual'),
+            (float) $loja->custo_fixo_mensal,
+            (int) $loja->volume_vendas_esperado,
+        ];
+        [$aliquota, $taxaCanal, $custoFixo, $volume] = $this->parametrosPiso[$loja->id];
+
+        if ($volume <= 0) {
+            return null;
+        }
+
+        return app(PricingEngine::class)->composicao(
+            custoAquisicao: $custo,
+            freteEntradaUnitario: 0.0,
+            aliquotaEfetiva: $aliquota,
+            taxaCanal: $taxaCanal,
+            custoFixoMensal: $custoFixo,
+            volumeVendasEsperado: $volume,
+        )['preco_piso'];
+    }
+
     /** Nome do tecido, para a sonda parecer produto e não fixture. */
     private function nomeDaSonda(string $zona): string
     {
@@ -637,10 +793,12 @@ class DemoSeeder extends Seeder
         };
     }
 
-    private function registrarProduto(Loja $loja, Categoria $categoria, string $nome, ?float $preco, float $custo, ?int $estoquePorTamanho = null, ?float $precoPiso = null): string
+    private function registrarProduto(Loja $loja, Categoria $categoria, string $nome, ?float $preco, float $custo, ?int $estoquePorTamanho = null, ?float $precoPiso = null, ?int $cadastroDiasAtras = null): string
     {
         $id = (string) Str::uuid();
-        $cadastro = now()->subDays($this->entre(...$this->premissas['idade_cadastro_dias']));
+        $cadastro = now()->subDays($cadastroDiasAtras ?? $this->entre(...$this->premissas['idade_cadastro_dias']));
+        // Sem piso informado, o mesmo piso que o cadastro pela API gravaria.
+        $precoPiso ??= $this->pisoDoProduto($loja, $custo);
 
         $this->filaProdutos[] = [
             'id' => $id,
@@ -855,5 +1013,39 @@ class DemoSeeder extends Seeder
     private function moeda(float $valor): string
     {
         return number_format($valor, 2, ',', '.');
+    }
+
+    /**
+     * Recomendação esperada e obtida de cada caso de demonstração. Os casos
+     * demonstram as regras; não medem frequência.
+     */
+    private function resumirRecomendacoes(Loja $consulente): void
+    {
+        if ($this->command === null) {
+            return;
+        }
+
+        $ids = array_filter(array_column($this->casosRecomendacao, 'produto_id'));
+        $produtos = Produto::with(['categoria', 'variantes'])->whereIn('id', $ids)->get();
+        $avaliacoes = app(RecomendacaoCenarioDados::class)->avaliar($consulente, $produtos);
+
+        $linhas = [];
+        foreach ($this->casosRecomendacao as $caso) {
+            $avaliacao = $avaliacoes[$caso['produto_id']] ?? null;
+            $obtido = $avaliacao === null ? '—' : ($avaliacao['cenario_recomendado'] ?? $avaliacao['motivo_indisponivel']);
+            $origem = $avaliacao['origem_recomendacao'] ?? '—';
+
+            $linhas[] = [
+                $caso['nome'],
+                $caso['categoria'],
+                $caso['regra'],
+                $caso['esperado'].' · '.$caso['origem'],
+                $obtido.' · '.$origem,
+                $obtido === $caso['esperado'] && ($avaliacao === null || ! $avaliacao['disponivel'] || $origem === $caso['origem']) ? 'ok' : 'DIVERGE',
+            ];
+        }
+
+        $this->command->info('Recomendação de cenário (casos de demonstração das regras, não de frequência):');
+        $this->command->table(['produto', 'categoria', 'sinal', 'esperado', 'obtido', ''], $linhas);
     }
 }
