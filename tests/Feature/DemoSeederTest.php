@@ -406,6 +406,55 @@ class DemoSeederTest extends TestCase
         $this->assertSame(1, Loja::where('is_demo', false)->count());
     }
 
+    public function test_nao_apaga_loja_demo_de_outro_dominio(): void
+    {
+        // Subdomínio (o "@" do filtro tem de deixá-lo de fora) e domínio sem relação.
+        $outras = [
+            $this->criarLojaDemoDeOutroDominio('loja-a@catalogo.maremu.demo', 'Loja Fictícia A'),
+            $this->criarLojaDemoDeOutroDominio('loja-b@outro-dominio.test', 'Loja Fictícia B'),
+        ];
+        $ids = array_map(fn (Loja $loja) => $loja->id, $outras);
+        $usuarios = array_map(fn (Loja $loja) => $loja->user_id, $outras);
+
+        $retrato = fn () => [
+            'users' => $this->linhas(DB::table('users')->whereIn('id', $usuarios)),
+            'lojas' => $this->linhas(DB::table('lojas')->whereIn('id', $ids)),
+            'categorias' => $this->linhas(DB::table('categorias')->whereIn('loja_id', $ids)),
+            'produtos' => $this->linhas(DB::table('produtos')->whereIn('loja_id', $ids)),
+        ];
+        $antes = $retrato();
+
+        $this->semear();
+        $this->semear();
+
+        $this->assertCount(2, $antes['lojas']);
+        $this->assertCount(4, $antes['produtos']);
+        $this->assertSame($antes, $retrato());
+        $this->assertSame(2, Loja::whereIn('id', $ids)->where('is_demo', true)->count());
+    }
+
+    public function test_lojas_do_proprio_dominio_continuam_sendo_recriadas_ao_lado_das_de_outro_dominio(): void
+    {
+        $this->criarLojaDemoDeOutroDominio('loja-a@catalogo.maremu.demo', 'Loja Fictícia A');
+        $doSeeder = fn () => Loja::where('is_demo', true)
+            ->whereIn('user_id', User::where('email', 'like', '%@maremu.demo')->select('id'));
+        $esperadas = count((new \ReflectionClassConstant(DemoSeeder::class, 'LOJAS_SEMELHANTES'))->getValue()) + 1;
+
+        $this->semear();
+        $idsPrimeira = $doSeeder()->pluck('id')->sort()->values()->all();
+        $consulentePrimeira = $this->consulente->id;
+
+        $this->semear();
+        $idsSegunda = $doSeeder()->pluck('id')->sort()->values()->all();
+
+        $this->assertCount($esperadas, $idsPrimeira);
+        $this->assertCount($esperadas, $idsSegunda);
+        // Recriadas, não reaproveitadas: a segunda rodada apagou as da primeira.
+        $this->assertSame([], array_intersect($idsPrimeira, $idsSegunda));
+        $this->assertNotSame($consulentePrimeira, $this->consulente->id);
+        $this->assertSame($esperadas + 1, Loja::where('is_demo', true)->count());
+    }
+
     // ─── trava de ambiente ───────────────────────────────────────────────
 
     public function test_recusa_rodar_em_producao_sem_autorizacao_explicita(): void
@@ -529,5 +578,31 @@ class DemoSeederTest extends TestCase
         ]);
 
         return $loja;
+    }
+
+    /**
+     * Loja demo (is_demo = true) que não é do DemoSeeder: usuário em outro
+     * domínio, com duas categorias e dois produtos.
+     */
+    private function criarLojaDemoDeOutroDominio(string $email, string $nome): Loja
+    {
+        $loja = Loja::factory()
+            ->for(User::factory()->state(['email' => $email]))
+            ->create(['nome' => $nome, 'is_demo' => true]);
+
+        foreach (['Camisetas fictícias', 'Calças fictícias'] as $nomeCategoria) {
+            $categoria = Categoria::factory()->create(['loja_id' => $loja->id, 'nome' => $nomeCategoria]);
+            Produto::factory()->create(['loja_id' => $loja->id, 'categoria_id' => $categoria->id]);
+        }
+
+        return $loja->fresh();
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function linhas(\Illuminate\Database\Query\Builder $consulta): array
+    {
+        return $consulta->orderBy('id')->get()->map(fn ($linha) => (array) $linha)->all();
     }
 }
