@@ -33,9 +33,14 @@ use RuntimeException;
  * dado de demonstração sem alguém pedir.
  *
  * ─── SEGURANÇA ────────────────────────────────────────────────────────────
- * Mexe só em lojas com `is_demo = true`: apaga essas e recria. Loja real,
- * com seus produtos, pedidos e métricas, nunca é tocada. Em `production` o
- * seeder se recusa a rodar sem `DEMO_SEED_ALLOW=true` no ambiente.
+ * Mexe só nas lojas que ele mesmo cria: `is_demo = true` com usuário no domínio
+ * DOMINIO (`@maremu.demo`). Apaga essas e recria. Loja real, com seus produtos,
+ * pedidos e métricas, nunca é tocada, e loja demo de outro domínio (como lojas
+ * fictícias em `@catalogo.maremu.demo`) também não. Em `production` o seeder se
+ * recusa a rodar sem `DEMO_SEED_ALLOW=true` no ambiente.
+ *
+ * Lojas demo de domínios diferentes ficam no mesmo mundo da camada 3 (ela separa
+ * só demo de real): com as duas no banco, uma entra na amostra da outra.
  *
  * A única coisa que o seeder faz fora do mundo demo é rodar, no final, o job
  * AgregarMetricasCategoria — o mesmo do cron diário. Ele recalcula a janela de
@@ -261,7 +266,7 @@ class DemoSeeder extends Seeder
         if ($producao && ! $autorizado) {
             throw new RuntimeException(
                 'DemoSeeder recusou rodar: o ambiente é "production". Este seeder apaga e '
-                .'recria todas as lojas com is_demo = true. Se é mesmo isso que você quer, '
+                .'recria as lojas de demonstração (is_demo = true, domínio @'.self::DOMINIO.'). Se é mesmo isso que você quer, '
                 .'defina DEMO_SEED_ALLOW=true no ambiente antes de rodar.'
             );
         }
@@ -279,7 +284,19 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * Apaga só o que pertence a loja de demonstração, em ordem de dependência.
+     * Lojas que este seeder cria: demo e com usuário no domínio dele. O "@" antes
+     * do domínio deixa de fora subdomínios como catalogo.maremu.demo.
+     */
+    private function lojasDoSeeder(): \Illuminate\Database\Query\Builder
+    {
+        return DB::table('lojas')
+            ->join('users', 'users.id', '=', 'lojas.user_id')
+            ->where('lojas.is_demo', true)
+            ->where('users.email', 'like', '%@'.self::DOMINIO);
+    }
+
+    /**
+     * Apaga só o que pertence às lojas deste seeder, em ordem de dependência.
      *
      * As subconsultas são refeitas a cada passo (e não uma lista de ids) para
      * não estourar o limite de parâmetros do banco quando a demo crescer.
@@ -289,9 +306,9 @@ class DemoSeeder extends Seeder
         $this->fatorPreco = [];
         $this->sondas = [];
 
-        $usuarios = DB::table('lojas')->where('is_demo', true)->pluck('user_id')->all();
+        $usuarios = $this->lojasDoSeeder()->pluck('lojas.user_id')->all();
 
-        $lojas = fn () => DB::table('lojas')->select('id')->where('is_demo', true);
+        $lojas = fn () => $this->lojasDoSeeder()->select('lojas.id');
         $produtos = fn () => DB::table('produtos')->select('id')->whereIn('loja_id', $lojas());
         $pedidos = fn () => DB::table('pedidos')->select('id')->whereIn('loja_id', $lojas());
 
@@ -307,9 +324,9 @@ class DemoSeeder extends Seeder
             DB::table('categorias')->whereIn('loja_id', $lojas())->delete();
             DB::table('canais_venda_loja')->whereIn('loja_id', $lojas())->delete();
             DB::table('logs_onboarding_ia')->whereIn('loja_id', $lojas())->delete();
-            DB::table('lojas')->where('is_demo', true)->delete();
 
             if ($usuarios !== []) {
+                DB::table('lojas')->where('is_demo', true)->whereIn('user_id', $usuarios)->delete();
                 DB::table('personal_access_tokens')
                     ->where('tokenable_type', User::class)
                     ->whereIn('tokenable_id', $usuarios)
@@ -795,7 +812,9 @@ class DemoSeeder extends Seeder
         $onboarding = app(OnboardingService::class);
         $mercado = app(Camada3MercadoService::class);
 
-        $lojas = Loja::where('is_demo', true)->get();
+        $lojas = Loja::where('is_demo', true)
+            ->whereIn('user_id', User::where('email', 'like', '%@'.self::DOMINIO)->select('id'))
+            ->get();
 
         $this->command->info("Lojas de demonstração: {$lojas->count()} (1 consulente + ".($lojas->count() - 1).' semelhantes)');
         $this->command->line('Acesso: '.self::EMAIL_CONSULENTE);
